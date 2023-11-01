@@ -1,3 +1,3 @@
-Essential Recruit Donna
+Essential Recruit Judy
 
-This is the codebase for essential recruit donna AI
+This is the codebase for essential recruit judy AI

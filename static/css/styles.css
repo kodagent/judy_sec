@@ -1,0 +1,243 @@
+/* General Styles */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+    color: #333;
+  }
+  
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #303f9f;
+}
+
+a:hover {
+    color: #1976d2;
+}
+
+button {
+    background-color: #303f9f;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1976d2;
+}
+
+.cta {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+/* Header Styles */
+
+header {
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header nav a {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+header nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+header nav li {
+    margin-left: 20px;
+}
+
+/* Hero Section Styles */
+
+#hero {
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px;
+}
+
+#hero .hero-text {
+    flex-basis: 50%;
+    padding-right: 50px;
+}
+
+#hero h1 {
+    font-size: 48px;
+    line-height: 1.2;
+}
+
+#hero p {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+#hero img {
+    flex-basis: 50%;
+}
+
+/* Features Section Styles */
+
+#features {
+    padding: 50px;
+}
+
+#features h2 {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.feature {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.feature img {
+    flex-basis: 50%;
+}
+
+.feature-text {
+    flex-basis: 50%;
+    padding-left: 50px;
+}
+
+.feature h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.feature p {
+    font-size: 18px;
+}
+
+/* Pricing Section Styles */
+
+#pricing {
+    background-color: #f7f7f7;
+    padding: 50px;
+}
+
+#pricing h2 {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #303f9f;
+    color: #fff;
+}
+
+td {
+    vertical-align: middle;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Contact Section Styles */
+
+#contact {
+    background-color: #303f9f;
+    color: #fff;
+    padding: 50px;
+}
+
+#contact h2 {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+#contact form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#contact form label {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+#contact form input, #contact form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px;
+}
+
+#contact form textarea {
+    height: 200px;
+}
+
+#contact form button[type="submit"] {
+    width: auto;
+    margin-top: 20px;
+}
+
+/* Footer Styles */
+
+footer {
+    background-color: #ddd;
+    padding: 20px;
+    text-align: center;
+}
+
+footer p {
+    font-size: 14px;
+    margin: 0;
+}
+
+footer a {
+    color: #303f9f;
+}
+
+footer a:hover {
+    color: #1976d2;
+}

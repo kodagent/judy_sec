@@ -1,0 +1,250 @@
+<!-- chatbot_widget.html -->
+<style>
+  /* Styling for the chatbot widget */
+  .chatbot-widget-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    border: none;
+    border-radius: 4px;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    z-index: 9999;
+  }
+
+  .chatbot-widget-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    background-color: #4a90e2;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    outline: none;
+  }
+
+  .chatbot-widget-button:hover {
+    background-color: #3971b9;
+  }
+
+  .chatbot-widget-content {
+    display: none;
+    padding: 10px;
+    height: 300px;
+    overflow-y: scroll;
+  }
+
+  .chatbot-widget-open .chatbot-widget-content {
+    display: block;
+  }
+
+  .message {
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .user {
+    background-color: #cce6ff;
+    text-align: right;
+  }
+
+  .chatbot {
+    background-color: #ebebeb;
+  }
+
+  .user-message-button {
+    display: inline-block;
+    padding: 4px 8px;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .user-message-button:hover {
+    background-color: #f2f2f2;
+  }
+
+  #user-input {
+    width: 100%;
+    padding: 6px;
+    font-size: 14px;
+    border: none;
+    border-top: 1px solid #ccc;
+    outline: none;
+  }
+  .option-button {
+    display: inline-block;
+    padding: 4px 8px;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .option-button:hover {
+    background-color: #f2f2f2;
+  }  
+</style>
+
+<div class="chatbot-widget-container">
+  <button id="chatbot-widget-button" class="chatbot-widget-button">Chat</button>
+  <div id="chatbot-widget-content" class="chatbot-widget-content">
+    <div id="chat-display"></div>
+    <input type="text" id="user-input" placeholder="Type your message..." disabled/>
+    <div id="options-container" style="margin-top: 10px;">
+      <button class="option-button" id="option1">Learn about the mortgage industry in Nigeria</button>
+      <button class="option-button" id="option2">Recommend the best houses for me</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const chatbotWidgetContainer = document.querySelector(".chatbot-widget-container");
+  const chatbotWidgetButton = document.querySelector("#chatbot-widget-button");
+  const chatDisplay = document.getElementById("chat-display");
+  const userInput = document.getElementById("user-input");
+  const option1Button = document.getElementById("option1");
+  const option2Button = document.getElementById("option2");
+
+  let apiUrl = ""; // Will hold the API URL based on user's selection
+  let optionSelected = false; // Flag to track option selection
+
+  // Retrieve the CSRF token from the cookie
+  function getCSRFToken() {
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="));
+
+    if (cookieValue) {
+      return cookieValue.split("=")[1];
+    }
+
+    return null;
+  }
+
+  function scrollToBottom() {
+    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+  }
+
+  function appendMessage(sender, message) {
+    const messageElement = document.createElement("div");
+    messageElement.className = `message ${sender}`;
+    messageElement.innerText = message;
+
+    // Add a click event listener to user messages to send them automatically
+    if (sender === "user") {
+      messageElement.addEventListener("click", function () {
+        sendMessage(message);
+      });
+      messageElement.classList.add("user-message-button");
+      messageElement.setAttribute("title", "Click to send");
+      messageElement.style.cursor = "pointer";
+    }
+
+    chatDisplay.appendChild(messageElement);
+    scrollToBottom();
+  }
+
+  function sendMessage(message) {
+    appendMessage("user", message);
+
+    userInput.disabled = true; // Disable the input field while processing
+
+    // Construct the payload including the message and user information
+    const payload = {
+      message: optionSelected ? message : "I want to buy a house",
+      user: {
+        id: "{{ request.user.id }}",
+        username: "{{ request.user.username }}",
+        // Include any other relevant user information as needed
+      },
+    };
+
+    const csrfToken = getCSRFToken();
+
+    // Construct the headers object with the CSRF token
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrfToken,
+    };
+
+    // Make an API call to the specified URL
+    fetch(apiUrl, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(payload),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not OK");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Process the response received from the backend
+        const chatbotResponse = data.response;
+        appendMessage("chatbot", chatbotResponse);
+        userInput.disabled = false; // Enable the input field
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        appendMessage("chatbot", "Oops! Something went wrong. Please try again.");
+        userInput.disabled = false; // Enable the input field
+      });
+  }
+
+  function handleOptionSelection(option) {
+    if (option === 1) {
+      userInput.placeholder = "What do you want to know about the mortgage industry in Nigeria";
+      apiUrl = "https://kemi-389113.uc.r.appspot.com/knowledge-qa/";
+      optionSelected = true;
+    } else if (option === 2) {
+      userInput.placeholder = "";
+      apiUrl = "https://kemi-389113.uc.r.appspot.com/form-qa/";
+      optionSelected = true;
+    }
+    userInput.disabled = false;
+    option1Button.disabled = true;
+    option2Button.disabled = true;
+  }
+
+  option1Button.addEventListener("click", function () {
+    handleOptionSelection(1);
+  });
+
+  option2Button.addEventListener("click", function () {
+    handleOptionSelection(2);
+    sendMessage("I want to buy a house");
+  });
+
+  chatbotWidgetButton.addEventListener("click", function () {
+    chatbotWidgetContainer.classList.toggle("chatbot-widget-open");
+    if (chatbotWidgetContainer.classList.contains("chatbot-widget-open")) {
+      userInput.focus();
+    }
+  });
+
+  userInput.addEventListener("keyup", function (event) {
+    if (event.key === "Enter") {
+      const message = userInput.value;
+      userInput.value = "";
+      sendMessage(message);
+    }
+  });
+});
+</script>

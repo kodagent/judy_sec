@@ -31,7 +31,7 @@ async def single_bot_query(messages):
         model="gpt-3.5-turbo-16k",
         messages=messages
     )
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 
 async def separate_confidence_from_answer(full_response):

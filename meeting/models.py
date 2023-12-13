@@ -2,6 +2,7 @@ from django.db import models
 
 
 class InterviewTranscript(models.Model):
+    transcript_id = models.CharField(max_length=100, unique=True)
     candidate_name = models.CharField(max_length=100)
     interview_date = models.DateField()
     transcript = models.TextField()

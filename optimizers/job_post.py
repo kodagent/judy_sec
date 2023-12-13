@@ -36,7 +36,7 @@ def get_openai_response(INSTRUCTION, content, functions=None, function_name=None
             messages=messages,
         )
 
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 
 def get_feedback(job_post_content):

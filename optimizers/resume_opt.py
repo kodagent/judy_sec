@@ -84,7 +84,7 @@ def get_openai_response(INSTRUCTION, content, functions=None, function_name=None
             messages=messages,
         )
 
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 
 def resume_parser(resume_text=None, document_id=None):

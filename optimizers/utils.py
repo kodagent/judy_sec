@@ -33,7 +33,7 @@ async def get_openai_response(INSTRUCTION, content, functions=None, function_nam
             messages=messages,
         )
 
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
 
 
 async def get_chat_response(instruction, message):

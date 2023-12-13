@@ -20,7 +20,7 @@ async def analyze_communication_skills(transcript):
     """
     communication_feedback = await get_chat_response(instruction, transcript)
     
-    logger.info(f"{communication_feedback}")
+    # logger.info(f"{communication_feedback}")
     return communication_feedback
 
 
@@ -32,7 +32,7 @@ async def analyze_technical_knowledge(transcript):
     """
     technical_feedback = await get_chat_response(instruction, transcript)
     
-    logger.info(f"{technical_feedback}")
+    # logger.info(f"{technical_feedback}")
     return technical_feedback
 
 
@@ -44,7 +44,7 @@ async def analyze_emotional_intelligence(transcript):
     """
     emotional_intelligence_feedback = await get_chat_response(instruction, transcript)
     
-    logger.info(f"{emotional_intelligence_feedback}")
+    # logger.info(f"{emotional_intelligence_feedback}")
     return emotional_intelligence_feedback
 
 
@@ -54,7 +54,7 @@ async def analyze_sentiment(transcript):
     analysis = TextBlob(transcript)
     polarity = analysis.sentiment.polarity
 
-    logger.info(f"{polarity}")
+    # logger.info(f"{polarity}")
 
     return polarity 
 
@@ -67,7 +67,7 @@ async def analyze_professionalism(transcript):
     """
     professionalism_feedback = await get_chat_response(instruction, transcript)
     
-    logger.info(f"{professionalism_feedback}")
+    # logger.info(f"{professionalism_feedback}")
     return professionalism_feedback
 
 
@@ -78,7 +78,7 @@ async def analyze_teamwork_and_leadership(transcript):
     Assess the candidate's abilities in teamwork and leadership based on the interview transcript. Evaluate their experiences and anecdotes that demonstrate their capacity to work collaboratively in a team and to lead others. Provide a detailed analysis with examples that highlight these competencies.
     """
     teamwork_leadership_feedback = await get_chat_response(instruction, transcript)
-    logger.info(f"{teamwork_leadership_feedback}")
+    # logger.info(f"{teamwork_leadership_feedback}")
     return teamwork_leadership_feedback
 
 
@@ -89,7 +89,7 @@ async def analyze_adaptability_and_problem_solving(transcript):
     Analyze the candidate's adaptability and problem-solving skills from the interview transcript. Focus on how they approach challenges and changes, and their methodology in solving complex issues. Highlight specific instances where these skills are evident, and provide an assessment of their potential effectiveness in a dynamic work environment.
     """
     adaptability_problem_solving_feedback = await get_chat_response(instruction, transcript)
-    logger.info(f"{adaptability_problem_solving_feedback}")
+    # logger.info(f"{adaptability_problem_solving_feedback}")
     return adaptability_problem_solving_feedback
 
 
@@ -100,7 +100,7 @@ async def analyze_cultural_fit_and_motivation(transcript):
     Evaluate the candidate's alignment with the company's culture and their motivation for applying for the job. Analyze the transcript for cues on their understanding of the company values, their reasons for applying, and how their personal and professional goals align with the organization's direction. Offer insights into their potential integration into the company culture.
     """
     cultural_fit_motivation_feedback = await get_chat_response(instruction, transcript)
-    logger.info(f"{cultural_fit_motivation_feedback}")
+    # logger.info(f"{cultural_fit_motivation_feedback}")
     return cultural_fit_motivation_feedback
 
 
@@ -117,8 +117,8 @@ async def main_analysis(transcript):
     return results
 
 
-transcript = "Your interview transcript here"
-analysis_results = asyncio.run(main_analysis(transcript))
+# transcript = "Your interview transcript here"
+# analysis_results = asyncio.run(main_analysis(transcript))
 
 
 """

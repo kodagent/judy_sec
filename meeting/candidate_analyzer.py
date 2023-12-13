@@ -18,8 +18,9 @@ async def analyze_communication_for_candidate(transcript):
     instruction = """
     Analyze the interview transcript for communication skills. Assess the candidate's clarity of expression, listening skills, and ability to articulate complex ideas. Provide specific examples from the transcript where the candidate demonstrated these skills effectively or areas where improvement is needed.
     """
-    feedback = await get_chat_response(instruction, transcript)
-    return feedback
+    communication_feedback = await get_chat_response(instruction, transcript)
+    # logger.info(f"{communication_feedback}")
+    return communication_feedback
 
 
 async def analyze_technical_knowledge_for_candidate(transcript):
@@ -27,8 +28,9 @@ async def analyze_technical_knowledge_for_candidate(transcript):
     instruction = """
     Evaluate the technical knowledge of the candidate as shown in the transcript. Focus on their depth of understanding in the relevant technical domain and their problem-solving abilities. Highlight specific instances where technical expertise is evident and suggest areas for improvement.
     """
-    feedback = await get_chat_response(instruction, transcript)
-    return feedback
+    technical_feedback = await get_chat_response(instruction, transcript)
+    # logger.info(f"{technical_feedback}")
+    return technical_feedback
 
 
 async def analyze_behavioral_competencies_for_candidate(transcript):
@@ -38,7 +40,7 @@ async def analyze_behavioral_competencies_for_candidate(transcript):
     Analyze the candidate's behavioral competencies based on the transcript. Assess their teamwork, leadership abilities, and adaptability. Provide feedback on how effectively these competencies are demonstrated during the interview.
     """
     behavioral_feedback = await get_chat_response(instruction, transcript)
-    logger.info(behavioral_feedback)
+    # logger.info(f"{behavioral_feedback}")
     return behavioral_feedback
 
 
@@ -49,7 +51,7 @@ async def analyze_experience_and_qualifications_for_candidate(transcript):
     Review the candidate's discussion of their experience and qualifications. Provide feedback on how relevant their experience is to the role they have applied for and how they might better align or present their qualifications.
     """
     experience_feedback = await get_chat_response(instruction, transcript)
-    
+    # logger.info(f"{experience_feedback}")
     return experience_feedback
 
 
@@ -60,6 +62,7 @@ async def analyze_problem_solving_skills_for_candidate(transcript):
     Evaluate the candidate's problem-solving and critical thinking skills as demonstrated in the interview. Provide feedback on their analytical approach and creativity, with suggestions for further development in these areas.
     """
     problem_solving_feedback = await get_chat_response(instruction, transcript)
+    # logger.info(f"{problem_solving_feedback}")
     return problem_solving_feedback
 
 
@@ -69,9 +72,9 @@ async def analyze_emotional_intelligence_for_candidate(transcript):
     instruction = """
     Assess the candidate's emotional intelligence based on this transcript. Provide advice on how they can improve in areas like empathy, self-awareness, and managing interactions with others.
     """
-    feedback = await get_chat_response(instruction, transcript)
-    
-    return feedback
+    emotional_intelligence_feedback = await get_chat_response(instruction, transcript)
+    # logger.info(f"{emotional_intelligence_feedback}")
+    return emotional_intelligence_feedback
 
 
 async def analyze_professionalism_for_candidate(transcript):
@@ -80,9 +83,9 @@ async def analyze_professionalism_for_candidate(transcript):
     instruction = """
     Analyze the candidate's level of professionalism during the interview. Give tips on how they can present themselves more professionally and prepared in future interviews.
     """
-    feedback = await get_chat_response(instruction, transcript)
-
-    return feedback
+    professionalism_feedback = await get_chat_response(instruction, transcript)
+    # logger.info(f"{professionalism_feedback}")
+    return professionalism_feedback
 
 
 async def analyze_sentiment_for_candidate(transcript):
@@ -92,17 +95,17 @@ async def analyze_sentiment_for_candidate(transcript):
     polarity = analysis.sentiment.polarity  # Polarity score
     subjectivity = analysis.sentiment.subjectivity  # Subjectivity score
 
-    feedback = "Your interview responses seem "
-    feedback += "mostly positive" if polarity > 0.1 else "mostly negative" if polarity < -0.1 else "quite neutral"
-    feedback += ". "
-    feedback += "They also appear to be "
-    feedback += "subjective" if subjectivity > 0.5 else "objective"
-    feedback += ". Consider if this tone aligns with how you want to present yourself in professional settings."
+    sentiment_feedback = "Your interview responses seem "
+    sentiment_feedback += "mostly positive" if polarity > 0.1 else "mostly negative" if polarity < -0.1 else "quite neutral"
+    sentiment_feedback += ". "
+    sentiment_feedback += "They also appear to be "
+    sentiment_feedback += "subjective" if subjectivity > 0.5 else "objective"
+    sentiment_feedback += ". Consider if this tone aligns with how you want to present yourself in professional settings."
 
     logger.info(f"Sentiment Analysis: Polarity: {polarity}, Subjectivity: {subjectivity}")
-    logger.info(f"Feedback: {feedback}")
+    logger.info(f"Sentiment Feedback: {sentiment_feedback}")
 
-    return feedback
+    return sentiment_feedback
 
 
 async def main_analysis(transcript):
@@ -118,5 +121,5 @@ async def main_analysis(transcript):
     }
     return results
 
-transcript = "Your interview transcript here"
-analysis_results = asyncio.run(main_analysis(transcript))
+# transcript = "Your interview transcript here"
+# analysis_results = asyncio.run(main_analysis(transcript))

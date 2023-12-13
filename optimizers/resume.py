@@ -1,10 +1,8 @@
 import asyncio
 import json
-import os
 import time
 
 import autogen
-import openai
 import textstat
 from asgiref.sync import sync_to_async
 from autogen import (AssistantAgent, GroupChatManager, UserProxyAgent,
@@ -33,8 +31,6 @@ logger = configure_logger(__name__)
 
 config_list = config_list_from_json(env_or_file="optimizers/OAI_CONFIG_LIST.json")
 config_list[0]["api_key"] = settings.OPENAI_API_KEY
-
-os.environ['OPENAI_API_KEY'] = settings.OPENAI_API_KEY
 
 
 llm_config = {

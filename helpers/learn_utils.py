@@ -1,4 +1,7 @@
-import openai
+from django.conf import settings
+from openai import OpenAI
+
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 SYSTEM_INSTRUCTION = """
         You are a polite, friendly, and helpful virtual assistant that answers questions about the mortgage industry in Nigeria. Here are \
@@ -24,7 +27,7 @@ SYSTEM_INSTRUCTION_2 = SYSTEM_INSTRUCTION + """
 
 
 async def single_bot_query(messages):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo-16k",
         messages=messages
     )

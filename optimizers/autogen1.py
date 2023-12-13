@@ -1,17 +1,13 @@
-import json
-import logging
-import os
-
 import autogen
-import openai
 import textstat
 from autogen import (AssistantAgent, GroupChatManager, UserProxyAgent,
                      config_list_from_json)
 from django.conf import settings
 from dotenv import load_dotenv
+from openai import OpenAI
 from sklearn.feature_extraction.text import CountVectorizer
 
-# optimizer helpers
+from chatbackend.logging_config import configure_logger
 from helpers.optimizer_utils import (get_cover_letter_instruction,
                                      get_job_post_instruction,
                                      get_resume_instruction,
@@ -21,14 +17,12 @@ from helpers.optimizer_utils import (get_cover_letter_instruction,
 
 load_dotenv()
 
-# Logging setup
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = configure_logger(__name__)
 
 config_list = config_list_from_json(env_or_file="optimizers/OAI_CONFIG_LIST.json")
 config_list[0]["api_key"] = settings.OPENAI_API_KEY
 
-os.environ['OPENAI_API_KEY'] = settings.OPENAI_API_KEY
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 SYSTEM_ROLE = "system"
 USER_ROLE = "user"
@@ -50,15 +44,15 @@ def get_openai_response(INSTRUCTION, content, functions=None, function_name=None
     ]
 
     if functions:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-0613",
+        response = client.chat.completions.create(
+            model="gpt-4-1106-preview",
             messages=messages,
             functions=functions,
             function_name=function_name,
         )
     else:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-0613",
+        response = client.chat.completions.create(
+            model="gpt-4-1106-preview",
             messages=messages,
         )
 

@@ -1,5 +1,6 @@
 import os
 
+from decouple import config
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from google.cloud import storage
@@ -59,7 +60,7 @@ class Upload(models.Model):
             storage_client = storage.Client()
 
             # Specify the bucket name
-            bucket_name = os.getenv("GS_BUCKET_NAME")
+            bucket_name = config("GS_BUCKET_NAME")
 
             # Get the bucket
             bucket = storage_client.get_bucket(bucket_name)

@@ -30,6 +30,7 @@ custom_urlpatterns = [
     path('api/optimizers/', include('optimizers.urls')),
     path('api/recommendation/', include('recommendation.urls')),
     path('api/record/', include('record.urls')),
+    path('api/meeting/', include('meeting.urls')),
     # path('api/payment/', include('payment.urls')),
 ]
 

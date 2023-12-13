@@ -1,5 +1,4 @@
 import asyncio
-import os
 import time
 
 from asgiref.sync import sync_to_async
@@ -18,8 +17,6 @@ from optimizers.utils import (analyze_readability, get_chat_response,
                               get_readability_text, match_keywords_func)
 
 logger = configure_logger(__name__)
-
-os.environ['OPENAI_API_KEY'] = settings.OPENAI_API_KEY
 
 SYSTEM_ROLE = "system"
 USER_ROLE = "user"

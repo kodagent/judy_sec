@@ -72,7 +72,7 @@ def get_mortgage_description(property_type, area, state, budget, bedrooms, lende
     ]
     return random.choice(MORTGAGE_PREDEFINED_RESPONSE_OPTIONS)
 # async def get_description(content):
-#     chat = ChatOpenAI(temperature=0.7, model_name="gpt-4-0613", openai_api_key=os.getenv("OPENAI_API_KEY"))
+#     chat = ChatOpenAI(temperature=0.7, model_name="gpt-4-0613", openai_api_key=settings.OPENAI_API_KEY)
 #     messages = [SystemMessage(content="You are a real estate professional."), HumanMessage(content=content),]
 #     return chat(messages).content
 

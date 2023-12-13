@@ -1,24 +1,20 @@
-import logging
-import os
-
-import openai
 import textstat
 from django.conf import settings
 from django.db import connections
 from langchain.document_loaders import OnlinePDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from openai import OpenAI
 
+from chatbackend.logging_config import configure_logger
 from helpers.optimizer_utils import (get_cover_letter_instruction,
                                      get_job_post_instruction,
                                      get_resume_instruction,
                                      get_resume_parser_instruction,
                                      job_post_description, resume_content)
 
-# Logging setup
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = configure_logger(__name__)
 
-os.environ['OPENAI_API_KEY'] = settings.OPENAI_API_KEY
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 SYSTEM_ROLE = "system"
 USER_ROLE = "user"
@@ -76,15 +72,15 @@ def get_openai_response(INSTRUCTION, content, functions=None, function_name=None
     ]
 
     if functions:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-0613",
+        response = client.chat.completions.create(
+            model="gpt-4-1106-preview",
             messages=messages,
             functions=functions,
             function_name=function_name,
         )
     else:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-0613",
+        response = client.chat.completions.create(
+            model="gpt-4-1106-preview",
             messages=messages,
         )
 

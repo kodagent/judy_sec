@@ -42,6 +42,7 @@ LOCAL_APPS = [
     "record",
     'optimizers',
     'recommendation',
+    'meeting',
     # "payment",
 ]
 
@@ -228,3 +229,4 @@ MONGO_DB_NAME = config("MONGO_DB_NAME")
 # ================================ CUSTOM VARIABLES =======================================
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 ASSISTANT_ID = config("ASSISTANT_ID")
+os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY

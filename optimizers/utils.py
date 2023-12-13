@@ -1,10 +1,11 @@
-import os
-
-import openai
 import textstat
+from django.conf import settings
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
+from openai import OpenAI
 from sklearn.feature_extraction.text import CountVectorizer
+
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 SYSTEM_ROLE = "system"
 USER_ROLE = "user"
@@ -19,16 +20,16 @@ async def get_openai_response(INSTRUCTION, content, functions=None, function_nam
     ]
 
     if functions:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-0613",
+        response = client.chat.completions.create(
+            model="gpt-4-1106-preview",
             messages=messages,
             functions=functions,
             function_call={'name': function_name},
         )
         return response["choices"][0]["message"]
     else:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-0613",
+        response = client.chat.completions.create(
+            model="gpt-4-1106-preview",
             messages=messages,
         )
 
@@ -36,7 +37,7 @@ async def get_openai_response(INSTRUCTION, content, functions=None, function_nam
 
 
 async def get_chat_response(instruction, message):
-    chat = ChatOpenAI(temperature=0.7, model_name="gpt-4-0613", openai_api_key=os.getenv("OPENAI_API_KEY"))
+    chat = ChatOpenAI(temperature=0.7, model_name="gpt-4-1106-preview", openai_api_key=settings.OPENAI_API_KEY)
 
     messages = [SystemMessage(content=instruction), HumanMessage(content=message)]
 

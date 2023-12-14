@@ -46,15 +46,15 @@ STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
 
 
 # ================================ EMAIL =======================================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp.office365.com'  # 'smtp.outlook.office365.com'
-EMAIL_PORT = 587  # 465  # TLS port
-EMAIL_USE_TLS = True
-# EMAIL_USE_SSL = True
-EMAIL_HOST_USER = config("EMAIL")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = config("EMAIL")
+# EMAIL_HOST = 'smtp.office365.com'  # 'smtp.outlook.office365.com'
+# EMAIL_PORT = 587  # 465  # TLS port
+# EMAIL_USE_TLS = True
+# # EMAIL_USE_SSL = True
+# EMAIL_HOST_USER = config("EMAIL")
+# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+# DEFAULT_FROM_EMAIL = config("EMAIL")
 # ================================ EMAIL =======================================
 
 

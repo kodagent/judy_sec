@@ -71,46 +71,61 @@ class TranscriptAnalysis(View):
 
 {
     "candidate_analysis": {
-        "Communication Skills": "Based on the interview transcript, the candidate, Jordan, demonstrates effective communication skills in several ways:\n\n**Clarity of \
-            Expression:**\n- **Effective:** Jordan provides clear responses to the recruiter's questions, using specific examples to illustrate points. For instance, \
-            when asked about a challenging situation, Jordan describes a particular instance with a pediatric patient and explains the approach taken to handle \
-            it.\n- **Improvement:** Overall, Jordan's clarity of expression is solid. However, there could be an opportunity to provide more detailed examples of \
-            the initiatives in pediatric care innovation that excited them about the hospital.\n\n**Listening Skills:**\n- **Effective:** Jordan's responses are directly \
-            relevant to the questions asked by the recruiter, indicating active listening. For example, after being asked about keeping nursing knowledge up to date, \
-            Jordan lists specific ways they engage in continuous learning.\n- **Improvement:** There are no obvious areas needing improvement regarding listening skills \
-            based on this transcript. Jordan demonstrates good listening by responding appropriately to each question without veering off-topic.\n\n**Ability to Articulate \
-            Complex Ideas:**\n- **Effective:** Jordan articulates the concept of patient-centered care by describing a personal experience where they communicated \
-            effectively with a child patient and their parents. This shows an ability to convey complex healthcare practices in an understandable way.\n- **Improvement:** \
-            Jordan could potentially enhance their articulation of complex ideas by providing more depth in the discussion about teamwork and stress management. For \
-            instance, they could offer a specific example of a high-pressure situation and detail how they prioritized tasks.\n\n**Specific Examples:**\n- When describing \
-            teamwork, Jordan emphasizes the importance of \"clear communication, mutual respect, and collaboration,\" which shows an understanding of the nuanced dynamics \
-            in a team setting.\n- Jordan mentions practicing self-care to maintain well-being as a stress management technique, a complex idea that they communicate \
-            succinctly.\n\n**Areas for Improvement:**\n- To further impress, Jordan might consider asking more detailed questions about the hospital's initiatives or \
-            expressing a broader range of their professional interests. This would demonstrate curiosity and a deeper engagement with the role and organization.\n- While \
-            Jordan's communication skills are strong, they could use more storytelling techniques to create a more vivid and memorable impression during the \
-            interview.\n\nIn conclusion, Jordan demonstrates effective communication skills throughout the interview. They are articulate, respond well to questions, and \
-            seem to listen actively to the recruiter. Their ability to describe complex ideas in accessible terms is also evident, although there is always room to enrich \
-            responses with more pertinent examples and further detail.", 
+        "Communication Skills": "Based on the interview transcript, the candidate, Jordan, demonstrates effective communication skills in several ways:\n\n\
+            **Clarity of Expression:**\n\
+                - **Effective:** Jordan provides clear responses to the recruiter's questions, using specific examples to illustrate points. For instance, \
+                when asked about a challenging situation, Jordan describes a particular instance with a pediatric patient and explains the approach taken to handle \
+                it.\n\
+                - **Improvement:** Overall, Jordan's clarity of expression is solid. However, there could be an opportunity to provide more detailed examples of \
+                the initiatives in pediatric care innovation that excited them about the hospital.\n\n\
+            **Listening Skills:**\n\
+                - **Effective:** Jordan's responses are directly relevant to the questions asked by the recruiter, indicating active listening. For example, after \
+                being asked about keeping nursing knowledge up to date, Jordan lists specific ways they engage in continuous learning.\n\
+                - **Improvement:** There are no obvious areas needing improvement regarding listening skills based on this transcript. Jordan demonstrates good \
+                listening by responding appropriately to each question without veering off-topic.\n\n\
+            **Ability to Articulate Complex Ideas:**\n\
+                - **Effective:** Jordan articulates the concept of patient-centered care by describing a personal experience where they communicated effectively \
+                with a child patient and their parents. This shows an ability to convey complex healthcare practices in an understandable way.\n\
+                - **Improvement:** Jordan could potentially enhance their articulation of complex ideas by providing more depth in the discussion about teamwork \
+                and stress management. For instance, they could offer a specific example of a high-pressure situation and detail how they prioritized tasks.\n\n\
+            **Specific Examples:**\n\
+                - When describing teamwork, Jordan emphasizes the importance of \"clear communication, mutual respect, and collaboration,\" which shows an \
+                understanding of the nuanced dynamics in a team setting.\n\
+                - Jordan mentions practicing self-care to maintain well-being as a stress management technique, a complex idea that they communicate succinctly.\n\n\
+            **Areas for Improvement:**\n\
+                - To further impress, Jordan might consider asking more detailed questions about the hospital's initiatives or expressing a broader range of their \
+                professional interests. This would demonstrate curiosity and a deeper engagement with the role and organization.\n\
+                - While Jordan's communication skills are strong, they could use more storytelling techniques to create a more vivid and memorable impression \
+                during the interview.\n\n\
+            In conclusion, Jordan demonstrates effective communication skills throughout the interview. They are articulate, respond well to questions, and \
+            seem to listen actively to the recruiter. Their ability to describe complex ideas in accessible terms is also evident, although there is always room \
+            to enrich responses with more pertinent examples and further detail.", 
         "Technical Knowledge": "Based on the provided transcript, Jordan demonstrates a solid grounding in the field of nursing, particularly in pediatric care. Here are \
-            some instances that show their technical expertise:\n\n1. **Range of Experiences**: Jordan mentions having worked in both hospital and clinic settings, \
-            suggesting familiarity with different healthcare environments and the ability to adapt to various patient care scenarios.\n\n2. **Specialization in Pediatric \
-            Care**: The candidate specializes in pediatric nursing, which requires not only clinical skills but also the ability to communicate effectively with children \
-            and their families, as evidenced by how they handled the anxious pediatric patient.\n\n3. **Commitment to Continuous Learning**: Jordan's dedication to \
-            attending workshops and seminars, participating in study groups, and reading nursing journals demonstrates a commitment to staying current with medical \
-            knowledge and practices, which is essential in the rapidly evolving healthcare field.\n\n4. **Teamwork**: The candidate values clear communication, mutual \
-            respect, and collaboration, which are critical skills for working in the integrated, multidisciplinary teams commonly found in hospitals.\n\n5. **Stress \
-            Management**: Jordan's approach to handling stressful situations by staying calm, prioritizing tasks, and practicing self-care shows an understanding of the \
-            importance of resilience and mental health in providing effective patient care.\n\nAreas for improvement or further exploration might \
-            include:\n\n- **Technical Skills**: The conversation does not delve into specific technical nursing skills or competencies, such as Jordan's proficiency \
-            with medical equipment, medication administration, or familiarity with electronic health records. These details would provide a clearer picture of their \
-            hands-on abilities.\n  \n- **Problem-Solving Abilities**: While Jordan discusses handling an anxious patient, more examples of critical thinking or \
-            problem-solving in complex medical scenarios would help assess their ability to address the multifaceted challenges that can arise in a hospital \
-            setting.\n\n- **Knowledge of Current Trends**: While the candidate mentions reading journals, it would be beneficial to hear about any specific new trends or \
-            innovations in pediatric care that they are excited about or see as impactful in their field.\n\n- **Leadership**: Further discussion around previous leadership \
-            experiences or aspirations could be valuable, especially since the recruiter mentions opportunities for advancement into leadership roles.\n\nOverall, Jordan \
-            appears to be a well-rounded candidate with a strong foundation in nursing and a commendable dedication to professional development. However, more detailed \
-            conversations about their technical skills, practical problem-solving experiences, and specific interests within the field would provide a comprehensive \
-            understanding of their expertise.", 
+            some instances that show their technical expertise:\n\n\
+                1. **Range of Experiences**: Jordan mentions having worked in both hospital and clinic settings, suggesting familiarity with different healthcare \
+                environments and the ability to adapt to various patient care scenarios.\n\n\
+                2. **Specialization in Pediatric Care**: The candidate specializes in pediatric nursing, which requires not only clinical skills but also the ability \
+                to communicate effectively with children and their families, as evidenced by how they handled the anxious pediatric patient.\n\n\
+                3. **Commitment to Continuous Learning**: Jordan's dedication to attending workshops and seminars, participating in study groups, and reading nursing \
+                journals demonstrates a commitment to staying current with medical knowledge and practices, which is essential in the rapidly evolving healthcare \
+                field.\n\n\
+                4. **Teamwork**: The candidate values clear communication, mutual respect, and collaboration, which are critical skills for working in the integrated, \
+                multidisciplinary teams commonly found in hospitals.\n\n\
+                5. **Stress Management**: Jordan's approach to handling stressful situations by staying calm, prioritizing tasks, and practicing self-care shows an \
+                understanding of the importance of resilience and mental health in providing effective patient care.\n\n\
+                Areas for improvement or further exploration might include:\n\n\
+                    - **Technical Skills**: The conversation does not delve into specific technical nursing skills or competencies, such as Jordan's proficiency \
+                    with medical equipment, medication administration, or familiarity with electronic health records. These details would provide a clearer \
+                    picture of their hands-on abilities.\n  \n\
+                    - **Problem-Solving Abilities**: While Jordan discusses handling an anxious patient, more examples of critical thinking or problem-solving \
+                    in complex medical scenarios would help assess their ability to address the multifaceted challenges that can arise in a hospital setting.\n\n\
+                    - **Knowledge of Current Trends**: While the candidate mentions reading journals, it would be beneficial to hear about any specific new trends \
+                    or innovations in pediatric care that they are excited about or see as impactful in their field.\n\n\
+                    - **Leadership**: Further discussion around previous leadership experiences or aspirations could be valuable, especially since the recruiter \
+                    mentions opportunities for advancement into leadership roles.\n\n\
+                Overall, Jordan appears to be a well-rounded candidate with a strong foundation in nursing and a commendable dedication to professional development. \
+                However, more detailed conversations about their technical skills, practical problem-solving experiences, and specific interests within the field \
+                would provide a comprehensive understanding of their expertise.", 
         "Behavioral Competencies": "Based on the provided transcript, Jordan demonstrates several behavioral competencies effectively:\n\n**Teamwork:**\nJordan highlights \
             the importance of teamwork in nursing and mentions clear communication, mutual respect, and collaboration as key components of their approach to working in a \
             team setting. By mentioning active listening and positive contribution to team goals, Jordan demonstrates an understanding of what effective teamwork entails. \

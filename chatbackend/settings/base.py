@@ -37,12 +37,21 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    # auth apps
     "accounts",
+
+    # chat apps
     "assistant",
-    "record",
+    
     'optimizers',
     'recommendation',
     'meeting',
+    
+    # knowledge
+    'knowledge',
+    "record",
+    
+    # payment apps
     # "payment",
 ]
 

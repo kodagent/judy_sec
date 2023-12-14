@@ -15,6 +15,10 @@ class OpenAIChatEngine:
         with open(file_path, 'rb') as file:
             return self.client.files.create(file=file, purpose="assistants")
 
+    async def delete_file(self, file_id, assistant_id):
+        self.client.files.delete(file_id=file_id)
+        self.client.beta.assistants.files.delete(file_id=file_id, assistant_id=assistant_id)
+    
     async def create_assistant(self, name, instructions, model, tools, file_id):
         return self.client.beta.assistants.create(
             name=name,
@@ -23,6 +27,9 @@ class OpenAIChatEngine:
             tools=tools,
             file_ids=[file_id]
         )
+
+    async def attach_file_to_assistant(self, assistant_id, file_id):
+        self.client.beta.assistants.files.create(assistant_id, file_id=file_id)
 
     async def create_thread(self):
         thread = self.client.beta.threads.create()

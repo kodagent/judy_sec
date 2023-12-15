@@ -1,0 +1,230 @@
+{% comment %} {% extends 'base.html' %} 
+
+{% block content %}
+
+<section id="hero">
+    <div class="hero-image">
+      <img src="hero-image.jpg" alt="Chatbot Service Hero Image">
+    </div>
+    <div class="hero-content">
+      <h1>Automate your customer support with our chatbot</h1>
+      <p>Our chatbot is available 24/7 to answer your customers' questions and provide personalized support.</p>
+      <a href="#chatbot" class="cta">Get Started</a>
+    </div>
+  </section>
+  
+  <section id="features">
+    <h2>Our Features</h2>
+    <ul>
+      <li>
+        <img src="feature-1.png" alt="Feature 1 Icon">
+        <h3>Natural Language Processing</h3>
+        <p>Our chatbot can understand and respond to natural language queries, making it easy for your customers to get the help they need.</p>
+      </li>
+      <li>
+        <img src="feature-2.png" alt="Feature 2 Icon">
+        <h3>Personalized Responses</h3>
+        <p>Our chatbot can provide personalized responses based on the customer's history and preferences, making the interaction more engaging and helpful.</p>
+      </li>
+      <li>
+        <img src="feature-3.png" alt="Feature 3 Icon">
+        <h3>24/7 Availability</h3>
+        <p>Our chatbot is always available to help your customers, even outside of business hours, improving your customer service and satisfaction.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section id="pricing">
+      <h2>Pricing</h2>
+      <table>
+          <tr>
+              <th>Plan</th>
+              <th>Features</th>
+              <th>Price</th>
+              <th>Subscribe</th>
+          </tr>
+          <tr>
+              <td>Free</td>
+              <td>Basic Features</td>
+              <td>$0/month</td>
+              <td><a href="#chatbot" class="cta">Subscribe Now</a></td>
+          </tr>
+          <tr>
+              <td>Basic</td>
+              <td>All Features</td>
+              <td>$9.99/month</td>
+              <td><a href="#chatbot" class="cta">Subscribe Now</a></td>
+          </tr>
+          <tr>
+              <td>Premium</td>
+              <td>All Features + Analytics</td>
+              <td>$19.99/month</td>
+              <td><a href="#chatbot" class="cta">Subscribe Now</a></td>
+          </tr>
+          <tr>
+              <td>Enterprise</td>
+              <td>Customizable Features + Support</td>
+              <td>Contact Us</td>
+              <td><a href="#contact" class="cta">Contact Us</a></td>
+          </tr>
+      </table>
+  </section>
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <form>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+    <div class="contact-info">
+        <p>Phone: 1-800-CHATBOT</p>
+        <p>Email: info@chatbotservice.com</p>
+        <p>Address: 123 Main St, Anytown USA</p>
+    </div>
+  </section>
+{% endblock %} {% endcomment %}
+
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Your Chatbot Service</title>
+  <style>
+    /* Add your custom CSS styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f1f1;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    
+    .chatbot-btn {
+      display: inline-block;
+      background-color: #4CAF50;
+      color: #ffffff;
+      font-size: 18px;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .chatbot-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Your Chatbot Service</h1>
+    <p>Welcome to Your Chatbot Service, where AI meets conversation!</p>
+    <p>Integrate our powerful chatbot into your website or application to enhance user interactions, provide support, and streamline processes.</p>
+    <a href="your_chatbot_link" class="chatbot-btn">Launch Chatbot</a>
+  </div>
+</body>
+</html> {% endcomment %}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Service | Company Name</title>
+  <link href="{% static 'css/style-test.css' %}" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="hero">
+      <h1>Automate Your Customer Support with Our Chatbot Service</h1>
+      <p>Enhance customer experience and streamline support operations</p>
+      <a href="#register" class="btn">Get Started</a>
+    </section>
+
+    <section id="features">
+      <h2>Key Features</h2>
+      <div class="feature">
+        <img src="feature1.png" alt="Feature 1">
+        <h3>Feature 1</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+      <div class="feature">
+        <img src="feature2.png" alt="Feature 2">
+        <h3>Feature 2</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+      <div class="feature">
+        <img src="feature3.png" alt="Feature 3">
+        <h3>Feature 3</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <h2>Pricing Plans</h2>
+      <div class="plan">
+        <h3>Basic</h3>
+        <p>Perfect for small businesses</p>
+        <span class="price">$19/month</span>
+        <a href="#register" class="btn">Get Started</a>
+      </div>
+      <div class="plan">
+        <h3>Pro</h3>
+        <p>Great for medium-sized businesses</p>
+        <span class="price">$49/month</span>
+        <a href="#register" class="btn">Get Started</a>
+      </div>
+      <div class="plan">
+        <h3>Enterprise</h3>
+        <p>Custom solutions for large corporations</p>
+        <span class="price">Contact us</span>
+        <a href="#contact" class="btn">Contact</a>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Contact Us</h2>
+      <p>Have questions? Get in touch with our team.</p>
+      <form>
+        <input type="text" name="name" placeholder="Your Name">
+        <input type="email" name="email" placeholder="Your Email">
+        <textarea name="message" placeholder="Your Message"></textarea>
+        <button type="submit" class="btn">Send Message</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Company Name. All rights reserved.</p>
+  </footer>
+</body>
+</html>

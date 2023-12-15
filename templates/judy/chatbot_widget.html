@@ -1,0 +1,556 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway|Ubuntu&display=swap">
+<style>
+    body {
+        background: #E8EBF5;
+        padding: 0;
+        margin: 0;
+        font-family: 'Raleway', sans-serif;
+    }
+    .chat-box {
+        height: 90%;
+        width: 400px;
+        position: absolute;
+        margin: 0 auto;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        z-index: 15;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.005);
+        right: 0;
+        bottom: 0;
+        margin: 15px;
+        background: #fff;
+        border-radius: 15px;
+        visibility: hidden;
+        overflow-y: auto;
+    }
+    
+    .chat-box-header {
+        height: 15%;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        display: flex;
+        font-size: 14px;
+        padding: 0.5em 0;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.2),
+            0 -1px 10px rgba(172, 54, 195, 0.3),
+            0 1px 10px rgba(0, 0, 0, 0.025);
+        align-items: center;
+        position: relative;
+        background-color: #4B7BF5;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .chat-box-header img {
+        margin-right: 10px;
+        margin-left: 10px;
+        width: 100px;
+        height: auto;
+    }
+
+    .chat-box-header .header-text {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-box-header h3 {
+        font-family: 'Ubuntu', sans-serif;
+        font-weight: bold;
+        margin: 0;
+        color: white;
+    }
+
+    .chat-box-header .sub-text {
+        font-size: 12px;
+        color: white;
+        margin: 0;
+        line-height: 1.5;
+        margin-top: 5px;
+    }
+    
+    .chat-box-header p {
+        margin-left: auto;
+        margin-right: 25px;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .chat-box-header p i {
+        font-size: 20px;
+        color: #D3D3D3;
+    }
+
+    .chat-box-header .smiley-icon {
+        margin-right: 5px;
+        font-size: 50px;
+    }
+
+    .chat-box-body {
+        height: 75%;
+        background: #f8f8f8;
+        overflow-y: scroll;
+        padding: 12px;
+    }
+
+    .chat-box-body-send {
+        width: 250px;
+        float: right;
+        background: white;
+        padding: 10px 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.015);
+        margin-bottom: 14px;        
+        border: 2px solid #eaeaea;
+    }
+
+    .chat-box-body-send p {
+        margin: 0;
+        color: #444;
+        font-size: 14px;
+        margin-bottom: 0.25rem;
+    }
+
+    .chat-box-body-send span {
+        float: right;
+        color: #777;
+        font-size: 10px;
+    }
+
+    .chat-box-body-receive {
+        width: 250px;
+        float: left;
+        padding: 10px 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.015);
+        margin-bottom: 14px;
+        background: #ECECEC;
+        border: 2px solid #eaeaea;
+    }
+
+    .chat-box-body-receive p {
+        margin: 0;
+        color: #444;
+        font-size: 14px;
+        margin-bottom: 0.25rem;
+    }
+
+    .chat-box-body-receive span {
+        float: right;
+        color: #777;
+        font-size: 10px;
+    }
+    .chat-box-body::-webkit-scrollbar {
+        width: 5px;
+        opacity: 0;
+    }
+    .chat-box-footer {
+        position: relative;
+        display: flex;
+    }
+    .chat-box-footer button {
+        border: none;
+        padding: 16px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+    }
+    .chat-box-footer button:focus {
+        outline: none;
+    }
+    .chat-box-footer input {
+        padding: 10px;
+        border: none;
+        -webkit-appearance: none;
+        border-radius: 50px;
+        background: whitesmoke;
+        margin: 10px;
+        font-family: 'Ubuntu', sans-serif;
+        font-weight: 600;
+        color: #444;
+        width: 280px;
+    }
+    .chat-box-footer input:focus {
+        outline: none;
+    }
+    .chat-box-footer .send {
+        vertical-align: middle;
+        align-items: center;
+        justify-content: center;
+        transform: translate(0px, 20px);
+        cursor: pointer;
+    }
+
+    .chat-button {
+        padding: 25px 16px 25px 40px;
+        background: #2C50EF;
+        /* width: 120px; */
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin: 15px;
+        border-top-left-radius: 25px;
+        border-top-right-radius: 25px;
+        border-bottom-left-radius: 25px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.21);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+    
+    .chat-button span::before {
+        content: "";
+        height: 15px;
+        width: 15px;
+        background: #47cf73;
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 15px;
+        margin-right: 10px;
+    }
+
+    .chat-button span::after {
+        content: "Ask me anything!";
+        font-size: 14px;
+        color: white;
+    }
+    
+    .modal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(1.1);
+        transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
+    }
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 1rem 1.5rem;
+        width: 24rem;
+        border-radius: 0.5rem;
+    }
+    .modal-close-button {
+        float: right;
+        width: 1.5rem;
+        line-height: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 0.25rem;
+        background-color: lightgray;
+    }
+
+    .close-button:hover {
+        background-color: darkgray;
+    }
+    .show-modal {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+        transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
+        z-index: 30;
+    }
+    @media screen only and (max-width: 450px) {
+        .chat-box {
+            min-width: 100% !important;
+        }
+    }
+
+    .options-container {
+        height: 150px;
+        overflow-y: auto;
+        padding: 10px 20px;;
+        display: flex;
+        flex-direction: column;
+        background-color: #F8F8F8;
+        border-bottom: 1px solid #BCD4E6;
+        box-shadow: 0px 1px 3px 0px rgba(0, 0, 255, 0.4);
+    }
+
+    .option-button {
+        display: inline-block;
+        padding: 10px 16px;
+        margin-right: 10px;
+        flex: 0 0 auto;
+        border: 1px solid #4a90e2;
+        border-radius: 20px;
+        background-color: #f5f5f5;
+        color: #4a90e2;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        max-width: 60%;
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
+
+    .option-button:hover {
+        background-color: #e0e0e0;
+    }
+</style>
+
+<div class="chat-box">
+    <div class="chat-box-header">
+        <div class="header-content">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABEElEQVR4nO2ZQUrDUBCGR0HBlasu3fZGb5cf+h4l1+jS9Aa9gSfwAq4VCvpGCBSK2LrqGVJSBI1VIVZ8b/D/YJYJ872ZP4REhBBCssS5h1MEncLHNYI2ScrHFXys2l56C7QXJms87IlUPxFId/KhW0XQl/4CGTSOd0UBcALKFerFx5Wp55s/Lfx2iM0LgCFWhvh/Z6C2LgCGWBnipBlI/jpdWxcAQ6ycQC9SrwyYgZD+1PFaRYjPpleoCPHSpoA/5NPitzfWJcY6lJzB1+N8HI3uLyR38KlAvPO+HogFsC9w48rFuVgBnbXRa+eezsQSeHsSXJXl7YlYA+3Je51NJs2xWAS7vyLNUeo+CCFEsmYLju0ZY2L8uroAAAAASUVORK5CYII=">
+            <div class="header-text">
+                <h3>Talk to us</h3>
+                <p class="sub-text">What would you like to know? We can help make your buying decision faster!</p>
+            </div>
+            <p id="minimizeButton"><i class="fas fa-angle-down"></i></p>
+        </div>
+    </div>
+    
+    <div class="options-container">
+        <div class="option-button" id="option1">Learn about the mortgage industry in Nigeria, US, UK, Australia and Canada</div>
+        <div class="option-button" id="option2">Recommend the best houses for me</div>
+        <div class="option-button" id="option3">Option 3</div>
+        <div class="option-button" id="option4">Option 4</div>
+        <div class="option-button" id="option5">Option 5</div>
+    </div>
+
+    <div class="chat-box-body"></div>
+    <div class="chat-box-footer">
+        <button id="addExtra"><i class="fa fa-plus"></i></button>
+        <input id="messageInput" placeholder="Enter Your Message" type="text" />
+        <i id="sendButton" class="send far fa-paper-plane"></i>
+    </div>
+</div>
+<div class="chat-button"><span></span></div>
+<div class="modal">
+    <div class="modal-content">
+        <span class="modal-close-button">&times;</span>
+        <h1>Upload your document here</h1>
+    </div>
+</div> 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var chatButton = document.querySelector('.chat-button');
+    var chatBox = document.querySelector('.chat-box');
+    var userInput = document.querySelector('.chat-box-footer input');
+    var sendButton = document.querySelector('.chat-box-footer .send');
+    // Get the addExtra button and modal element
+    var addExtraButton = document.getElementById('addExtra');
+    var modal = document.querySelector('.modal');
+    var optionsContainer = document.querySelector('.options-container');
+    var optionsContainerWidth = optionsContainer.offsetWidth;
+    var option1Button = document.getElementById("option1");
+    var option2Button = document.getElementById("option2");
+
+    let apiUrl = ""; // Will hold the API URL based on user's selection
+    let optionSelected = false; // Flag to track option selection
+
+    // Retrieve the CSRF token from the cookie
+    function getCSRFToken() {
+        const cookieValue = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("csrftoken="));
+
+        if (cookieValue) {
+            return cookieValue.split("=")[1];
+        }
+
+        return null;
+    }
+
+    //// WIDGET CONTROL ////
+    // Add click event listener to chat button
+    chatButton.addEventListener('click', function() {
+        chatButton.style.display = 'none';
+        chatBox.style.visibility = 'visible';
+
+        if (optionSelected) {
+            optionsContainer.style.display = 'block';
+        }
+    });
+
+    // Get the minimize button element
+    var minimizeButton = document.getElementById('minimizeButton');
+
+    // Add click event listener to minimize button
+    minimizeButton.addEventListener('click', function() {
+        chatBox.style.visibility = 'hidden';
+        chatButton.style.display = 'block';
+
+        // Hide the option1 and option2 boxes
+        optionsContainer.style.display = "none";
+    });
+
+    //// FOR ATTACHMENTS ////
+    // Add click event listener to addExtra button
+    addExtraButton.addEventListener('click', function() {
+        modal.classList.toggle('show-modal');
+    });
+
+    // Get the modal close button element
+    var modalCloseButton = document.querySelector('.modal-close-button');
+
+    // Add click event listener to modal close button
+    modalCloseButton.addEventListener('click', function() {
+        modal.classList.toggle('show-modal');
+    });
+
+    //// FUNCTIONALITY ////
+    // Function to send the message
+    function appendMessage(sender, message) {
+        var chatBoxBody = document.querySelector('.chat-box-body');
+        var messageContainer = document.createElement('div');
+        var messageElement = document.createElement('p');
+        var timestampElement = document.createElement('span');
+
+        messageElement.innerHTML = message;
+        timestampElement.innerHTML = getCurrentTime();
+
+        messageContainer.appendChild(messageElement);
+        messageContainer.appendChild(timestampElement);
+
+        if (sender === 'user') {
+            messageContainer.className = 'chat-box-body-send';
+        } else if (sender === 'chatbot') {
+            messageContainer.className = 'chat-box-body-receive';
+        }
+
+        chatBoxBody.appendChild(messageContainer);
+        chatBoxBody.scrollTop = chatBoxBody.scrollHeight;
+    }
+    
+    function sendMessage(message) {
+        appendMessage("user", message);
+    
+        userInput.disabled = true; // Disable the input field while processing
+    
+        // Construct the payload including the message and user information
+        const payload = {
+            message: optionSelected ? message : "I want to buy a house",
+            user: {
+                id: "{{ request.user.id }}",
+                username: "{{ request.user.username }}",
+            },
+        };
+
+        const csrfToken = getCSRFToken();
+
+        // Construct the headers object with the CSRF token
+        const headers = {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+        };
+    
+        // Make an API call to the specified URL
+        fetch(apiUrl, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(payload),
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not OK");
+            }
+            return response.json();
+        })
+        .then((data) => {
+            // Process the response received from the backend
+            const chatbotResponse = data.response;
+            console.log(chatbotResponse)
+            appendMessage("chatbot", chatbotResponse);
+            userInput.disabled = false; // Enable the input field
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            appendMessage("chatbot", "Oops! Something went wrong. Please try again.");
+            userInput.disabled = false; // Enable the input field
+        });
+    }
+    
+    function handleOptionSelection(option) {
+        if (option === 1) {
+            userInput.placeholder = "What do you want to know about the mortgage industry in Nigeria";
+            apiUrl = "https://kemi-389113.uc.r.appspot.com/knowledge-qa/";
+            // apiUrl = "http://localhost:8000/knowledge-qa/";
+            optionSelected = true;
+        } else if (option === 2) {
+            userInput.placeholder = "";
+            // apiUrl = "https://kemi-389113.uc.r.appspot.com/form-qa/";
+            apiUrl = "http://localhost:8000/form-qa/";
+            optionSelected = true;
+        }
+        userInput.disabled = false;
+        option1Button.disabled = true;
+        option2Button.disabled = true;
+    }
+
+    option1Button.addEventListener("click", function () {
+        handleOptionSelection(1);
+    });
+    
+    option2Button.addEventListener("click", function () {
+        handleOptionSelection(2);
+        sendMessage("What mortgages can I  get?");
+    });
+
+    // Function to get the current time in HH:MM format
+    function getCurrentTime() {
+        var date = new Date();
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var time = hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+        return time;
+    }
+
+    // Function to scroll to the bottom of the chat body
+    function scrollToBottom(element) {
+        element.scrollTop = element.scrollHeight;
+    }
+
+    // Add click event listener to send button
+    sendButton.addEventListener('click', function() {
+        message = userInput.value;
+        userInput.value = "";
+        sendMessage(message);
+    });
+    
+    // Add keyup event listener to input field
+    userInput.addEventListener('keyup', function(event) {
+        if (event.key === "Enter") { 
+            message = userInput.value;
+            userInput.value = "";
+            sendMessage(message);
+        }
+    });
+
+    // Calculate the total width of all option buttons
+    var optionButtonsWidth = 0;
+    var optionButtons = document.querySelectorAll('.option-button');
+    optionButtons.forEach(function(button) {
+        optionButtonsWidth += button.offsetWidth;
+    });
+
+    // Check if the total width exceeds the container width
+    if (optionButtonsWidth > optionsContainerWidth) {
+        optionsContainer.classList.add('scrollable');
+    }
+
+    // Dynamically adjust the width of the chat button based on the length of the text
+    function adjustChatButtonWidth() {
+        var textWidth = chatButtonText.offsetWidth;
+        chatButton.style.width = textWidth + 'px';
+    }
+});
+</script>
+
+{% comment %} #0A7E32 {% endcomment %}

@@ -31,6 +31,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "django_rest_passwordreset",
     "drf_yasg",
+    "drf_spectacular",
     "rest_framework",
     'rest_framework_simplejwt',
     "storages",

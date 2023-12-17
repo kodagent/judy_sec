@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  web:
+    image: essentialrecruit/judy-staging:latest
+    command: daphne chatbackend.asgi:application -b 0.0.0.0 -p 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - DJANGO_DEBUG=False
+      # Other production-like environment variables
+    container_name: chat_app_staging
+  
+  celery:
+    image: essentialrecruit/judy-staging:latest
+    command: celery -A chatbackend worker --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      # Celery specific environment variables for staging
+    container_name: chat_app_celery_staging
+    
+  redis:
+    image: redis:latest
+    container_name: chat_app_redis_staging

@@ -28,5 +28,5 @@ RUN pip install -r requirements.txt
 # RUN pip install daphne
 
 # Run the application
-CMD ["daphne", "chatbackend.asgi:application", "--port", "$PORT", "--bind", "0.0.0.0"]
+CMD ["daphne", "chatbackend.asgi:application", "--port", "$PORT", "--bind", "127.0.0.1"]
 # CMD daphne chatbackend.asgi:application --port $PORT --bind 0.0.0.0

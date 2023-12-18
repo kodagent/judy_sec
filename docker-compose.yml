@@ -1,7 +1,7 @@
-version: '3'
+version: "3"
 services:
   web:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     command: daphne chatbackend.asgi:application -b 0.0.0.0 -p 8000
@@ -12,9 +12,9 @@ services:
     depends_on:
       - redis
     container_name: chat_app
-  
+
   celery:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     command: celery -A chatbackend worker --loglevel=info
@@ -23,7 +23,7 @@ services:
     depends_on:
       - redis
     container_name: chat_app_celery
-    
+
   redis:
     image: redis:latest
     container_name: chat_app_redis

@@ -160,12 +160,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 # {
-#     "type": "user_message",
-#     "userId": "1",
-#     "message": "what was the dark sorcerer known as?"
-# }
-
-# {
 #     "type": "end_session",
 #     "userId": "23423poiasdli23lo23lawk",
 #     "email": "johndoe@gmail.com"

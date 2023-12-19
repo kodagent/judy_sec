@@ -24,9 +24,9 @@ socket.onerror = function(error) {
 };
 ```
 
-## Sending Messages
+### Sending Messages
 
-### Message Format
+#### Message Format
 
 Messages to the chatbot should be sent in JSON format.
 
@@ -35,7 +35,8 @@ Messages to the chatbot should be sent in JSON format.
   {
     "type": "user_message",
     "message": "Your question here"
-  }```
+  }
+  ```
 
 - **Upvote or Downvote a Returned Response**:
   ```json
@@ -47,7 +48,8 @@ Messages to the chatbot should be sent in JSON format.
   {
     "type": "downvote",
     "messageId": "message id of the message to be downvoted"
-  }```
+  }
+  ```
 
 - **End Session After a Stipulated Period Of Inactivity**:
   ```json
@@ -56,49 +58,62 @@ Messages to the chatbot should be sent in JSON format.
     "userId": "Id of the user from ER platform",
     "email": "Email of the user from ER platform",
     "name": "Full name of the user from ER platform",
-    "role": "Role of the user from ER platform",  # For example, a candidate or a recruiter
-  }```
+    "role": "Role of the user from ER platform" // e.g, a candidate or a recruiter",
+  }
+  ```
 
-Example
-javascript
+#### Example
+
+```javascript
 function sendMessage(message) {
   socket.send(JSON.stringify({
     type: "user_message",
     message: message
   }));
 }
+```
 
-Receiving Messages
+### Receiving Messages
+
+#### Message Format
+
 The chatbot will send responses in JSON format.
 
 - **Ongoing Chats**:
   ```json
   {
     "message": "Judy's response here [might include citation number]",
-    "citations": {}, # citation number as key, and citation content as value
-    "messageId": "msg_XQWvsWPbtWk9U6XUQABEYpxw"  # message id to enable upvoting or downvoting
-  }```
+    "citations": {}, // citation number as key, and citation content as value
+    "messageId": "msg_XQWvsWPbtWk9U6XUQABEYpxw"  // message id to enable upvoting or downvoting
+  }
+  ```
 
 - **Ended Chats**:
   ```json
   {
     "message": "session_ended",
-  }```
+  }
+  ```
 
-Handle incoming messages by adding an event listener to the socket.
-Example
-javascript
+### Handle incoming messages by adding an event listener to the socket.
+
+#### Example
+
+```javascript
 socket.onmessage = function(event) {
   const response = JSON.parse(event.data);
   console.log("Message from server:", response.message);
 };
+```
 
-Handling Different Message Types
+### Handling Different Message Types
+
 The chatbot can send different types of messages, such as chat responses, session end confirmations, etc.
 Implement logic to handle different type values in the received messages.
-Example
-javascript
-Copy code
+
+#### Example
+
+```javascript
 socket.onmessage = function(event) {
   const response = JSON.parse(event.data);
   switch(response.type) {
@@ -108,26 +123,31 @@ socket.onmessage = function(event) {
     // Handle other message types as needed
   }
 };
+```
 
 ## Closing the Connection
 
 ### Close the WebSocket connection when it's no longer needed or when the user leaves the chat interface.
 
-Example
-javascript
+#### Example
 
+```javascript
 function closeConnection() {
   socket.close();
 }
+```
 
 ## Error Handling
 
 ### Implement error handling for scenarios such as network issues, server downtime, or JSON parsing errors.
-Example
-javascript
+
+#### Example
+
+```javascript
 socket.onerror = function(error) {
   console.error("WebSocket Error: ", error);
 };
+```
 
 ## Additional Tips
 - Ensure that your frontend handles reconnection logic in case of dropped connections.

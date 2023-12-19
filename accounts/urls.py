@@ -75,7 +75,7 @@ password_urls = [
     ),
 ]
 
-urlpatterns = admin_urls + account_urls + password_urls
+urlpatterns = admin_urls + jwt_urls + account_urls + password_urls
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

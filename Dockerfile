@@ -24,9 +24,6 @@ RUN pip install -r requirements.txt
 # # Collect static files
 # RUN python manage.py collectstatic --noinput
 
-# # Install Daphne
-# RUN pip install daphne
-
 # Run the application
 CMD ["daphne", "chatbackend.asgi:application", "--port", "$PORT", "--bind", "0.0.0.0"]
 # CMD daphne chatbackend.asgi:application --port $PORT --bind 0.0.0.0

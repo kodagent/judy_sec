@@ -22,6 +22,7 @@ socket.onopen = function(e) {
 socket.onerror = function(error) {
   console.error(`[error] ${error.message}`);
 };
+```
 
 ## Sending Messages
 

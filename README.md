@@ -52,13 +52,15 @@ Messages to the chatbot should be sent in JSON format.
   ```
 
 - **End Session After a Stipulated Period Of Inactivity**:
+  The `role` field should indicate the user's role in the ER platform, for example, "candidate" or "recruiter".
+
   ```json
   {
     "type": "end_session",
     "userId": "Id of the user from ER platform",
     "email": "Email of the user from ER platform",
     "name": "Full name of the user from ER platform",
-    "role": "Role of the user from ER platform" // e.g, a candidate or a recruiter",
+    "role": "Role of the user from ER platform"
   }
   ```
 
@@ -80,11 +82,14 @@ function sendMessage(message) {
 The chatbot will send responses in JSON format.
 
 - **Ongoing Chats**:
+  `citations` is a dictionary/object with the number of a specific citation as key (in string format), and citation content as value.
+  `messageId` represents the message to be upvoted or downvoted. 
+
   ```json
   {
     "message": "Judy's response here [might include citation number]",
-    "citations": {}, // citation number as key, and citation content as value
-    "messageId": "msg_XQWvsWPbtWk9U6XUQABEYpxw"  // message id to enable upvoting or downvoting
+    "citations": {"0": "Judy response was found here"}, 
+    "messageId": "msg_XQWvsWPbtWk9U6XUQABEYpxw"  
   }
   ```
 

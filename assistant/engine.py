@@ -104,30 +104,30 @@ class OpenAIChatEngine:
         return processed_message, citations, message_id
     
 
-class ChatbotManager:
-    def __init__(self, openai_client):
-        self.openai_client = openai_client
-        self.thread_id = None
-        self.assistant_id = None
+# class ChatbotManager:
+#     def __init__(self, openai_client):
+#         self.openai_client = openai_client
+#         self.thread_id = None
+#         self.assistant_id = None
 
-    def start_conversation(self, assistant_name, assistant_instructions, model, tools, file_path):
-        file = self.openai_client.upload_file(file_path)
-        assistant = self.openai_client.create_assistant(
-            name=assistant_name,
-            instructions=assistant_instructions,
-            model=model,
-            tools=tools,
-            file_id=file.id
-        )
-        self.assistant_id = assistant.id
-        self.thread_id = self.openai_client.create_thread().id
+#     def start_conversation(self, assistant_name, assistant_instructions, model, tools, file_path):
+#         file = self.openai_client.upload_file(file_path)
+#         assistant = self.openai_client.create_assistant(
+#             name=assistant_name,
+#             instructions=assistant_instructions,
+#             model=model,
+#             tools=tools,
+#             file_id=file.id
+#         )
+#         self.assistant_id = assistant.id
+#         self.thread_id = self.openai_client.create_thread().id
 
-    def send_message_and_process_response(self, message):
-        self.openai_client.send_message(self.thread_id, message)
-        run_status = self.openai_client.process_run(self.thread_id, self.assistant_id)
-        messages = self.openai_client.get_messages(self.thread_id)
-        processed_message, citations = self.openai_client.process_annotations(messages)
-        return processed_message, citations
+#     def send_message_and_process_response(self, message):
+#         self.openai_client.send_message(self.thread_id, message)
+#         run_status = self.openai_client.process_run(self.thread_id, self.assistant_id)
+#         messages = self.openai_client.get_messages(self.thread_id)
+#         processed_message, citations = self.openai_client.process_annotations(messages)
+#         return processed_message, citations
 
 
 # # Example usage in a Django Channels consumer

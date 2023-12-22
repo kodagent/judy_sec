@@ -1,7 +1,9 @@
 import json
+import os
 import pickle
 
 from bson import ObjectId
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 
@@ -13,15 +15,26 @@ class SimilarityMatrix(models.Model):
     candidate_ids = models.TextField(default='[]')  # Store candidate IDs as a JSON array
 
     def set_matrix(self, matrix, job_ids, candidate_ids):
-        # Serialize the matrix to bytes and save as a file
+        # Serialize the matrix to bytes
         matrix_bytes = pickle.dumps(matrix)
-        self.matrix_file.save("matrix.pkl", ContentFile(matrix_bytes))
 
-        # Ensure all ObjectId instances are converted to strings
+        # Define the file path
+        file_path = os.path.join(settings.MEDIA_ROOT, "similarity_matrices", "matrix.pkl")
+
+        # Check if the file already exists
+        if os.path.exists(file_path):
+            # Open the existing file in binary write mode and overwrite it
+            with open(file_path, 'wb') as file:
+                file.write(matrix_bytes)
+        else:
+            # If the file doesn't exist, use the save method to create it
+            self.matrix_file.save("matrix.pkl", ContentFile(matrix_bytes))
+
+        # Convert ObjectId instances to strings
         job_ids_str = [str(job_id) if isinstance(job_id, ObjectId) else job_id for job_id in job_ids]
         candidate_ids_str = [str(candidate_id) if isinstance(candidate_id, ObjectId) else candidate_id for candidate_id in candidate_ids]
 
-        # Convert job IDs and candidate IDs to JSON and save in their respective fields
+        # Convert to JSON and save in fields
         self.job_ids = json.dumps(job_ids_str)
         self.candidate_ids = json.dumps(candidate_ids_str)
         self.save()

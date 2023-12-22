@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from recommendation.recommend import create_matrix
 from recommendation.utilities.processing import JobRecommender
 
 # Instantiate the recommender with the jobs data
@@ -35,6 +36,23 @@ class CandidateRecommendationView(APIView):
         try:
             top_candidates = recommender.get_top_candidates_for_job_by_id(job_id, top_n=10)
             return Response(top_candidates)
+        except KeyError:
+            return Response({"error": "Job ID not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class CreateMatrixView(APIView):
+    """
+    This view handles creating the recommendation matrix. It does not interact with the database directly,
+    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    """
+    serializer_class = None
+
+    def get(self, request, format=None):
+        try:
+            create_matrix()
+            return Response({"Success": "Recommendation Matrix Created!"}, status=status.HTTP_200_OK)
         except KeyError:
             return Response({"error": "Job ID not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:

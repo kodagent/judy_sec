@@ -7,7 +7,7 @@
 *.pyc
 __pycache__/
 local_settings.py
-# db.sqlite3  # uncomment this back one you connect to the external postgres db
+db.sqlite3  
 db.sqlite3-journal
 media
 

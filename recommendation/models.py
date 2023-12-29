@@ -21,6 +21,7 @@ class SimilarityMatrix(models.Model):
         # Define the file path
         file_path = os.path.join(settings.MEDIA_ROOT, "similarity_matrices", "matrix.pkl")
 
+
         # Check if the file already exists
         if os.path.exists(file_path):
             # Open the existing file in binary write mode and overwrite it

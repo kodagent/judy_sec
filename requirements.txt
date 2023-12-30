@@ -1,6 +1,6 @@
 boto3==1.33.7
 beautifulsoup4==4.12.2
-bleach==6.1.0 
+bleach[css]==6.1.0 
 celery==5.3.6
 channels==4.0.0
 channels-redis==4.1.0

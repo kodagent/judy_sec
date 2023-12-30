@@ -5,6 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from django.conf import settings
 from openai import OpenAI
 
+from assistant.utils import convert_markdown_to_html
+
 
 class OpenAIChatEngine:
     def __init__(self, api_key, assistant_id):
@@ -101,7 +103,11 @@ class OpenAIChatEngine:
         await self.wait_for_run_completion(run)
         messages = await self.get_messages(thread_id)
         processed_message, citations = await self.process_annotations(messages)
-        return processed_message, citations, message_id
+
+        # Convert Markdown (including handling for newlines) to HTML, then sanitize
+        processed_message_html = await convert_markdown_to_html(processed_message)
+
+        return processed_message_html, citations, message_id
     
 
 # class ChatbotManager:

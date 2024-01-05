@@ -31,7 +31,7 @@ AWS_HEADERS = {
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
 # DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-DEFAULT_FILE_STORAGE = "dfxconfig.storage_backends.MediaStorage"
+DEFAULT_FILE_STORAGE = "chatbackend.storage_backends.MediaStorage"
 
 # ==> STATIC FILE UPLOADS
 STATICFILES_STORAGE = "storages.backends.s3boto3.S3StaticStorage"

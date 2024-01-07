@@ -12,6 +12,7 @@ from assistant.knowledge import query_vec_database
 from assistant.memory import BaseMemory
 from assistant.models import Conversation
 from assistant.tasks import save_conversation
+from assistant.utils import convert_markdown_to_html
 from chatbackend.logging_config import configure_logger
 
 logger = configure_logger(__name__)
@@ -190,10 +191,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             *full_history
         ]
 
-        final_response = self.single_bot_query(messages)
-                    
+        judy_response = self.single_bot_query(messages)
+
+        # Convert Markdown (including handling for newlines) to HTML, then sanitize
+        processed_message_html = await convert_markdown_to_html(judy_response)
+
         logger.info("---------- BOT ENGINE STOPPED ----------")
-        return final_response
+
+        return processed_message_html
     
     async def end_conversation(self):
         # self.conversation = await database_sync_to_async(Conversation.objects.create)()

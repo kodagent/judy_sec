@@ -42,7 +42,7 @@ async def get_text():
 
     # Load data
     # loader = GCSDirectoryLoader(project_name=os.getenv('GAE_PROJECT_NAME'), bucket=os.getenv('GS_BUCKET_NAME'))
-    loader = S3DirectoryLoader("testing-hwc", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+    loader = S3DirectoryLoader("scraped_data/", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
     data = loader.load()
     
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=10, length_function=tiktoken_len, separators=["\n\n", "\n", " ", ""])

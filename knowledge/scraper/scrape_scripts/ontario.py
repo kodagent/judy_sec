@@ -7,7 +7,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from playwright.async_api import async_playwright
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 from knowledge.scraper.scraper_utils import download_pdf, sanitize_filename
 
 logger = configure_logger(__name__)

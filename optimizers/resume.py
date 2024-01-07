@@ -10,7 +10,7 @@ from autogen import (AssistantAgent, GroupChatManager, UserProxyAgent,
 from django.conf import settings
 from dotenv import load_dotenv
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 from helpers.optimizer_utils import (get_cover_letter_instruction,
                                      get_job_post_instruction,
                                      get_resume_instruction,

@@ -7,18 +7,11 @@ from django.views import View
 from django.views.generic import View
 
 from accounts.models import OrganizationCustomer
-from assistant.knowledge import save_vec_to_database
 from assistant.models import (Conversation, GeneralChatAnalytics, Message,
                               MessageVote, Session)
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 
 logger = configure_logger(__name__)
-
-
-class SaveVecToDBAPI(View): 
-    async def get(self, request, *args, **kwargs):
-        await save_vec_to_database(pinecone_index_name="judy")
-        return JsonResponse({"Success": "Done saving vector to vecDB"})
 
 
 # Template Views

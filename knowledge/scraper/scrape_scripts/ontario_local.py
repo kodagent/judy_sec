@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 
 logger = configure_logger(__name__)
 

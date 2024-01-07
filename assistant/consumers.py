@@ -8,17 +8,15 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 from openai import OpenAI
 
-from assistant.knowledge import query_vec_database
 from assistant.memory import BaseMemory
 from assistant.models import Conversation
 from assistant.tasks import save_conversation
 from assistant.utils import convert_markdown_to_html
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.base_config import openai_client as client
+from chatbackend.configs.logging_config import configure_logger
+from knowledge.knowledge_vec import query_vec_database
 
 logger = configure_logger(__name__)
-
-
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):

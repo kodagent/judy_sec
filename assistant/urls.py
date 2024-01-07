@@ -1,7 +1,9 @@
-from assistant import views
 from django.urls import path
 
+from assistant import views
+
 urlpatterns = [
+    # Template urls
     # path("", views.index, name="index"),
     path('', views.DashboardView.as_view(), name='index'),
 

@@ -1,11 +1,9 @@
 import asyncio
 
-import openai
 from django.conf import settings
-from openai import OpenAI
 
-# Initialize the OpenAI client with your API key
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+from chatbackend.configs.base_config import openai_client as client
+
 
 class OpenAIChatEngine:
     def __init__(self):

@@ -8,7 +8,7 @@ from django.conf import settings
 from langchain.document_loaders import OnlinePDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 
 # Append TESSERACT_PATH to the system PATH, if it's set
 if 'TESSERACT_PATH' in os.environ:

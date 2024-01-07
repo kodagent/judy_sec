@@ -5,7 +5,7 @@ from django.views import View
 from rest_framework import status
 
 from assistant.assistant_api_setup.engine import OpenAIChatEngine
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 from knowledge.models import OpenAIFile
 from knowledge.scraper.scrape_scripts.ontario import scrape_ontario_site
 

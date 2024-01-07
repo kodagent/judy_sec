@@ -8,7 +8,7 @@ from google.cloud import storage
 from storages.backends.s3boto3 import S3Boto3Storage
 
 from accounts.models import User
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 
 logger = configure_logger(__name__)
 

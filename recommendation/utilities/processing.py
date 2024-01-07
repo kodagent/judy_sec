@@ -5,7 +5,7 @@ import pandas as pd
 from bson import ObjectId
 from sklearn.metrics.pairwise import cosine_similarity
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 from optimizers.mg_database import db
 from recommendation.models import SimilarityMatrix
 

@@ -12,7 +12,7 @@ from accounts.models import User
 from assistant.assistant_api_setup.engine import OpenAIChatEngine
 from assistant.memory import BaseMemory
 from assistant.tasks import save_conversation
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 
 logger = configure_logger(__name__)
 

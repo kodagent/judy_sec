@@ -7,7 +7,7 @@ from botocore.exceptions import NoCredentialsError
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 
 logger = configure_logger(__name__)
 

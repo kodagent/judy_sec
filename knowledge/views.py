@@ -6,7 +6,8 @@ from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
+from knowledge.knowledge_vec import query_vec_database, save_vec_to_database
 from knowledge.scraper.scrape_scripts.british import scrape_british_site
 from knowledge.scraper.scrape_scripts.ontario import scrape_ontario_site
 from knowledge.scraper.scraper_utils import clear_s3_directory
@@ -31,3 +32,26 @@ class ScrapeAndUpdateAPI(View):
             logger.error(f"Error during scraping: {e}")
             return JsonResponse({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
  
+
+class SaveVecToDBAPI(View):
+    async def get(self, request, *args, **kwargs):
+        try:
+            # Convert the asynchronous function to synchronous for Django compatibility
+            await save_vec_to_database()
+            return JsonResponse({"Success": "Done saving vector to vecDB"}, status=200)
+        except Exception as e:
+            # Log the error and send an error response
+            logger.error(f"Error in SaveVecToDBAPI: {e}")
+            return JsonResponse({"Error": "Failed to save vector to vecDB"}, status=500)
+
+
+class QueryVecDBAPI(View):
+    async def get(self, request, *args, **kwargs):
+        try:
+            # Convert the asynchronous function to synchronous for Django compatibility
+            await query_vec_database(query="What is the BCCNM?", num_results=4)
+            return JsonResponse({"Success": "Answer contexts received"}, status=200)
+        except Exception as e:
+            # Log the error and send an error response
+            logger.error(f"Error in QueryVecDBAPI: {e}")
+            return JsonResponse({"Error": "Failed to save vector to vecDB"}, status=500)

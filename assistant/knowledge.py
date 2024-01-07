@@ -22,6 +22,12 @@ logger = configure_logger(__name__)
 client = OpenAI()
 pinecone.init(api_key=config("PINECONE_API_KEY"), environment=config("PINECONE_API_ENV"))
 
+# Constants or Configuration Parameters
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 10
+BATCH_SIZE = 50
+PINECONE_INDEX_NAME = "judy"
+
 # ------------------------ UTIL FUNCTIONS ----------------------
 async def get_text():
     def tiktoken_len(text):
@@ -59,7 +65,6 @@ async def create_embedding(text):
 
 async def save_vec_to_database(pinecone_index_name):
     # Initialize Pinecone
-    # pinecone.init(api_key=os.getenv("PINECONE_API_KEY"), environment=os.getenv("PINECONE_API_ENV"))
     if pinecone_index_name not in pinecone.list_indexes():
         pinecone.create_index(name=pinecone_index_name, metric='cosine', dimension=1536)
 

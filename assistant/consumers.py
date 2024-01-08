@@ -6,7 +6,6 @@ from datetime import datetime
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
-from openai import OpenAI
 
 from assistant.memory import BaseMemory
 from assistant.models import Conversation
@@ -77,20 +76,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user_message = text_data_json.get('message')
                 message_id = str(uuid.uuid4())
 
-                contexts = await query_vec_database(query=user_message, num_results=2, pinecone_index_name=settings.PINECONE_INDEX_NAME)
+                contexts = await query_vec_database(query=user_message, num_results=2)
                 context_parts = []
                 for idx, ctx in enumerate(contexts, start=1):
                     context_text = ctx['metadata']['text']
                     context_parts.append(f"context {idx}:\n\n{context_text}")
                 context = "\n\n".join(context_parts)
 
-                # if we want to store this data in the database (connect it to message id)
-                # context_text_1, context_score_1 = context1['metadata']['text'], context1['score']
-                # context_text_2, context_score_2 = context2['metadata']['text'], context2['score']
-                # context_text_3, context_score_3 = context3['metadata']['text'], context3['score']
-
                 # build our prompt with the retrieved contexts included
-                prompt_start = ("Answer the question based on the context below.\n\n" + "Context:\n")
+                prompt_start = ("Use the contexts below to respond to the user's query. Include a reference url if it is present in the context:\n\n")
                 prompt_end = (f"\n\nQuestion: {user_message}\nAnswer:")
                 user_ques = (prompt_start + "\n\n---\n\n" + context + prompt_end)
                 
@@ -193,7 +187,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             *full_history
         ]
 
-        judy_response = self.single_bot_query(messages)
+        judy_response = await self.single_bot_query(messages)
 
         # Convert Markdown (including handling for newlines) to HTML, then sanitize
         processed_message_html = await convert_markdown_to_html(judy_response)
@@ -203,10 +197,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return processed_message_html
     
     async def end_conversation(self):
-        # self.conversation = await database_sync_to_async(Conversation.objects.create)()
+        self.conversation = await database_sync_to_async(Conversation.objects.create)()
         self.conversation_memory.session_end_time = datetime.now()
         conversation_memory_dict = self.conversation_memory.to_dict()
-        save_conversation.apply_async(args=[conversation_memory_dict, str(self.thread_id), self.user_detail, "learn"])
+        save_conversation.apply_async(args=[conversation_memory_dict, str(self.conversation.id), self.user_detail, "learn"])
         
         return "Done!"
 
@@ -215,6 +209,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             model="gpt-4-1106-preview",
             messages=messages
         )
-        return response["choices"][0]["message"]["content"]
+        return response.choices[0].message.content
     # ----------------------- CUSTOM ASYNC FUNCTIONS --------------------------
  

@@ -1,7 +1,6 @@
 # from datacenter import models as datacenter_models
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Avg, Sum
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import View

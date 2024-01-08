@@ -38,10 +38,6 @@ async def scrape_main_content(page, url, scraped_urls, file):
             for section in main_content:
                 content_text += f"{section.get_text(strip=True)}\n\n"
 
-            # Need to text this for first URL
-            logger.info(content_text)
-            logger.info("------------------------------------------------------------\n\n")
-
             file.write(content_text)
             file.write("------------------------------------------------------------\n\n")
 

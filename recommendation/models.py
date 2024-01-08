@@ -18,18 +18,8 @@ class SimilarityMatrix(models.Model):
         # Serialize the matrix to bytes
         matrix_bytes = pickle.dumps(matrix)
 
-        # Define the file path
-        file_path = os.path.join(settings.MEDIA_ROOT, "similarity_matrices", "matrix.pkl")
-
-
-        # Check if the file already exists
-        if os.path.exists(file_path):
-            # Open the existing file in binary write mode and overwrite it
-            with open(file_path, 'wb') as file:
-                file.write(matrix_bytes)
-        else:
-            # If the file doesn't exist, use the save method to create it
-            self.matrix_file.save("matrix.pkl", ContentFile(matrix_bytes))
+        # Use Django's FileField save method to save the file to S3
+        self.matrix_file.save("matrix.pkl", ContentFile(matrix_bytes))
 
         # Convert ObjectId instances to strings
         job_ids_str = [str(job_id) if isinstance(job_id, ObjectId) else job_id for job_id in job_ids]
@@ -38,6 +28,8 @@ class SimilarityMatrix(models.Model):
         # Convert to JSON and save in fields
         self.job_ids = json.dumps(job_ids_str)
         self.candidate_ids = json.dumps(candidate_ids_str)
+
+        # Save the instance to update the database record
         self.save()
 
     def get_matrix(self):

@@ -1,7 +1,6 @@
 from django.conf import settings
-from openai import OpenAI
 
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+from chatbackend.configs.base_config import openai_client as client
 
 SYSTEM_INSTRUCTION = """
         You are a polite, friendly, and helpful virtual assistant that answers questions about the mortgage industry in Nigeria. Here are \

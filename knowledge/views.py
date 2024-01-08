@@ -1,50 +1,58 @@
-from asgiref.sync import sync_to_async
+import asyncio
+
 from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
 
-from assistant.engine import OpenAIChatEngine
-from chatbackend.logging_config import configure_logger
-from knowledge.models import OpenAIFile
+from chatbackend.configs.logging_config import configure_logger
+from knowledge.knowledge_vec import query_vec_database, save_vec_to_database
+from knowledge.scraper.scrape_scripts.alberta_1 import scrape_alberta_site_1
+from knowledge.scraper.scrape_scripts.alberta_2 import scrape_alberta_site_2
+from knowledge.scraper.scrape_scripts.alberta_3 import scrape_alberta_site_3
+from knowledge.scraper.scrape_scripts.british import scrape_british_site
 from knowledge.scraper.scrape_scripts.ontario import scrape_ontario_site
+from knowledge.scraper.scraper_utils import clear_s3_directory
 
 logger = configure_logger(__name__)
 
-class ScrapeAndUpdateAPI(View):
+class ScrapeAndUpdateAPI(View): 
     async def get(self, request, *args, **kwargs):
-        website = "ontario"
-        output_file_path = f"knowledge/scraper/scraped_data/scraped_{website}_content.txt"
-
-        # # Run scraping
-        # if website == "ontario":
-        #     await scrape_ontario_site()
-
-        # Initialize OpenAI client
-        assistant_id = settings.ASSISTANT_ID
-        openai_client = OpenAIChatEngine(api_key=settings.OPENAI_API_KEY, assistant_id=assistant_id)
-
-        # Handle file update or creation
         try:
-            new_file_id = await self.handle_file_update_or_creation(website, output_file_path, openai_client, assistant_id)
-            await openai_client.attach_file_to_assistant(assistant_id, file_id=new_file_id)
-            logger.info(f"File ID update: {new_file_id}")
-            return JsonResponse({"message": "Scraping and uploading completed."}, status=status.HTTP_200_OK)
+            clear_s3_directory(settings.AWS_STORAGE_BUCKET_NAME, 'media/scraped_data')
+            tasks = [
+                asyncio.create_task(scrape_ontario_site()),
+                asyncio.create_task(scrape_british_site()),
+                asyncio.create_task(scrape_alberta_site_1()),
+                asyncio.create_task(scrape_alberta_site_2()),
+                asyncio.create_task(scrape_alberta_site_3()),
+            ]
+            await asyncio.gather(*tasks)
+            return JsonResponse({'status': 'success', 'message': 'Scraping initiated'}, status=status.HTTP_200_OK)
         except Exception as e:
-            # Handle other exceptions
-            return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"Error during scraping: {e}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    async def handle_file_update_or_creation(self, website, output_file_path, openai_client, assistant_id):
-        new_file = await openai_client.upload_file(output_file_path)
-        logger.info(f"This is the new file: {new_file}")
+
+class SaveVecToDBAPI(View):
+    async def get(self, request, *args, **kwargs):
         try:
-            existing_file = await sync_to_async(OpenAIFile.objects.get, thread_sensitive=True)(title=website)
-            if existing_file:
-                logger.info(f"Deleting...: {existing_file.file_id}")  
-                await openai_client.delete_file(file_id=existing_file.file_id, assistant_id=assistant_id)
-                existing_file.file_id = new_file.id
-                await sync_to_async(existing_file.save, thread_sensitive=True)()
+            # Convert the asynchronous function to synchronous for Django compatibility
+            await save_vec_to_database()
+            return JsonResponse({"Success": "Done saving vector to vecDB"}, status=200)
         except Exception as e:
-            await sync_to_async(OpenAIFile.objects.create, thread_sensitive=True)(title=website, file_id=new_file.id)
-    
-        return new_file.id
+            # Log the error and send an error response
+            logger.error(f"Error in SaveVecToDBAPI: {e}")
+            return JsonResponse({"Error": "Failed to save vector to vecDB"}, status=500)
+
+
+class QueryVecDBAPI(View):
+    async def get(self, request, *args, **kwargs):
+        try:
+            # Convert the asynchronous function to synchronous for Django compatibility
+            await query_vec_database(query="What is the BCCNM's legal obligation?", num_results=4)
+            return JsonResponse({"Success": "Answer contexts received"}, status=200)
+        except Exception as e:
+            # Log the error and send an error response
+            logger.error(f"Error in QueryVecDBAPI: {e}")
+            return JsonResponse({"Error": "Context collection failed"}, status=500)

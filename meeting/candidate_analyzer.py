@@ -1,15 +1,13 @@
 import asyncio
 
 from django.conf import settings
-from openai import OpenAI
 from textblob import TextBlob
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.base_config import openai_client as client
+from chatbackend.configs.logging_config import configure_logger
 from optimizers.utils import get_chat_response
 
 logger = configure_logger(__name__)
-
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
 async def analyze_communication_for_candidate(transcript):

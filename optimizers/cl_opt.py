@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from spellchecker import SpellChecker
 from textblob import TextBlob
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 from helpers.optimizer_utils import cover_letter, job_post_description
 from optimizers.mg_database import (get_cover_letter_content,
                                     get_job_post_content_async)

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import time
 import uuid
@@ -7,16 +8,13 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 
+from accounts.models import User
+from assistant.assistant_api_setup.engine import OpenAIChatEngine
 from assistant.memory import BaseMemory
-from assistant.models import Conversation
 from assistant.tasks import save_conversation
-from assistant.utils import convert_markdown_to_html
-from chatbackend.configs.base_config import openai_client as client
 from chatbackend.configs.logging_config import configure_logger
-from knowledge.knowledge_vec import query_vec_database
 
 logger = configure_logger(__name__)
-
 
 class ChatConsumer(AsyncWebsocketConsumer):
     """
@@ -25,6 +23,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.chat_engine = OpenAIChatEngine(api_key=settings.OPENAI_API_KEY, assistant_id=settings.ASSISTANT_ID)
 
     async def connect(self):
         """
@@ -39,10 +38,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         self.conversation_memory = BaseMemory()
 
-        # Create the Conversation instance without setting the customer and channel
-        self.conversation = await database_sync_to_async(Conversation.objects.create)()
+        # Start a new conversation thread
+        self.thread_id = await self.chat_engine.create_thread()
 
-        # Initialize the conversation start time
         self.conversation_memory.session_start_time = datetime.now()
         logger.info(f"Conversation start time: {self.conversation_memory.session_start_time}")
 
@@ -51,10 +49,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+
         await self.accept()
 
     async def disconnect(self, close_code):
         logger.info("---------- CONNECTION DISCONNECTED ----------")
+
         # Leave room group
         await self.channel_layer.group_discard(
             self.room_group_name,
@@ -72,34 +72,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             if message_type == 'user_message':
                 start = time.time()
-                self.user_id = text_data_json.get('userId')
                 user_message = text_data_json.get('message')
-                message_id = str(uuid.uuid4())
 
-                contexts = await query_vec_database(query=user_message, num_results=2)
-                context_parts = []
-                for idx, ctx in enumerate(contexts, start=1):
-                    context_text = ctx['metadata']['text']
-                    context_parts.append(f"context {idx}:\n\n{context_text}")
-                context = "\n\n".join(context_parts)
-
-                # build our prompt with the retrieved contexts included
-                prompt_start = ("Use the contexts below to respond to the user's query. Include a reference url if it is present in the context:\n\n")
-                prompt_end = (f"\n\nQuestion: {user_message}\nAnswer:")
-                user_ques = (prompt_start + "\n\n---\n\n" + context + prompt_end)
-                
-                self.conversation_memory.add_message(role='user', content=user_ques, message_id=message_id)
-
-                bot_response = await self.generate_bot_response(user_ques)
-                # logger.info(bot_response)
+                bot_response, citations, message_id = await self.chat_engine.handle_chat(self.thread_id, user_message)
+                self.conversation_memory.add_message('user', user_message, message_id=message_id)
 
                 stop = time.time()
                 duration = stop - start
-                
-                # Add to the conversation tracker
-                judy_response_id = str(uuid.uuid4())
-                self.conversation_memory.add_message(role='assistant', content=bot_response, duration=duration, message_id=judy_response_id)
-                
+
                 logger.info(f"RESPONSE DURATION: {duration}")
 
                 # Send message to room group
@@ -108,6 +88,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     {
                         'type': 'chat_message',
                         'message': bot_response, 
+                        'citations': citations,
                         'messageId': message_id
                     }
                 )
@@ -145,7 +126,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f"An unexpected error occurred while processing the received data: {str(e)}")
             return
-
+        
     # Receive message from room group
     async def chat_message(self, event):
         """
@@ -153,11 +134,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
         logger.info("---------- FORWARDING BOT MESSAGE ----------")
 
-        message = event.get('message')  
+        message = event.get('message') 
+        citations = event.get('citations') 
         message_id = event.get('messageId')    
 
         json_message = json.dumps({
             'message': message,
+            'citations': citations,
             'messageId': message_id
         })    
 
@@ -167,48 +150,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json_message)
 
-    # ----------------------- CUSTOM ASYNC FUNCTIONS --------------------------
-    async def generate_bot_response(self, user_message):
-        logger.info("---------- BOT ENGINE STARTED ----------")
-
-        full_history = self.conversation_memory.get_openai_history()
-
-        logger.info(f"CONVERSATION MEMORY: ")
-        logger.info(full_history)
-
-        # Make a copy and remove the most recent message (presumably the user's latest question)
-        history_except_last = full_history[:-1]  # RECTIFY: this should be the latest context not latest question
-        
-        messages = [
-            {
-                "role": "system",
-                "content": "You are a polite, friendly, helpful assistant that answers questions from the context given"
-            },
-            *full_history
-        ]
-
-        judy_response = await self.single_bot_query(messages)
-
-        # Convert Markdown (including handling for newlines) to HTML, then sanitize
-        processed_message_html = await convert_markdown_to_html(judy_response)
-
-        logger.info("---------- BOT ENGINE STOPPED ----------")
-
-        return processed_message_html
-    
     async def end_conversation(self):
-        self.conversation = await database_sync_to_async(Conversation.objects.create)()
+        # self.conversation = await database_sync_to_async(Conversation.objects.create)()
         self.conversation_memory.session_end_time = datetime.now()
         conversation_memory_dict = self.conversation_memory.to_dict()
-        save_conversation.apply_async(args=[conversation_memory_dict, str(self.conversation.id), self.user_detail, "learn"])
+        save_conversation.apply_async(args=[conversation_memory_dict, str(self.thread_id), self.user_detail, "learn"])
         
         return "Done!"
 
-    async def single_bot_query(self, messages):
-        response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
-            messages=messages
-        )
-        return response.choices[0].message.content
-    # ----------------------- CUSTOM ASYNC FUNCTIONS --------------------------
- 
+
+# {
+#     "type": "end_session",
+#     "userId": "23423poiasdli23lo23lawk",
+#     "email": "johndoe@gmail.com"
+#     "name": "John Doe"
+#     "role": "candidate"
+# }

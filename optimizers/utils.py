@@ -2,10 +2,9 @@ import textstat
 from django.conf import settings
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
-from openai import OpenAI
 from sklearn.feature_extraction.text import CountVectorizer
 
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
+from chatbackend.configs.base_config import openai_client as client
 
 SYSTEM_ROLE = "system"
 USER_ROLE = "user"

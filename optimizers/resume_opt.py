@@ -3,9 +3,9 @@ from django.conf import settings
 from django.db import connections
 from langchain.document_loaders import OnlinePDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from openai import OpenAI
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.base_config import openai_client as client
+from chatbackend.configs.logging_config import configure_logger
 from helpers.optimizer_utils import (get_cover_letter_instruction,
                                      get_job_post_instruction,
                                      get_resume_instruction,
@@ -14,7 +14,6 @@ from helpers.optimizer_utils import (get_cover_letter_instruction,
 
 logger = configure_logger(__name__)
 
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 SYSTEM_ROLE = "system"
 USER_ROLE = "user"

@@ -2,16 +2,18 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Avg, Sum
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from accounts.models import OrganizationCustomer
 from assistant.models import (Conversation, GeneralChatAnalytics, Message,
                               MessageVote, Session)
+from chatbackend.configs.logging_config import configure_logger
+
+logger = configure_logger(__name__)
 
 
+# Template Views
 def index(request):
     print(request.user)
     return render(request, "judy/dashboard.html")

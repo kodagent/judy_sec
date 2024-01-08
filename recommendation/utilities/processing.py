@@ -2,9 +2,10 @@ import itertools
 
 import numpy as np
 import pandas as pd
+from bson import ObjectId
 from sklearn.metrics.pairwise import cosine_similarity
 
-from chatbackend.logging_config import configure_logger
+from chatbackend.configs.logging_config import configure_logger
 from optimizers.mg_database import db
 from recommendation.models import SimilarityMatrix
 
@@ -408,7 +409,7 @@ def preprocess_job_specialties(jobs_df, specialties_requirements_df):
     unhandled_specialties = all_specialties_in_jobs - set(specialty_cols)
 
     if unhandled_specialties:
-        print(f"Warning: The following specialties are present in the jobs data but not in specialties_requirements_df: {', '.join(unhandled_specialties)}")
+        logger.info(f"Warning: The following specialties are present in the jobs data but not in specialties_requirements_df: {', '.join(unhandled_specialties)}")
 
     # For the specialties that are present in specialties_requirements_df, create separate columns with years as values
     for specialty in specialty_cols:
@@ -523,12 +524,12 @@ class JobRecommender:
     
     def get_index_from_job_id(self, job_id):
         job_ids = self.load_job_ids()
-        print("This is the job ids", job_ids)
+        logger.info(f"These are the job ids in the database: \n{job_ids}")
         return job_ids.index(job_id)
 
     def get_index_from_candidate_id(self, candidate_id):
         candidate_ids = self.load_candidate_ids()
-        print("This is the candidate ids", candidate_ids)
+        logger.info(f"These are the candidate ids in the database: \n {candidate_ids}")
         return candidate_ids.index(candidate_id)
 
     def get_job_recommendations_by_id(self, candidate_id, top_n=10):
@@ -556,10 +557,31 @@ class JobRecommender:
         # Get the similarity scores of these top jobs
         top_jobs_scores = candidate_scores[top_jobs_indices]
 
-        # Create a dictionary with job IDs as keys and their scores as values
-        top_jobs_for_candidate = {str(job_id): score for job_id, score in zip(top_job_ids, top_jobs_scores)}
+        # Fetch additional job details from MongoDB
+        jobs = db['jobs'].find({'_id': {'$in': [ObjectId(job_id) for job_id in top_job_ids]}})
 
-        return top_jobs_for_candidate
+        # Extract the required fields from the job documents
+        job_details_with_scores = {}
+        for job in jobs:
+            job_id = str(job['_id'])  
+            job_details_with_scores[job_id] = {
+                'score': top_jobs_scores[top_job_ids.index(job_id)],
+                'details': {
+                    'City': job.get('city'),
+                    'location': job.get('location'),
+                    'id': job_id,
+                    'owner': str(job.get('owner')),
+                    'title': job.get('title'),
+                    'slug': job.get('slug'),
+                    'jobType': job.get('jobType'),
+                    'salaryRange': job.get('salaryRange'),
+                    'experienceYears': job.get('experienceYears'),
+                    'companyName': job.get('companyName'),
+                    'companyLogo': job.get('companyLogo')
+                }
+            }
+
+        return job_details_with_scores
 
     def get_top_candidates_for_job(self, job_index, top_n=10):
         """

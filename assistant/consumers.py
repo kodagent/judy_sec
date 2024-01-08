@@ -77,8 +77,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user_message = text_data_json.get('message')
                 message_id = str(uuid.uuid4())
 
-                context1, context2 = await query_vec_database(query=user_message, num_results=2, pinecone_index_name=settings.PINECONE_INDEX_NAME)
-                context = context1['metadata']['text'] + "\n\n" + context2['metadata']['text']
+                contexts = await query_vec_database(query=user_message, num_results=2, pinecone_index_name=settings.PINECONE_INDEX_NAME)
+                context_parts = []
+                for idx, ctx in enumerate(contexts, start=1):
+                    context_text = ctx['metadata']['text']
+                    context_parts.append(f"context {idx}:\n\n{context_text}")
+                context = "\n\n".join(context_parts)
 
                 # if we want to store this data in the database (connect it to message id)
                 # context_text_1, context_score_1 = context1['metadata']['text'], context1['score']

@@ -151,7 +151,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
         Receives a message from the room group and sends it to the WebSocket.
         """
-        logger.info("---------- FORWARDING BOT MESSAGE ----------")
+        # logger.info("---------- FORWARDING BOT MESSAGE ----------")
 
         message = event.get('message')  
         message_id = event.get('messageId')    
@@ -161,8 +161,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'messageId': message_id
         })    
 
-        logger.info(f"MESSAGE TO WEBSOCKET: ")
-        logger.info(f"{json_message}")
+        # logger.info(f"MESSAGE TO WEBSOCKET: ")
+        # logger.info(f"{json_message}")
 
         # Send message to WebSocket
         await self.send(text_data=json_message)
@@ -173,8 +173,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         full_history = self.conversation_memory.get_openai_history()
 
-        logger.info(f"CONVERSATION MEMORY: ")
-        logger.info(full_history)
+        # logger.info(f"CONVERSATION MEMORY: ")
+        # logger.info(full_history)
 
         # Make a copy and remove the most recent message (presumably the user's latest question)
         history_except_last = full_history[:-1]  # RECTIFY: this should be the latest context not latest question

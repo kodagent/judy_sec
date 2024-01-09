@@ -39,8 +39,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         self.conversation_memory = BaseMemory()
 
-        # # Create the Conversation instance without setting the customer and channel
-        # self.conversation = await database_sync_to_async(Conversation.objects.create)()
+        # Create the Conversation instance without setting the customer and channel
+        self.conversation = await database_sync_to_async(Conversation.objects.create)()
 
         # Initialize the conversation start time
         self.conversation_memory.session_start_time = datetime.now()
@@ -76,7 +76,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user_message = text_data_json.get('message')
                 message_id = str(uuid.uuid4())
 
-                contexts = await query_vec_database(query=user_message, num_results=2)
+                contexts = await query_vec_database(query=user_message, num_results=3)
                 context_parts = []
                 for idx, ctx in enumerate(contexts, start=1):
                     context_text = ctx['metadata']['text']
@@ -123,13 +123,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 logger.info(f"MESSAGE {message_id} DOWNVOTED!")
             
             elif message_type == 'end_session':
-                # self.username_id = text_data_json.get('userId')
-                # self.email = text_data_json.get('email')
-                # self.name = text_data_json.get('name')
-                # self.role = text_data_json.get('role')
-                # self.user_detail = [self.username_id, self.email, self.name, self.role]
-                # await self.end_conversation()
                 logger.info(f"---------- CONVERSATION ENDED ----------")
+                self.username_id = text_data_json.get('userId')
+                self.email = text_data_json.get('email')
+                self.name = text_data_json.get('name')
+                self.role = text_data_json.get('role')
+                self.user_detail = [self.username_id, self.email, self.name, self.role]
+                await self.end_conversation()
 
                 # Send message to room group
                 await self.channel_layer.group_send(

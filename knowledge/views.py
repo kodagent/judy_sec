@@ -50,7 +50,7 @@ class QueryVecDBAPI(View):
     async def get(self, request, *args, **kwargs):
         try:
             # Convert the asynchronous function to synchronous for Django compatibility
-            await query_vec_database(query="What is the BCCNM's legal obligation?", num_results=4)
+            await query_vec_database(query="What is the BCCNM's legal obligation?", num_results=3)
             return JsonResponse({"Success": "Answer contexts received"}, status=200)
         except Exception as e:
             # Log the error and send an error response

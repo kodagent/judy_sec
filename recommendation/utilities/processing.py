@@ -565,11 +565,11 @@ class JobRecommender:
         for job in jobs:
             job_id = str(job['_id'])  
             job_details_with_scores.append(
-                {
+                {   
+                    'id': job_id,
                     'score': top_jobs_scores[top_job_ids.index(job_id)],
                     'city': job.get('city'),
                     'location': job.get('location'),
-                    'id': job_id,
                     'owner': str(job.get('owner')),
                     'title': job.get('title'),
                     'slug': job.get('slug'),
@@ -580,6 +580,9 @@ class JobRecommender:
                     'company_logo': job.get('companyLogo')
                 }
             )
+        
+        # Sort the job details by score in descending order
+        job_details_with_scores = sorted(job_details_with_scores, key=lambda x: x['score'], reverse=True)
 
         return job_details_with_scores
 

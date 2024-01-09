@@ -561,25 +561,25 @@ class JobRecommender:
         jobs = db['jobs'].find({'_id': {'$in': [ObjectId(job_id) for job_id in top_job_ids]}})
 
         # Extract the required fields from the job documents
-        job_details_with_scores = {}
+        job_details_with_scores = []
         for job in jobs:
             job_id = str(job['_id'])  
-            job_details_with_scores[job_id] = {
-                'score': top_jobs_scores[top_job_ids.index(job_id)],
-                'details': {
-                    'City': job.get('city'),
+            job_details_with_scores.append(
+                {
+                    'score': top_jobs_scores[top_job_ids.index(job_id)],
+                    'city': job.get('city'),
                     'location': job.get('location'),
                     'id': job_id,
                     'owner': str(job.get('owner')),
                     'title': job.get('title'),
                     'slug': job.get('slug'),
-                    'jobType': job.get('jobType'),
-                    'salaryRange': job.get('salaryRange'),
-                    'experienceYears': job.get('experienceYears'),
-                    'companyName': job.get('companyName'),
-                    'companyLogo': job.get('companyLogo')
+                    'job_type': job.get('jobType'),
+                    'salary_range': job.get('salaryRange'),
+                    'experience_years': job.get('experienceYears'),
+                    'company_name': job.get('companyName'),
+                    'company_logo': job.get('companyLogo')
                 }
-            }
+            )
 
         return job_details_with_scores
 

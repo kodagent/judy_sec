@@ -39,8 +39,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         self.conversation_memory = BaseMemory()
 
-        # Create the Conversation instance without setting the customer and channel
-        self.conversation = await database_sync_to_async(Conversation.objects.create)()
+        # # Create the Conversation instance without setting the customer and channel
+        # self.conversation = await database_sync_to_async(Conversation.objects.create)()
 
         # Initialize the conversation start time
         self.conversation_memory.session_start_time = datetime.now()
@@ -123,12 +123,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 logger.info(f"MESSAGE {message_id} DOWNVOTED!")
             
             elif message_type == 'end_session':
-                self.username_id = text_data_json.get('userId')
-                self.email = text_data_json.get('email')
-                self.name = text_data_json.get('name')
-                self.role = text_data_json.get('role')
-                self.user_detail = [self.username_id, self.email, self.name, self.role]
-                await self.end_conversation()
+                # self.username_id = text_data_json.get('userId')
+                # self.email = text_data_json.get('email')
+                # self.name = text_data_json.get('name')
+                # self.role = text_data_json.get('role')
+                # self.user_detail = [self.username_id, self.email, self.name, self.role]
+                # await self.end_conversation()
+                logger.info(f"---------- CONVERSATION ENDED ----------")
 
                 # Send message to room group
                 await self.channel_layer.group_send(

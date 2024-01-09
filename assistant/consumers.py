@@ -76,7 +76,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user_message = text_data_json.get('message')
                 message_id = str(uuid.uuid4())
 
-                contexts = await query_vec_database(query=user_message, num_results=2)
+                contexts = await query_vec_database(query=user_message, num_results=3)
                 context_parts = []
                 for idx, ctx in enumerate(contexts, start=1):
                     context_text = ctx['metadata']['text']
@@ -123,6 +123,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 logger.info(f"MESSAGE {message_id} DOWNVOTED!")
             
             elif message_type == 'end_session':
+                logger.info(f"---------- CONVERSATION ENDED ----------")
                 self.username_id = text_data_json.get('userId')
                 self.email = text_data_json.get('email')
                 self.name = text_data_json.get('name')

@@ -90,10 +90,7 @@ async def query_vec_database(query, num_results):
     duration = time.time() - start_time
     logger.info(f"QUERY VEC DURATION: {duration:.2f} seconds")
     
-    contexts = [results["matches"][0], results["matches"][1]]
-    if results["matches"][2]['metadata']['text']:
-        contexts.append(results["matches"][2])
-
+    contexts = [results["matches"][0], results["matches"][1], results["matches"][2]]
     return contexts
 
 # print(results["matches"][0]['metadata']['text'])

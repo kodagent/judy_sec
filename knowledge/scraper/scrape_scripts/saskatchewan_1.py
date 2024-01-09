@@ -89,10 +89,10 @@ async def scrape_crns_site():
         await browser.close()
         logger.info("Scraping completed.")
 
-        # # Upload the temporary file to S3
-        # with open(temp_file_path, 'rb') as temp_file_to_upload:
-        #     s3_file_name = "scraped_data/scraped_crns_content.txt"
-        #     default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
-        #     logger.info(f"Scraped content saved to S3 as {s3_file_name}")
+        # Upload the temporary file to S3
+        with open(temp_file_path, 'rb') as temp_file_to_upload:
+            s3_file_name = "scraped_data/scraped_crns_content.txt"
+            default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
+            logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
 # asyncio.run(scrape_crns_site())

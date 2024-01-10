@@ -11,7 +11,11 @@ from knowledge.scraper.scrape_scripts.alberta_1 import scrape_alberta_site_1
 from knowledge.scraper.scrape_scripts.alberta_2 import scrape_alberta_site_2
 from knowledge.scraper.scrape_scripts.alberta_3 import scrape_alberta_site_3
 from knowledge.scraper.scrape_scripts.british import scrape_british_site
+from knowledge.scraper.scrape_scripts.brunswick_1 import scrape_nanb_site
+from knowledge.scraper.scrape_scripts.brunswick_2 import scrape_anblpn_site
 from knowledge.scraper.scrape_scripts.manitoba_1 import scrape_crnm_site
+from knowledge.scraper.scrape_scripts.manitoba_2 import scrape_clpnm_site
+from knowledge.scraper.scrape_scripts.manitoba_3 import scrape_crpnm_site
 from knowledge.scraper.scrape_scripts.ontario import scrape_ontario_site
 from knowledge.scraper.scrape_scripts.saskatchewan_1 import scrape_crns_site
 from knowledge.scraper.scrape_scripts.saskatchewan_2 import scrape_clpns_site
@@ -24,6 +28,7 @@ class ScrapeAndUpdateAPI(View):
     async def get(self, request, *args, **kwargs):
         try:
             clear_s3_directory(settings.AWS_STORAGE_BUCKET_NAME, 'media/scraped_data')
+
             tasks = [
                 asyncio.create_task(scrape_ontario_site()),
                 asyncio.create_task(scrape_british_site()),
@@ -34,8 +39,13 @@ class ScrapeAndUpdateAPI(View):
                 asyncio.create_task(scrape_clpns_site()),
                 asyncio.create_task(scrape_rpnas_site()),
                 asyncio.create_task(scrape_crnm_site()),
+                asyncio.create_task(scrape_clpnm_site()),
+                asyncio.create_task(scrape_crpnm_site()),
+                asyncio.create_task(scrape_nanb_site()),
+                asyncio.create_task(scrape_anblpn_site()),
             ]
             await asyncio.gather(*tasks)
+            
             return JsonResponse({'status': 'success', 'message': 'Scraping initiated'}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Error during scraping: {e}")

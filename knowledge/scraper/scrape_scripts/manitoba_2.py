@@ -12,22 +12,26 @@ from knowledge.scraper.scraper_utils import download_pdf, sanitize_filename
 logger = configure_logger(__name__)
 
 # Base URL
-base_url = "https://www.crnm.mb.ca/"
+base_url = "https://www.clpnm.ca/"
 
 async def extract_nav_links(page):
     return await page.evaluate('''() => {
         const links = [];
-        document.querySelectorAll('#mega-menu-main-menu .mega-menu-item a').forEach(a => {
-            links.push({text: a.innerText.trim(), href: a.href});
+        document.querySelectorAll('#mega-menu-menu-1 .mega-menu-item a').forEach(a => {
+            if (a.offsetParent !== null) {
+                links.push({text: a.innerText.trim(), href: a.href});
+            }
         });
         return links;
     }''')
 
-async def extract_all_links(page):
+async def extract_page_links(page):
     return await page.evaluate('''() => {
         const links = [];
         document.querySelectorAll('a').forEach(a => {
-            links.push(a.href);
+            if (a.href && !a.href.startsWith('javascript') && a.offsetParent !== null) {
+                links.push(a.href);
+            }
         });
         return links.filter(href => href.startsWith(document.location.origin));
     }''')
@@ -35,31 +39,29 @@ async def extract_all_links(page):
 async def scrape_html_content(page, url):
     try:
         await page.goto(url, timeout=60000)
-        # Wait for the main content to be loaded
-        await page.wait_for_selector('main.section-page', timeout=60000)
-
-        content_html = await page.content()
-        soup = BeautifulSoup(content_html, 'html.parser')
-
-        # Adjust the selector according to the structure of the content you want to scrape
-        main_content = soup.select_one('main.section-page')
+        content = await page.content()
+        soup = BeautifulSoup(content, 'html.parser')
+        main_content = soup.find_all(class_='elementor-widget-container')
         content_text = ""
 
         if main_content:
-            for element in main_content.find_all(['h1', 'h2', 'h3', 'p', 'ul', 'li', 'a']):
-                # Check if the element is a link to a PDF
-                if element.name == 'a' and 'href' in element.attrs and element['href'].endswith('.pdf'):
-                    pdf_url = element['href']
-                    pdf_name = f"{sanitize_filename(element.get_text(strip=True))}.pdf"
-                    await download_pdf(pdf_url, pdf_name)
-                else:
-                    content_text += f"{element.get_text(' ', strip=True)}\n\n"
+            for element in main_content:
+                for subelement in element.find_all(['h1', 'h2', 'h3', 'p', 'ul', 'a']):
+                    if subelement.name == 'a' and 'href' in subelement.attrs:
+                        if subelement['href'].endswith('.pdf'):
+                            pdf_url = subelement['href']
+                            pdf_name = sanitize_filename(subelement.get_text(strip=True)) + '.pdf'
+                            await download_pdf(pdf_url, pdf_name)
+                        else:
+                            content_text += f"{subelement.get_text(strip=True)}\n\n"
+                    else:
+                        content_text += f"{subelement.get_text(strip=True)}\n\n"
         else:
-            content_text = "Main content not found.\n"
+            content_text += "Main content not found.\n"
 
         return content_text
     except Exception as e:
-        print(f"Error scraping content from {url}: {str(e)}")
+        logger.error(f"Error scraping content from {url}: {str(e)}")
         return None
 
 async def process_page(page, url, temp_file, processed_urls):
@@ -73,17 +75,16 @@ async def process_page(page, url, temp_file, processed_urls):
         temp_file.write(f"URL: {url}\n{content}")
         temp_file.write("------------------------------------------------------------\n\n")
 
-    all_links = await extract_all_links(page)
-    for link in all_links:
+    page_links = await extract_page_links(page)
+    for link in page_links:
         await process_page(page, link, temp_file, processed_urls)
 
-async def scrape_crnm_site():
+async def scrape_clpnm_site():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         page = await browser.new_page()
 
         await page.goto(base_url, timeout=60000)
-        await page.wait_for_selector('#mega-menu-main-menu .mega-menu-item a', timeout=60000)
 
         processed_urls = set()
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, encoding='utf-8') as temp_file:
@@ -98,9 +99,9 @@ async def scrape_crnm_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/scraped_crnm_content.txt"
+            s3_file_name = "scraped_data/scraped_clpnm_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
-# Run the scraping process
-asyncio.run(scrape_crnm_site())
+# # Run the scraping process
+# asyncio.run(scrape_clpnm_site())

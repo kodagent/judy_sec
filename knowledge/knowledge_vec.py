@@ -56,8 +56,12 @@ async def create_embedding(text):
 async def save_vec_to_database():
     logger.info(f"Save-to-vec process started")
     # Initialize Pinecone
-    if PINECONE_INDEX_NAME not in pinecone.list_indexes():
-        pinecone.create_index(name=PINECONE_INDEX_NAME, metric='cosine', dimension=1536)
+    if PINECONE_INDEX_NAME in pinecone.list_indexes():
+        logger.info(f"Deleting existing index: {PINECONE_INDEX_NAME}")
+        pinecone.delete_index(PINECONE_INDEX_NAME)
+
+    logger.info(f"Creating new index: {PINECONE_INDEX_NAME}")
+    pinecone.create_index(PINECONE_INDEX_NAME)
 
     pinecone_index = pinecone.Index(index_name=PINECONE_INDEX_NAME)
     text_chunks = await get_text()

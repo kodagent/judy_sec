@@ -78,15 +78,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 contexts = await query_vec_database(query=user_message, num_results=3)
                 context_parts = []
+
                 for idx, ctx in enumerate(contexts, start=1):
                     context_text = ctx['metadata']['text']
-                    context_parts.append(f"context {idx}:\n\n{context_text}")
-                context = "\n\n".join(context_parts)
+                    context_parts.append(f"Context {idx}:\n\n{context_text}")
+                context_combined = "\n\n".join(context_parts)
 
-                # build our prompt with the retrieved contexts included
-                prompt_start = ("Use the contexts below to respond to the user's query. Include a reference url if it is present in the context:\n\n")
-                prompt_end = (f"\n\nQuestion: {user_message}\nAnswer:")
-                user_ques = (prompt_start + "\n\n---\n\n" + context + prompt_end)
+                # Build the prompt with the retrieved contexts
+                prompt = (
+                    "Use the contexts provided below to accurately and comprehensively respond to the user's query. "
+                    "If a context contains a reference URL, format it as a clickable link that opens in a new tab or window to avoid disrupting the conversation flow. "
+                    "Formulate the answer considering all the relevant details from these contexts.\n\n"
+                    "Contexts:\n\n" + context_combined +
+                    "\n\n---\n\nQuestion: " + user_message +
+                    "\n\nAnswer:"
+                )
+
+                user_ques = prompt
                 
                 self.conversation_memory.add_message(role='user', content=user_ques, message_id=message_id)
 
@@ -183,7 +191,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         messages = [
             {
                 "role": "system",
-                "content": "You are a polite, friendly, helpful assistant that answers questions from the context given"
+                "content": "You are Judy, an AI Licensing Guide specifically designed for medical professionals. Your primary role is to facilitate the licensing process and ease the transition for those looking to work in the medical field, either in Canada or other countries. As an assistant, Judy is knowledgeable, polite, and approachable, providing helpful and accurate responses based on the given context."
             },
             *full_history
         ]

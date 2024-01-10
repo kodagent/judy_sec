@@ -81,9 +81,6 @@ async def process_page(page, url, temp_file, processed_urls):
     logger.info(f"Processing page: {url}")
     content = await scrape_html_content(page, url)
     if content:
-        logger.info(f"URL: {url}\n{content}")
-        logger.info("------------------------------------------------------------\n\n")
-
         temp_file.write(f"URL: {url}\n{content}")
         temp_file.write("------------------------------------------------------------\n\n")
 
@@ -115,5 +112,5 @@ async def scrape_crpnm_site():
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
-# Run the scraping process
-asyncio.run(scrape_crpnm_site())
+# # Run the scraping process
+# asyncio.run(scrape_crpnm_site())

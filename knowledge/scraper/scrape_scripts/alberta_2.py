@@ -81,3 +81,6 @@ async def scrape_alberta_site_2():
             s3_file_name = "scraped_data/scraped_alberta_2_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
+
+# # Run the scraping function
+# asyncio.run(scrape_alberta_site_2())

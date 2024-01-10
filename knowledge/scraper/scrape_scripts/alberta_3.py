@@ -47,9 +47,6 @@ async def scrape_main_content(page, url, scraped_urls, file):
             content_text = f"URL: {url}\n"
             for section in main_content:
                 content_text += f"{section.get_text(strip=True)}\n\n"
-
-            logger.info(content_text)
-            logger.info("------------------------------------------------------------\n\n")
             
             file.write(content_text)
             file.write("------------------------------------------------------------\n\n")
@@ -91,3 +88,6 @@ async def scrape_alberta_site_3():
             s3_file_name = "scraped_data/scraped_alberta_3_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
+
+# # Run the scraping function
+# asyncio.run(scrape_alberta_site_3())

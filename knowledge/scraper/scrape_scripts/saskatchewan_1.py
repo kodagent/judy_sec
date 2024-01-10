@@ -64,10 +64,6 @@ async def process_page(page, url, file, processed_urls):
         logger.info(f"Processing page: {url}")
         content = await scrape_page_content(page, url)
         if content:
-
-            logger.info(f"URL: {url}\n{content}")
-            logger.info("------------------------------------------------------------\n\n")
-
             file.write(f"URL: {url}\n{content}")
             file.write("------------------------------------------------------------\n\n")
 

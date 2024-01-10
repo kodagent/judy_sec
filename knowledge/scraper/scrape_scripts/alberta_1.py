@@ -95,5 +95,5 @@ async def scrape_alberta_site_1():
 
 
 # # Run the scraping function
-# asyncio.run(scrape_site())
+# asyncio.run(scrape_alberta_site_1())
 

@@ -102,5 +102,5 @@ async def scrape_crnm_site():
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
-# Run the scraping process
-asyncio.run(scrape_crnm_site())
+# # Run the scraping process
+# asyncio.run(scrape_crnm_site())

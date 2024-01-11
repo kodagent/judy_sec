@@ -70,6 +70,6 @@ def clear_s3_directory(bucket_name, directory_name):
         else:
             logger.info("No files found to delete.")
 
-        logger.info("Done with Delete operation on S3 bucket.")
+        logger.info(f"Done with Delete operation on {directory_name} in the S3 bucket with bucket name {bucket_name}.")
     except Exception as e:
         logger.error(f"Error during deletion: {e}")

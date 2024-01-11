@@ -1,7 +1,9 @@
 import asyncio
+import os
 import tempfile
 
 from bs4 import BeautifulSoup
+from celery import shared_task
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from playwright.async_api import async_playwright
@@ -60,7 +62,8 @@ async def scrape_html_content(page, url):
                         if subelement['href'].endswith('.pdf'):
                             pdf_url = subelement['href']
                             pdf_name = sanitize_filename(subelement.get_text(strip=True)) + '.pdf'
-                            await download_pdf(pdf_url, pdf_name)
+                            pdf_path = f"manitoba_3/{pdf_name}"
+                            await download_pdf(pdf_url, pdf_path)
                         else:
                             content_text += f"{subelement.get_text(strip=True)}\n\n"
                     else:
@@ -108,9 +111,22 @@ async def scrape_crpnm_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/scraped_crpnm_content.txt"
+            s3_file_name = "scraped_data/manitoba_3/scraped_crpnm_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
+        # Clean up the temporary file
+        try:
+            os.remove(temp_file_path)
+            logger.info(f"Temporary file {temp_file_path} deleted successfully.")
+        except Exception as e:
+            logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
+
 # # Run the scraping process
 # asyncio.run(scrape_crpnm_site())
+            
+
+# @shared_task
+# def scrape_crpnm_site():
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(scrape_crpnm_site())

@@ -1,8 +1,10 @@
 import asyncio
+import os
 import tempfile
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
+from celery import shared_task
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from playwright.async_api import async_playwright
@@ -26,8 +28,8 @@ urls_to_scrape = [
 ]
 
 # Function to scrape main content
-async def scrape_main_content(page, url, scraped_urls, file):
-    if url in scraped_urls:
+async def scrape_main_content(page, url, scraped_urls, file, depth=0):
+    if url in scraped_urls or depth > 3:
         return
     scraped_urls.add(url)
 
@@ -36,7 +38,8 @@ async def scrape_main_content(page, url, scraped_urls, file):
 
     if url.endswith('.pdf'):
         pdf_name = sanitize_filename(url.split('/')[-1])
-        await download_pdf(url, pdf_name)
+        pdf_path = f"alberta_3/{pdf_name}"
+        await download_pdf(url, pdf_path)
     else:
         try:
             await page.goto(url, timeout=60000)
@@ -54,9 +57,10 @@ async def scrape_main_content(page, url, scraped_urls, file):
             await scrape_nav_links(page, soup, url, scraped_urls, file)
         except Exception as e:
             logger.error(f"Error scraping content from {url}: {str(e)}")
+    await scrape_nav_links(page, soup, url, scraped_urls, file, depth + 1)
 
 # Function to scrape and follow navigation links
-async def scrape_nav_links(page, soup, base_url, scraped_urls, file):
+async def scrape_nav_links(page, soup, base_url, scraped_urls, file, depth):
     try:
         nav_links = soup.find_all('a', href=True)
         for a in nav_links:
@@ -65,7 +69,7 @@ async def scrape_nav_links(page, soup, base_url, scraped_urls, file):
                 link = urljoin(base_url, link)
             if not link.startswith('http') or link in scraped_urls:
                 continue
-            await scrape_main_content(page, link, scraped_urls, file)
+            await scrape_main_content(page, link, scraped_urls, file, depth + 1)
     except Exception as e:
         logger.error(f"Error scraping navigation links from {base_url}: {str(e)}")
 
@@ -78,16 +82,28 @@ async def scrape_alberta_site_3():
         scraped_urls = set()
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.txt', encoding='utf-8') as temp_file:
             for base_url in urls_to_scrape:
-                await scrape_main_content(page, base_url, scraped_urls, temp_file)
+                await scrape_main_content(page, base_url, scraped_urls, temp_file, 0)
 
             temp_file_path = temp_file.name
 
         await browser.close()
 
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/scraped_alberta_3_content.txt"
+            s3_file_name = "scraped_data/alberta_3/scraped_alberta_3_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
+        # Clean up the temporary file
+        try:
+            os.remove(temp_file_path)
+            logger.info(f"Temporary file {temp_file_path} deleted successfully.")
+        except Exception as e:
+            logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
+
 # # Run the scraping function
 # asyncio.run(scrape_alberta_site_3())
+            
+# @shared_task
+# def scrape_alberta_site_3():
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(scrape_alberta_site_3())

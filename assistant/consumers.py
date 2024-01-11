@@ -85,20 +85,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 context_combined = "\n\n".join(context_parts)
 
                 # Build the prompt with the retrieved contexts
-                prompt = (
-                    "Use the contexts provided below to accurately and comprehensively respond to the user's query. "
-                    "If a context contains a reference URL, format it as a clickable link that opens in a new tab or window to avoid disrupting the conversation flow. "
-                    "Formulate the answer considering all the relevant details from these contexts.\n\n"
+                refined_ques = (
+                    "Leverage the detailed information provided in the contexts to formulate a comprehensive and accurate response to the user's question. "
+                    "Incorporate any relevant details seamlessly, as if drawing from a deep well of knowledge. "
+                    "If there is additional pertinent information not covered by the contexts that you know would enrich the answer, feel free to include it. "
+                    "In cases where a context includes a reference URL, present it as a clickable link that opens in a new tab or window, ensuring a smooth conversation flow. "
+                    "Your response should come across as though it is derived from a knowledgeable and informed guide, without explicitly stating the use of provided contexts. "
+                    "Focus on delivering a response that is thorough, informative, and engaging.\n\n"
                     "Contexts:\n\n" + context_combined +
                     "\n\n---\n\nQuestion: " + user_message +
                     "\n\nAnswer:"
                 )
 
-                user_ques = prompt
-                
-                self.conversation_memory.add_message(role='user', content=user_ques, message_id=message_id)
+                self.conversation_memory.add_message(role='user', content=refined_ques, message_id=message_id)
 
-                bot_response = await self.generate_bot_response(user_ques)
+                bot_response = await self.generate_bot_response(refined_ques)
                 # logger.info(bot_response)
 
                 stop = time.time()

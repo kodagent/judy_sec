@@ -1,8 +1,10 @@
 import asyncio
+import os
 import tempfile
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
+from celery import shared_task
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from playwright.async_api import async_playwright
@@ -49,7 +51,8 @@ async def scrape_html_content(page, url):
                 if element.name == 'a' and element['href'].endswith('.pdf'):
                     pdf_url = element['href']
                     pdf_name = sanitize_filename(element.get_text(strip=True)) + '.pdf'
-                    await download_pdf(pdf_url, pdf_name)
+                    pdf_path = f"saskatchewan_3/{pdf_name}"
+                    await download_pdf(pdf_url, pdf_path)
                 else:
                     content_text += f"{element.get_text(strip=True)}\n\n"
         else:
@@ -95,9 +98,22 @@ async def scrape_rpnas_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/scraped_rpnas_content.txt"
+            s3_file_name = "scraped_data/saskatchewan_3/scraped_rpnas_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
+        # Clean up the temporary file
+        try:
+            os.remove(temp_file_path)
+            logger.info(f"Temporary file {temp_file_path} deleted successfully.")
+        except Exception as e:
+            logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
+
 # # Run the scraping process
 # asyncio.run(scrape_rpnas_site())
+            
+        
+# @shared_task
+# def scrape_rpnas_site():
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(scrape_rpnas_site())

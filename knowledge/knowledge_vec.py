@@ -25,7 +25,7 @@ PINECONE_INDEX_NAME = settings.PINECONE_INDEX_NAME
 
 
 # ------------------------ UTIL FUNCTIONS ----------------------
-async def get_text():
+async def get_text(knowledge_dir):
     def tiktoken_len(text):
         # Tokenize and split text
         tokenizer = tiktoken.get_encoding('cl100k_base')
@@ -36,7 +36,7 @@ async def get_text():
         return len(tokens)
 
     # Load data
-    loader = S3DirectoryLoader(bucket=settings.AWS_STORAGE_BUCKET_NAME, prefix="media/scraped_data/", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+    loader = S3DirectoryLoader(bucket=settings.AWS_STORAGE_BUCKET_NAME, prefix=f"media/scraped_data/{knowledge_dir}/", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
     data = loader.load()
     logger.info("Done getting texts from s3 knowledge datastore")
 
@@ -53,18 +53,19 @@ async def create_embedding(text):
     text_embedded = response.data[0].embedding
     return text_embedded
 
-async def save_vec_to_database():
+async def save_vec_to_database(knowledge_dir, first_db_opt=False):
     logger.info(f"Save-to-vec process started")
-    # Initialize Pinecone
-    if PINECONE_INDEX_NAME in pinecone.list_indexes():
+
+    if first_db_opt and PINECONE_INDEX_NAME in pinecone.list_indexes():
         logger.info(f"Deleting existing index: {PINECONE_INDEX_NAME}")
         pinecone.delete_index(PINECONE_INDEX_NAME)
 
-    logger.info(f"Creating new index: {PINECONE_INDEX_NAME}")
-    pinecone.create_index(PINECONE_INDEX_NAME)
+    if PINECONE_INDEX_NAME not in pinecone.list_indexes():
+        logger.info(f"Creating new index: {PINECONE_INDEX_NAME}")
+        pinecone.create_index(PINECONE_INDEX_NAME, dimension=1536)
 
     pinecone_index = pinecone.Index(index_name=PINECONE_INDEX_NAME)
-    text_chunks = await get_text()
+    text_chunks = await get_text(knowledge_dir)
     embeddings = []
 
     for i, chunk in enumerate(text_chunks):

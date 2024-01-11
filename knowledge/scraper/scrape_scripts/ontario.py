@@ -1,8 +1,10 @@
 import asyncio
+import os
 import tempfile
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
+from celery import shared_task
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from playwright.async_api import async_playwright
@@ -75,7 +77,8 @@ async def process_category(page, category_url, file, processed_urls, title=""):
 
     if category_url.endswith('.pdf'):
         pdf_name = f"{sanitize_filename(title)}.pdf"
-        await download_pdf(category_url, pdf_name) 
+        pdf_path = f"ontario/{pdf_name}"
+        await download_pdf(category_url, pdf_path)
     else:
         logger.info(f"Processing category: {category_url}")
         content = await scrape_html_content(page, category_url)
@@ -114,8 +117,21 @@ async def scrape_ontario_site():
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
             # Save the temporary file to S3 within the 'scraped_data' folder
-            s3_file_name = "scraped_data/scraped_ontario_content.txt"
+            s3_file_name = "scraped_data/ontario/scraped_ontario_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
+        # Clean up the temporary file
+        try:
+            os.remove(temp_file_path)
+            logger.info(f"Temporary file {temp_file_path} deleted successfully.")
+        except Exception as e:
+            logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
+
 # asyncio.run(scrape_ontario_site())
+
+
+# @shared_task
+# def scrape_ontario_site():
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(scrape_ontario_site())

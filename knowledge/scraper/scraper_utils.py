@@ -4,6 +4,7 @@ from io import BytesIO
 import boto3
 import requests
 from botocore.exceptions import NoCredentialsError
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
@@ -18,9 +19,17 @@ def sanitize_filename(name):
 
 # Function to download PDF using Playwright and save to s3
 async def download_pdf(url, pdf_name):
+    # if settings.DEBUG:
+    #     headers = {
+    #         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    #     }
+    # else:
+    #     headers = {
+    #         'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
+    #     }
     try:
         # Send a GET request to the URL
-        response = requests.get(url)
+        response = requests.get(url)  # , headers)
 
         # Check if the request was successful
         if response.status_code == 200:
@@ -29,7 +38,9 @@ async def download_pdf(url, pdf_name):
 
             # Check if the file exists in S3 and get an available name
             if default_storage.exists(s3_pdf_name):
-                s3_pdf_name = default_storage.get_available_name(s3_pdf_name)
+                # s3_pdf_name = default_storage.get_available_name(s3_pdf_name)
+                logger.info(f"PDF {s3_pdf_name} already exists in S3. Skipping download.")
+                return False
 
             # Save the response content to S3
             default_storage.save(s3_pdf_name, ContentFile(BytesIO(response.content).read()))
@@ -59,6 +70,6 @@ def clear_s3_directory(bucket_name, directory_name):
         else:
             logger.info("No files found to delete.")
 
-        logger.info("Done with Delete operation on S3 bucket.")
+        logger.info(f"Done with Delete operation on {directory_name} in the S3 bucket with bucket name {bucket_name}.")
     except Exception as e:
         logger.error(f"Error during deletion: {e}")

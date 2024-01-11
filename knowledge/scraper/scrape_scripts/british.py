@@ -1,7 +1,9 @@
 import asyncio
+import os
 import tempfile
 
 from bs4 import BeautifulSoup
+from celery import shared_task
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from playwright.async_api import async_playwright
@@ -90,8 +92,21 @@ async def scrape_british_site():
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
             # Save the temporary file to S3 within the 'scraped_data' folder
-            s3_file_name = "scraped_data/scraped_british_content.txt"
+            s3_file_name = "scraped_data/british/scraped_british_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
+        # Clean up the temporary file
+        try:
+            os.remove(temp_file_path)
+            logger.info(f"Temporary file {temp_file_path} deleted successfully.")
+        except Exception as e:
+            logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
+
 # asyncio.run(scrape_british_site())
+            
+
+# @shared_task
+# def scrape_british_site():
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(scrape_british_site())

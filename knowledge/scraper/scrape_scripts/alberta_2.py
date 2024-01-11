@@ -1,8 +1,10 @@
 import asyncio
+import os
 import tempfile
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
+from celery import shared_task
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from playwright.async_api import async_playwright
@@ -26,7 +28,8 @@ async def scrape_main_content(page, url, scraped_urls, file):
 
     if url.endswith('.pdf'):
         pdf_name = sanitize_filename(url.split('/')[-1])
-        await download_pdf(url, pdf_name)
+        pdf_path = f"alberta_2/{pdf_name}"
+        await download_pdf(url, pdf_path)
     else:
         try:
             await page.goto(url, timeout=60000)
@@ -78,6 +81,21 @@ async def scrape_alberta_site_2():
         await browser.close()
 
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/scraped_content.txt"
+            s3_file_name = "scraped_data/alberta_2/scraped_alberta_2_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
+
+        # Clean up the temporary file
+        try:
+            os.remove(temp_file_path)
+            logger.info(f"Temporary file {temp_file_path} deleted successfully.")
+        except Exception as e:
+            logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
+
+# # Run the scraping function
+# asyncio.run(scrape_alberta_site_2())
+            
+# @shared_task
+# def scrape_alberta_site_2():
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(scrape_alberta_site_2())

@@ -28,8 +28,8 @@ urls_to_scrape = [
 ]
 
 # Function to scrape main content
-async def scrape_main_content(page, url, scraped_urls, file, depth=0):
-    if url in scraped_urls or depth > 3:
+async def scrape_main_content(page, url, scraped_urls, file):
+    if url in scraped_urls:
         return
     scraped_urls.add(url)
 
@@ -57,10 +57,10 @@ async def scrape_main_content(page, url, scraped_urls, file, depth=0):
             await scrape_nav_links(page, soup, url, scraped_urls, file)
         except Exception as e:
             logger.error(f"Error scraping content from {url}: {str(e)}")
-    await scrape_nav_links(page, soup, url, scraped_urls, file, depth + 1)
+    # await scrape_nav_links(page, soup, url, scraped_urls, file)
 
 # Function to scrape and follow navigation links
-async def scrape_nav_links(page, soup, base_url, scraped_urls, file, depth):
+async def scrape_nav_links(page, soup, base_url, scraped_urls, file):
     try:
         nav_links = soup.find_all('a', href=True)
         for a in nav_links:
@@ -69,7 +69,7 @@ async def scrape_nav_links(page, soup, base_url, scraped_urls, file, depth):
                 link = urljoin(base_url, link)
             if not link.startswith('http') or link in scraped_urls:
                 continue
-            await scrape_main_content(page, link, scraped_urls, file, depth + 1)
+            await scrape_main_content(page, link, scraped_urls, file)
     except Exception as e:
         logger.error(f"Error scraping navigation links from {base_url}: {str(e)}")
 
@@ -82,7 +82,7 @@ async def scrape_alberta_site_3():
         scraped_urls = set()
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.txt', encoding='utf-8') as temp_file:
             for base_url in urls_to_scrape:
-                await scrape_main_content(page, base_url, scraped_urls, temp_file, 0)
+                await scrape_main_content(page, base_url, scraped_urls, temp_file)
 
             temp_file_path = temp_file.name
 

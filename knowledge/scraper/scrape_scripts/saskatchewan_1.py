@@ -65,7 +65,7 @@ async def scrape_page_content(page, url):
         logger.error(f"Error scraping content from {url}: {str(e)}")
         return None
 
-async def process_page(page, url, file, processed_urls, depth, max_depth=4):
+async def process_page(page, url, file, processed_urls, depth, max_depth=10):
     # Process each page: scrape content, download PDFs, and process sub-pages
     if url in processed_urls or not url.startswith(base_url):
         return
@@ -82,7 +82,7 @@ async def process_page(page, url, file, processed_urls, depth, max_depth=4):
             file.write(f"URL: {url}\n{content}")
             file.write("------------------------------------------------------------\n\n")
 
-            if depth < max_depth:
+            if depth <= max_depth:
                 child_links = await extract_page_links(page)
                 for child_url in child_links:
                     await process_page(page, child_url, file, processed_urls, depth + 1, max_depth)
@@ -96,9 +96,9 @@ async def scrape_crns_site():
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, encoding='utf-8') as temp_file:
             navigation_links = await extract_navigation_links(page)
             for link in navigation_links:
-                await process_page(page, link['href'], temp_file, processed_urls)
+                await process_page(page, link['href'], temp_file, processed_urls, depth=0)
                 for sub_link in link.get('subLinks', []):
-                    await process_page(page, sub_link['href'], temp_file, processed_urls)
+                    await process_page(page, sub_link['href'], temp_file, processed_urls, depth=0)
 
             temp_file_path = temp_file.name  # Save the path to upload later
 

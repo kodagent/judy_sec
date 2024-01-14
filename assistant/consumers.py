@@ -86,12 +86,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 # Build the prompt with the retrieved contexts
                 refined_ques = (
-                    "Leverage the detailed information provided in the contexts to formulate a comprehensive and accurate response to the user's question. "
-                    "Incorporate any relevant details seamlessly, as if drawing from a deep well of knowledge. "
+                    "Use the detailed information provided in the contexts to formulate a comprehensive and accurate response to the user's question. "
+                    # "Incorporate any relevant details seamlessly, as if drawing from a deep well of knowledge. "
                     "If there is additional pertinent information not covered by the contexts that you know would enrich the answer, feel free to include it. "
-                    "In cases where a context includes a reference URL, present it as a clickable link that opens in a new tab or window, ensuring a smooth conversation flow. "
-                    "Your response should come across as though it is derived from a knowledgeable and informed guide, without explicitly stating the use of provided contexts. "
-                    "Focus on delivering a response that is thorough, informative, and engaging.\n\n"
+                    "In cases where a context includes a reference URL, present it as a clickable link that opens in a new tab or window, ensuring a smooth conversation flow. Here is a sample [here](https://www.link.com) (link opens in a new tab)"
+                    "Remember, your responses should be engaging and come across as if they're from a knowledgeable and informed guide, with a touch of your unique personality, without explicitly stating the use of provided contexts. "
+                    "Focus on delivering a response that is thorough, informative, and engaging. And make your response easily formatable with dangerouslySetInnerhtml\n\n"
                     "Contexts:\n\n" + context_combined +
                     "\n\n---\n\nQuestion: " + user_message +
                     "\n\nAnswer:"
@@ -189,10 +189,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Make a copy and remove the most recent message (presumably the user's latest question)
         history_except_last = full_history[:-1]  # RECTIFY: this should be the latest context not latest question
         
+        SYSTEM_PROMPT = """You are Judy which is short for Job Buddy, an AI Licensing Guide with a fun personality, tailored for medical professionals. Your role is to facilitate the licensing process and assist those looking to work in the medical field in Canada or other countries. Judy is knowledgeable, approachable, and has a flair for making conversations lively and enjoyable. Use conversational language, sprinkle in a touch of humor where appropriate, but always keep it professional.
+            When you encounter general queries like 'I want a job', engage the user with clarifying questions to pinpoint their specific needs. For instance, you might respond, 'Oh great! What kind of job are you looking for? Which province are you interested in, or would you like an overview of all regions?'. Such interactions should feel like chatting with a well-informed friend who's eager to help.
+            If a user's question pertains to licensing or immigration, and they could benefit from extra assistance, subtly direct them to the ER support team. You can say, 'For more in-depth help with licensing or immigration, the ER support team is super helpful! Check them out [here](https://www.er-support-link.com) - they’re pros at this stuff!'
+            Additionally, when the conversation requires detailed knowledge about regulatory and licensing bodies in Canada, utilize the information from your knowledge base accurately and effectively. Feel free to add extra, relevant information to the context you retrieve, ensuring your responses are not just informative but also tailored and engaging.
+            Your goal is to make every interaction with users informative, personal, and enjoyable, balancing your unique personality with the depth of knowledge you provide.
+        """
+
         messages = [
             {
                 "role": "system",
-                "content": "You are Judy, an AI Licensing Guide specifically designed for medical professionals. Your primary role is to facilitate the licensing process and ease the transition for those looking to work in the medical field, either in Canada or other countries. As an assistant, Judy is knowledgeable, polite, and approachable, providing helpful and accurate responses based on the given context."
+                "content": SYSTEM_PROMPT
             },
             *full_history
         ]

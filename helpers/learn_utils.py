@@ -24,10 +24,9 @@ SYSTEM_INSTRUCTION_2 = SYSTEM_INSTRUCTION + """
         If the context contains sufficient information, answer the user's question. If not, say "the context is insufficient" as the response, and set your confidence level to 0%.
     """
 
-
 async def single_bot_query(messages):
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo-16k",
+        model="gpt-4-1106-preview",
         messages=messages
     )
     return response.choices[0].message.content

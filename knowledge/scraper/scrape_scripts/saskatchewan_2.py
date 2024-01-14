@@ -37,6 +37,18 @@ async def scrape_dropdown_links(page):
 
     return dropdown_links
 
+async def extract_page_links(page):
+    # Extracts all links from the current page content
+    return await page.evaluate('''() => {
+        const links = [];
+        document.querySelectorAll('a').forEach(a => {
+            if (a.href) {
+                links.push(a.href);
+            }
+        });
+        return links;
+    }''')
+
 # Function to scrape the main content of a page
 async def scrape_page_content(page, url):
     try:
@@ -59,7 +71,7 @@ async def scrape_page_content(page, url):
         print(f"Error scraping content from {url}: {str(e)}")
         return None
 
-async def process_page(page, url, file, processed_urls):
+async def process_page(page, url, file, processed_urls, depth, max_depth=10):
     # Process each page: scrape content, download PDFs, and process sub-pages
     if url in processed_urls or not url.startswith(base_url):
         return
@@ -75,6 +87,11 @@ async def process_page(page, url, file, processed_urls):
         if content:
             file.write(f"URL: {url}\n{content}")
             file.write("------------------------------------------------------------\n\n")
+
+            if depth <= max_depth:
+                child_links = await extract_page_links(page)
+                for child_url in child_links:
+                    await process_page(page, child_url, file, processed_urls, depth + 1, max_depth)
 
 # Main scraping function
 async def scrape_clpns_site():

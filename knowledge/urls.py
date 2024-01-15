@@ -9,4 +9,4 @@ urlpatterns = [
 ]
 
 # review:
-# crns, alberta_2, alberta_3
+# sas2, alberta_3

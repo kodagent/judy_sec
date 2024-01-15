@@ -82,6 +82,7 @@ async def save_vec_to_database(knowledge_dir, first_db_opt=False):
 
 async def query_vec_database(query, num_results):
     start_time = time.time()
+    query = f"Across all Canadian provinces, regarding healthcare job regulations and opportunities: {query}"
     query_embedding = await create_embedding(query)
     
     pinecone_index = pinecone.Index(index_name=PINECONE_INDEX_NAME)

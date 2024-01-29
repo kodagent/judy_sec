@@ -5,13 +5,22 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from optimizers.cl_opt import run_cover_letter_optimization
+from optimizers.cl_opt import improve_cover_letter, optimize_cover_letter
 from optimizers.job_post import run_job_post_optimization
-from optimizers.models import (CoverLetter, JobPost, OptimizedContent,
-                               OptimizedResume, Resume)
-from optimizers.resume import run_resume_optimization
-from optimizers.serializers import (CoverLetterSerializer, JobPostSerializer,
-                                    ResumeSerializer)
+from optimizers.models import (
+    CoverLetter,
+    JobPost,
+    OptimizedJobPostContent,
+    OptimizedResume,
+    Resume,
+)
+
+# from optimizers.resume import run_resume_optimization
+from optimizers.serializers import (
+    CoverLetterSerializer,
+    JobPostSerializer,
+    ResumeSerializer,
+)
 
 
 class ResumeViewSet(viewsets.ModelViewSet):
@@ -47,22 +56,44 @@ class CoverLetterViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class ResumeOptimizationView(View):
+# class ResumeOptimizationView(View):
+#     """
+#     This view handles resume optimization. It does not interact with the database directly,
+#     hence does not use a serializer_class. Instead, it relies on custom utility functions.
+#     """
+
+#     serializer_class = None
+
+#     # def get(self, request, application_id, job_post_id, format=None):
+#     async def get(self, request, application_id, job_post_id, format=None):
+#         try:
+#             # Get the optimized content
+#             # return_data = run_resume_optimization(application_id, job_post_id)
+#             return_data = await run_resume_optimization(application_id, job_post_id)
+#             data = {
+#                 "success": "Optimization complete",
+#                 "optimized_content": return_data,
+#             }
+#             return JsonResponse(data)
+#         except Exception as e:
+#             return JsonResponse({"error": str(e)}, status=500)
+
+
+class CoverLetterImprovementView(View):
     """
-    This view handles resume optimization. It does not interact with the database directly,
+    This view handles cover letter improvement. It does not interact with the database directly,
     hence does not use a serializer_class. Instead, it relies on custom utility functions.
     """
+
     serializer_class = None
 
-    # def get(self, request, application_id, job_post_id, format=None):
-    async def get(self, request, application_id, job_post_id, format=None):
+    async def get(self, request, applicant_id, format=None):
         try:
             # Get the optimized content
-            # return_data = run_resume_optimization(application_id, job_post_id)
-            return_data = await run_resume_optimization(application_id, job_post_id)
+            pdf_url = await improve_cover_letter(applicant_id)
             data = {
-                "success": "Optimization complete",
-                "optimized_content": return_data
+                "success": "Improvement complete",
+                "improved_content": pdf_url,
             }
             return JsonResponse(data)
         except Exception as e:
@@ -74,17 +105,18 @@ class CoverLetterOptimizationView(View):
     This view handles cover letter optimization. It does not interact with the database directly,
     hence does not use a serializer_class. Instead, it relies on custom utility functions.
     """
+
     serializer_class = None
 
     # def get(self, request, application_id, job_post_id, format=None):
-    async def get(self, request, application_id, job_post_id, format=None):
+    async def get(self, request, applicant_id, job_post_id, format=None):
         try:
             # Get the optimized content
             # return_data = run_cover_letter_optimization(application_id, job_post_id)
-            return_data = await run_cover_letter_optimization(application_id, job_post_id)
+            return_data = await optimize_cover_letter(applicant_id, job_post_id)
             data = {
                 "success": "Optimization complete",
-                "optimized_content": return_data
+                "optimized_content": return_data,
             }
             return JsonResponse(data)
         except Exception as e:
@@ -96,28 +128,35 @@ class JobOptimizationView(APIView):
     This view handles job post optimization. It does not interact with the database directly,
     hence does not use a serializer_class. Instead, it relies on custom utility functions.
     """
+
     serializer_class = None
 
     def get(self, request, job_id, format=None):
-        feedback_only = request.query_params.get('feedback', 'false').lower() == 'true'
+        feedback_only = request.query_params.get("feedback", "false").lower() == "true"
 
         try:
             if feedback_only:
                 # Get only the feedback
                 content_feedback = run_job_post_optimization(job_id, feedback=True)
-                return Response({
-                    "success": "Feedback retrieval complete",
-                    "post_feedback": content_feedback
-                })
+                return Response(
+                    {
+                        "success": "Feedback retrieval complete",
+                        "post_feedback": content_feedback,
+                    }
+                )
             else:
                 # Get the optimized content
                 optimized_job_post_content = run_job_post_optimization(job_id)
-                return Response({
-                    "success": "Optimization complete",
-                    "optimized_content": optimized_job_post_content
-                })
+                return Response(
+                    {
+                        "success": "Optimization complete",
+                        "optimized_content": optimized_job_post_content,
+                    }
+                )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 # http://127.0.0.1:8000/api/optimizers/optimize-job-post/654194177b7c7c8236e8541f/

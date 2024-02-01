@@ -1,55 +1,77 @@
 from django.contrib import admin
 
-from optimizers.models import (Analysis, CoverLetter, JobPost,
-                               OptimizedContent, OptimizedResume, Resume,
-                               ResumeAnalysis)
+from .models import (
+    CoverLetter,
+    CoverLetterAnalysis,
+    JobPost,
+    JobPostAnalysis,
+    OptimizedCoverLetterContent,
+    OptimizedResumeContent,
+    Resume,
+    ResumeAnalysis,
+)
+
+
+# JobPost
+class JobPostAnalysisInline(admin.TabularInline):
+    model = JobPostAnalysis
+    extra = 0
 
 
 class JobPostAdmin(admin.ModelAdmin):
-    list_display = ['job_post_id', 'title', 'description', 'posted_at']
+    list_display = ("job_post_id", "posted_at")
+    search_fields = ("job_post_id",)
+    ordering = ("-posted_at",)
+    inlines = [JobPostAnalysisInline]
+
+
+# CoverLetter
+class CoverLetterAnalysisInline(admin.TabularInline):
+    model = CoverLetterAnalysis
+    extra = 0
 
 
 class CoverLetterAdmin(admin.ModelAdmin):
-    list_display = ['cover_letter_id', 'content', 'job_post', 'submitted_at']
+    list_display = ("cover_letter_id", "display_original_pdf", "display_improved_pdf")
+    search_fields = ("cover_letter_id",)
+
+    def display_original_pdf(self, obj):
+        return obj.original_pdf.url if obj.original_pdf else "No File"
+
+    display_original_pdf.short_description = "Original PDF"
+
+    def display_improved_pdf(self, obj):
+        return obj.general_improved_pdf.url if obj.general_improved_pdf else "No File"
+
+    display_improved_pdf.short_description = "Improved PDF"
+    inlines = [CoverLetterAnalysisInline]
 
 
-class AnalysisAdmin(admin.ModelAdmin):
-    list_display = [
-        'cover_letter', 'job_post', 'keyword_matches', 'readability_score',
-        'sentiment_score', 'tone_analysis', 'analyzed_at',
-    ]
-
-
-class OptimizedContentAdmin(admin.ModelAdmin):
-    list_display = [
-        'original_cover_letter', 'original_job_post', 'optimized_content', 'analysis', 
-        'optimized_at',
-    ]
+# Resume
+class ResumeAnalysisInline(admin.TabularInline):
+    model = ResumeAnalysis
+    extra = 0
 
 
 class ResumeAdmin(admin.ModelAdmin):
-    list_display = [
-        'resume_id', 'content', 'job_post', 'submitted_at',
-    ]
+    list_display = ("resume_id", "display_original_pdf", "display_improved_pdf")
+    search_fields = ("resume_id",)
+
+    def display_original_pdf(self, obj):
+        return obj.original_pdf.url if obj.original_pdf else "No File"
+
+    display_original_pdf.short_description = "Original PDF"
+
+    def display_improved_pdf(self, obj):
+        return obj.general_improved_pdf.url if obj.general_improved_pdf else "No File"
+
+    display_improved_pdf.short_description = "Improved PDF"
+    inlines = [ResumeAnalysisInline]
 
 
-class ResumeAnalysisAdmin(admin.ModelAdmin):
-    list_display = [
-        'resume', 'keyword_matches', 'complexity_score', 'readability_score',
-        'section_feedback', 'analyzed_at',
-    ]
-
-
-class OptimizedResumeAdmin(admin.ModelAdmin):
-    list_display = [
-        'original_resume', 'optimized_content', 'analysis', 'optimized_at',
-    ]
-
-
+# Register your models here
 admin.site.register(JobPost, JobPostAdmin)
 admin.site.register(CoverLetter, CoverLetterAdmin)
-admin.site.register(Analysis, AnalysisAdmin)
-admin.site.register(OptimizedContent, OptimizedContentAdmin)
+admin.site.register(OptimizedCoverLetterContent)
 admin.site.register(Resume, ResumeAdmin)
-admin.site.register(ResumeAnalysis, ResumeAnalysisAdmin)
-admin.site.register(OptimizedResume, OptimizedResumeAdmin)
+admin.site.register(OptimizedResumeContent)

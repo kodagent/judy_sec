@@ -14,12 +14,12 @@ async def get_resume_parser_instruction(section):
     return SYSTEM_INSTRUCTION
 
 
-def get_cover_letter_instruction(job_role):
-    SYSTEM_INSTRUCTION = f"""
-        You are a professional recruiter that helps individuals optimize their cover letters. \
-        Take a look at the content of this cover letter and optimize it to get the best result for this job role: {job_role}
-    """
-    return SYSTEM_INSTRUCTION
+# def get_cover_letter_instruction(job_role):
+#     SYSTEM_INSTRUCTION = f"""
+#         You are a professional recruiter that helps individuals optimize their cover letters. \
+#         Take a look at the content of this cover letter and optimize it to get the best result for this job role: {job_role}
+#     """
+#     return SYSTEM_INSTRUCTION
 
 
 def get_job_post_instruction(job_role):
@@ -29,72 +29,6 @@ def get_job_post_instruction(job_role):
     """
     return SYSTEM_INSTRUCTION
 
-
-resume_content = """
-DANIEL NWACHUKWU
-Email: contactugodaniels@gmail.com | Phone: +2347033588400 | Location: Yaba, Lagos
-
-SUMMARY
-Software Engineer with over 4 years of professional experience in developing and deploying innovative solutions, with a strong interest in Machine Learning and AI. Known for developing ML/AI-powered applications. Fluent in English, with excellent problem-solving skills and the ability to think outside the box.
-
-EXPERIENCE
-Gidaa | AI Developer                                    April 2023 - Present | Delaware, United States
-Engineered advanced recommendation system to tailor properties and mortgage plans to users on the platform thereby increasing customer satisfaction by 25%. 
-Led the development of a customer guide feature to simplify the mortgage application process for users and provide valuable information about the mortgage industry increasing ease of use by 40%.
-Created a risk assessment tool to categorize mortgage plan applicants based on spending and saving patterns increasing the candidate analysis process by 30%.
-
-Essential Recruit | AI Developer                    September 2023 - Present | Halifax, Canada
-Developed an AI application for job recommendations, to candidates using candidate data and preferences pushing up job acquisition rate by 60%.
-Developed AI tool for resume optimization, cover letters optimization, job post optimization, catering to over 500 candidates and recruiters.
-Developed virtual assistant to provide relocation guidance for candidates 
-Implemented AI note-taking plugin integratable for interview meetings. Used in over 10 interview calls weekly.
-
-Project School | Backend Developer                                            Feb 2023 | Lagos, Nigeria
-Improved server-side architecture and built reusable APIs, quickening the response times by 20%.
-Implemented API versioning, cutting down version mismatch errors by 25%.
-Enhanced data accuracy with data validation rules, reducing data entry errors by 10%.
-Created automated testing suites, increasing code coverage by 20% and reducing user-reported bugs by 15%.
-Collaborated with front-end developers, reducing page load times by 25% and improving user satisfaction by 15%.
-Ensured application security through robust protocols.
-
-DFX Gadgets Hub | Full Stack Developer                                  Sep 2022 | Lagos, Nigeria
-Boosted sales by over 75% on the Ecommerce platform and reduced support requests by 5%.
-Updated server-side architecture, resulting in a 15% reduction in page load times and a 10% increase in user retention.
-Improved API documentation and error handling, reducing support requests related to API usage by 20%.
-Expanded third-party integrations, resulting in a 50% increase in integrations for users.
-Integrated Stripe payment platform, increasing successful transactions by 10% and reducing support requests by 5%.
-Reduced the average response time for database queries by 20%, improving overall application performance.
-Enhanced security measures, resulting in a 30% increase in customer retention and a 20% increase in new customer acquisition.
-
-CyberMe Studio | Backend Developer           May 2022 – Sep 2022 | Riyadh, Saudi Arabia
-Developed a web scraper for Instagram data and a trading bot, resulting in a 25% increase in revenue.
-Designed algorithms for arbitrage detection in Centralized and Decentralized Exchanges, boosting profits by 30%. 
-Implemented data collation systems and predictive models to growing profits by 15%.
-
-EDUCATION
-Yaba College of Technology | Higher National Diploma (Metallurgical Engineering) | Dec 2018 | Yaba, Lagos
-
-TECHNICAL SKILLS 
-Python (Advanced), SQL (Advanced), React (Intermediate), Kotlin (Beginner)
-Machine Learning Libraries: TensorFlow (Advanced), Keras (Advanced), Scikit-Learn (Advanced)
-Cloud Technologies: AWS, GCP
-Web Development: Flask, Django
-Blockchain/Smart Contract Tools: Brownie, Ethers.js, Hardhat
-Data Analysis Libraries: NumPy, Pandas
-IDEs and Version Control: Google Colaboratory, Jupyter Notebooks, Pycharm, Visual Studio, Git
-
-CERTIFICATIONS 
-DeepLearning.AI TensorFlow Developer Specialization 
-Machine Learning, Object Localization with TensorFlow 
-Transfer Learning for NLP with TensorFlow 
-Advanced Deployment Scenarios with TensorFlow 
-Neural Networks and Deep Learning - AWS Machine Learning
-
-REFERENCES 
-Available upon request.
-
-LinkedIn Profile: https://www.linkedin.com/in/ugo-nwachukwu
-"""
 
 job_post_description = f"""
 Job Title: Staff Software Engineer (ML/AI) - Remote
@@ -220,49 +154,6 @@ contactugodaniels@gmail.com
 LinkedIn: https://www.linkedin.com/in/ugo-nwachukwu
 """
 
-job_post_content = f"""Job Title: Registered Nurse (RN) – Critical Care Unit
-
-Location: Sunshine Medical Center, Springfield, IL
-
-Job Type: Full-Time/Part-Time
-
-Salary: Competitive
-
-About Us:
-Sunshine Medical Center is a state-of-the-art healthcare facility dedicated to providing exceptional medical care to our community. Our team of highly skilled medical professionals is committed to delivering compassionate care and improving the health and wellness of our patients.
-
-Job Summary:
-We are seeking a dedicated and skilled Registered Nurse to join our Critical Care Unit. The ideal candidate will have a passion for nursing, a strong commitment to providing high-quality patient care, and excellent interpersonal skills.
-
-Responsibilities:
-
-Assess, plan, implement, and evaluate patient care plans in coordination with healthcare professionals.
-Monitor and record patient conditions, and report any changes to the physician.
-Administer medications and treatments as prescribed by physicians.
-Provide emotional support to patients and their families.
-Educate patients on preventive health care and disease management.
-Ensure compliance with healthcare regulations and safety standards.
-Participate in professional development and continuous education opportunities.
-Qualifications:
-
-Current state Registered Nurse License.
-Bachelor’s Degree in Nursing (BSN) preferred.
-Minimum of 2 years of nursing experience, preferably in a critical care setting.
-ACLS and BLS certification.
-Exceptional interpersonal and communication skills.
-Ability to work collaboratively in a fast-paced work environment.
-Benefits:
-
-Competitive salary with performance-based incentives.
-Comprehensive medical, dental, and vision insurance.
-Retirement savings plan with employer match.
-Professional development and continuing education opportunities.
-Generous paid time off (PTO) and holidays.
-How to Apply:
-Interested candidates are invited to submit their resume and cover letter online at www.sunshinemedicaljobs.com or email to careers@sunshinemedical.com by October 30, 2023. Please include the job title in the subject line of your email.
-
-We look forward to building a healthier community together!"""
-
 
 llm_config_test = {
     "functions": [
@@ -274,10 +165,10 @@ llm_config_test = {
                 "properties": {
                     "job_description": {
                         "type": "string",
-                        "description": "job description content"
+                        "description": "job description content",
                     },
                 },
-                "required": ["job_description"]
+                "required": ["job_description"],
             },
         },
         {
@@ -288,14 +179,14 @@ llm_config_test = {
                 "properties": {
                     "resume_text": {
                         "type": "string",
-                        "description": "content of the resume"
+                        "description": "content of the resume",
                     },
                     "job_description_keywords_section": {
                         "type": "string",
                         "description": "extracted skills, technologies, qualifications section text from job description content",
                     },
                 },
-                "required": ["resume_text", "job_description_keywords_section"]
+                "required": ["resume_text", "job_description_keywords_section"],
             },
         },
         {
@@ -306,10 +197,10 @@ llm_config_test = {
                 "properties": {
                     "resume_text": {
                         "type": "string",
-                        "description": "content of the resume"
+                        "description": "content of the resume",
                     },
                 },
-                "required": ["resume_text"]
+                "required": ["resume_text"],
             },
         },
         # {
@@ -336,12 +227,9 @@ llm_config_test = {
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "resume_text": {
-                        "type": "string",
-                        "description": "Resume content"
-                    },
+                    "resume_text": {"type": "string", "description": "Resume content"},
                 },
-                "required": ["resume_text"]
+                "required": ["resume_text"],
             },
         },
         {
@@ -352,14 +240,14 @@ llm_config_test = {
                 "properties": {
                     "section_name": {
                         "type": "string",
-                        "description": "name of section"
+                        "description": "name of section",
                     },
                     "section_content": {
                         "type": "string",
-                        "description": "content of section"
+                        "description": "content of section",
                     },
                 },
-                "required": ["section_name", "section_content"]
+                "required": ["section_name", "section_content"],
             },
         },
         {
@@ -370,22 +258,27 @@ llm_config_test = {
                 "properties": {
                     "matching_keywords": {
                         "type": "string",
-                        "description": "list of matching keywords separated by commas"
+                        "description": "list of matching keywords separated by commas",
                     },
                     "complexity_score": {
                         "type": "integer",
-                        "description": "the complexity score of the resume content"
+                        "description": "the complexity score of the resume content",
                     },
                     "readability_score": {
                         "type": "integer",
-                        "description": "the readability score of the resume content"
+                        "description": "the readability score of the resume content",
                     },
                     "section_feedback": {
                         "type": "object",
-                        "description": "a dictionary of section names as keys and section content as values. This dictionary is gotten from using the resume_parser function"
+                        "description": "a dictionary of section names as keys and section content as values. This dictionary is gotten from using the resume_parser function",
                     },
                 },
-                "required": ["matching_keywords", "complexity_score", "readability_score", "section_feedback"]
+                "required": [
+                    "matching_keywords",
+                    "complexity_score",
+                    "readability_score",
+                    "section_feedback",
+                ],
             },
         },
         {
@@ -396,18 +289,18 @@ llm_config_test = {
                 "properties": {
                     "resume_content": {
                         "type": "string",
-                        "description": "the content of the resume"
+                        "description": "the content of the resume",
                     },
                     "job_description": {
                         "type": "string",
-                        "description": "the job description content"
+                        "description": "the job description content",
                     },
                     "resume_feedback": {
                         "type": "string",
-                        "description": "the feedback on the resume"
+                        "description": "the feedback on the resume",
                     },
                 },
-                "required": ["resume_content", "job_description", "resume_feedback"]
+                "required": ["resume_content", "job_description", "resume_feedback"],
             },
         },
         # {
@@ -454,7 +347,7 @@ llm_config_test = {
         #     },
         # },
     ]
-}  
+}
 
 llm_config_general_optimizer = {
     "functions": [
@@ -466,18 +359,18 @@ llm_config_general_optimizer = {
                 "properties": {
                     "resume_content": {
                         "type": "string",
-                        "description": "the content of the resume"
+                        "description": "the content of the resume",
                     },
                     "job_description": {
                         "type": "string",
-                        "description": "the job description content"
+                        "description": "the job description content",
                     },
                     "resume_feedback": {
                         "type": "string",
-                        "description": "the feedback on the resume"
+                        "description": "the feedback on the resume",
                     },
                 },
-                "required": ["resume_content", "job_description", "resume_feedback"]
+                "required": ["resume_content", "job_description", "resume_feedback"],
             },
         },
     ]

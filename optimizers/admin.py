@@ -6,8 +6,7 @@ from .models import (
     JobPost,
     JobPostAnalysis,
     OptimizedCoverLetterContent,
-    OptimizedJobPostContent,
-    OptimizedResume,
+    OptimizedResumeContent,
     Resume,
     ResumeAnalysis,
 )
@@ -20,8 +19,8 @@ class JobPostAnalysisInline(admin.TabularInline):
 
 
 class JobPostAdmin(admin.ModelAdmin):
-    list_display = ("job_post_id", "title", "posted_at")
-    search_fields = ("job_post_id", "title")
+    list_display = ("job_post_id", "posted_at")
+    search_fields = ("job_post_id",)
     ordering = ("-posted_at",)
     inlines = [JobPostAnalysisInline]
 
@@ -72,8 +71,7 @@ class ResumeAdmin(admin.ModelAdmin):
 
 # Register your models here
 admin.site.register(JobPost, JobPostAdmin)
-admin.site.register(OptimizedJobPostContent)
 admin.site.register(CoverLetter, CoverLetterAdmin)
 admin.site.register(OptimizedCoverLetterContent)
 admin.site.register(Resume, ResumeAdmin)
-admin.site.register(OptimizedResume)
+admin.site.register(OptimizedResumeContent)

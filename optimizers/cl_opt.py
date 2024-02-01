@@ -14,11 +14,11 @@ from optimizers.models import (
     OptimizedCoverLetterContent,
 )
 from optimizers.pdf_gen import generate_formatted_pdf
+from optimizers.samples import default_cover_letter
 from optimizers.utils import (
     Polarity,
     Readablity,
     check_grammar_and_spelling,
-    default_cover_letter,
     improve_doc,
     optimize_doc,
     review_tone,
@@ -97,7 +97,6 @@ async def optimize_cover_letter(applicant_id, job_post_id):
     optimized_cover_letter_update = sync_to_async(
         OptimizedCoverLetterContent.objects.update_or_create, thread_sensitive=True
     )
-
     cover_letter_instance = await sync_to_async(CoverLetter.objects.get)(
         cover_letter_id=applicant_id
     )

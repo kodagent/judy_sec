@@ -159,7 +159,7 @@ doc_style_l = ParagraphStyle(
 
 
 # Function to create and style a header with an HRFlowable and Spacer
-def add_header_with_line(doc, story, header_text, style):
+def add_header_with_line(doc=None, story=None, header_text=None, style=header_style):
     story.append(Paragraph(header_text, style))
     story.append(HRFlowable(width=doc.width))
     story.append(Spacer(1, 6))
@@ -201,9 +201,11 @@ def create_bullet_list(items, bullet_style):
 
 # Function to add contact information
 def add_contact_info(story, contact_dict):
-    middle_contact_details = (
-        f"{contact_dict['email']} | {contact_dict['phone']} | {contact_dict['address']}"
-    )
+    email = contact_dict.get("email", "")
+    phone = contact_dict.get("phone", "")
+    address_dict = contact_dict.get("address", "")
+
+    middle_contact_details = f"{email} | {phone} | {address_dict}"
 
     # Append the name with a special style
     story.append(Paragraph(contact_dict["name"], name_style))
@@ -219,9 +221,8 @@ def add_contact_info(story, contact_dict):
 
 
 # Function to add contact information
-def add_summary(story, summary_text):
-    # Add a header
-    add_header_with_line("SUMMARY", header_style)
+def add_summary(doc=None, story=None, summary_text=None):
+    add_header_with_line(doc=doc, story=story, header_text="SUMMARY")
 
     # Append the name with a special style
     story.append(Paragraph(summary_text, summary_style))
@@ -229,8 +230,7 @@ def add_summary(story, summary_text):
 
 # Function to add experiences
 def add_experiences(doc, story, exp_dict):
-    # Add a header
-    add_header_with_line("EXPERIENCES", header_style)
+    add_header_with_line(doc=doc, story=story, header_text="EXPERIENCES")
 
     for exp_value in exp_dict.values():
         company_name = Paragraph(exp_value["company_name"], company_name_style)
@@ -253,8 +253,7 @@ def add_experiences(doc, story, exp_dict):
 
 # Function to add education
 def add_education(doc, story, edu_list):
-    # Add a header
-    add_header_with_line("EDUCATION", header_style)
+    add_header_with_line(doc=doc, story=story, header_text="EDUCATION")
 
     column_width_large = doc.width * 0.75
     column_width_small = doc.width * 0.25
@@ -275,18 +274,16 @@ def add_education(doc, story, edu_list):
 
 
 # Function to add skills
-def add_skills(story, skill_list):
-    # Add a header
-    add_header_with_line("SKILLS", header_style)
+def add_skills(doc=None, story=None, skill_list=None):
+    add_header_with_line(doc=doc, story=story, header_text="SKILLS")
 
     skills_string = ", ".join(skill_list)
     story.append(Paragraph(skills_string, summary_style))
 
 
 # Function to add certifications
-def add_certifications(doc, story, cert_list):
-    # Add a header
-    add_header_with_line("CERTIFICATIONS", header_style)
+def add_certifications(doc=None, story=None, cert_list=None):
+    add_header_with_line(doc=doc, story=story, header_text="CERTIFICATIONS")
 
     column_width_large = doc.width * 0.75
     column_width_small = doc.width * 0.25
@@ -324,17 +321,21 @@ def generate_resume_pdf(improved_resume_dict, filename):
     story = []
 
     # Add sections to the document
-    add_contact_info(story, improved_resume_dict["contact"])
+    add_contact_info(story, improved_resume_dict.get("contact", ""))
     story.append(Spacer(1, 8))  # Add some space before the next section
-    add_summary(story, improved_resume_dict["summary"])
+    add_summary(
+        doc=doc,
+        story=story,
+        summary_text=improved_resume_dict.get("summary", ""),
+    )
     story.append(Spacer(1, 8))
-    add_experiences(doc, story, improved_resume_dict["experiences"])
+    add_experiences(doc, story, improved_resume_dict.get("experiences", ""))
     story.append(Spacer(1, 8))
-    add_education(doc, story, improved_resume_dict["education"])
+    add_education(doc, story, improved_resume_dict.get("education", ""))
     story.append(Spacer(1, 8))
-    add_skills(story, improved_resume_dict["skills"])
+    add_skills(doc, story, improved_resume_dict.get("skills", ""))
     story.append(Spacer(1, 8))
-    add_certifications(doc, story, improved_resume_dict["certifications"])
+    add_certifications(doc, story, improved_resume_dict.get("certifications", ""))
     # Optionally add projects if required
     # story.append(Spacer(1, 8))
     # add_projects(story, improved_resume_dict["projects"])

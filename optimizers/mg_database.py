@@ -150,7 +150,7 @@ async def get_job_post_content_async(job_id):
         logger.error(f"An error occurred: {e}")
 
 
-def get_job_post_content(job_id):
+async def get_job_post_content(job_id):
     try:
         job = db.jobs.find_one(
             {

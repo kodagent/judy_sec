@@ -154,49 +154,6 @@ contactugodaniels@gmail.com
 LinkedIn: https://www.linkedin.com/in/ugo-nwachukwu
 """
 
-job_post_content = f"""Job Title: Registered Nurse (RN) – Critical Care Unit
-
-Location: Sunshine Medical Center, Springfield, IL
-
-Job Type: Full-Time/Part-Time
-
-Salary: Competitive
-
-About Us:
-Sunshine Medical Center is a state-of-the-art healthcare facility dedicated to providing exceptional medical care to our community. Our team of highly skilled medical professionals is committed to delivering compassionate care and improving the health and wellness of our patients.
-
-Job Summary:
-We are seeking a dedicated and skilled Registered Nurse to join our Critical Care Unit. The ideal candidate will have a passion for nursing, a strong commitment to providing high-quality patient care, and excellent interpersonal skills.
-
-Responsibilities:
-
-Assess, plan, implement, and evaluate patient care plans in coordination with healthcare professionals.
-Monitor and record patient conditions, and report any changes to the physician.
-Administer medications and treatments as prescribed by physicians.
-Provide emotional support to patients and their families.
-Educate patients on preventive health care and disease management.
-Ensure compliance with healthcare regulations and safety standards.
-Participate in professional development and continuous education opportunities.
-Qualifications:
-
-Current state Registered Nurse License.
-Bachelor’s Degree in Nursing (BSN) preferred.
-Minimum of 2 years of nursing experience, preferably in a critical care setting.
-ACLS and BLS certification.
-Exceptional interpersonal and communication skills.
-Ability to work collaboratively in a fast-paced work environment.
-Benefits:
-
-Competitive salary with performance-based incentives.
-Comprehensive medical, dental, and vision insurance.
-Retirement savings plan with employer match.
-Professional development and continuing education opportunities.
-Generous paid time off (PTO) and holidays.
-How to Apply:
-Interested candidates are invited to submit their resume and cover letter online at www.sunshinemedicaljobs.com or email to careers@sunshinemedical.com by October 30, 2023. Please include the job title in the subject line of your email.
-
-We look forward to building a healthier community together!"""
-
 
 llm_config_test = {
     "functions": [

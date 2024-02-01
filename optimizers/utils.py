@@ -159,32 +159,6 @@ job_post_keywords_example_structure = json.dumps(
 )
 
 
-async def get_openai_response(INSTRUCTION, content, functions=None, function_name=None):
-    """
-    This function is used for getting responses when there is a need for function call otherwise use get_chat_response
-    """
-    messages = [
-        {"role": SYSTEM_ROLE, "content": INSTRUCTION},
-        {"role": USER_ROLE, "content": content},
-    ]
-
-    if functions:
-        response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
-            messages=messages,
-            functions=functions,
-            function_call={"name": function_name},
-        )
-        return response["choices"][0]["message"]
-    else:
-        response = client.chat.completions.create(
-            model="gpt-4-1106-preview",
-            messages=messages,
-        )
-
-        return response.choices[0].message.content
-
-
 async def get_chat_response(instruction, message, doc_type=None):
     start_time = time.time()
 
@@ -204,7 +178,7 @@ async def get_chat_response(instruction, message, doc_type=None):
         elif doc_type == "R":
             structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_example_structure}\n\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
         elif doc_type == "R-sections-fb":
-            structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_fb_example_structure}"
+            structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_fb_example_structure}\n\nDo not miss any key value pair when creating the JSON data."
 
         messages = [
             {"role": "system", "content": structured_instruction},
@@ -346,6 +320,34 @@ async def resume_sections_feedback(doc_text):
     return final_feedback
 
 
+async def get_job_post_feedback(doc_text):
+    start_time = time.time()
+
+    logger.info(f"----------------------- JOB POST REVIEW -----------------------")
+
+    instruction = f"""
+    As an experienced recruiter, review the following job post and provide detailed feedback analysis to help improve and optimize it.
+
+    Use these considerations below in your review:
+    - Enhancing SEO (Search Engine Optimization):
+    - Keyword Optimization
+    - Industry-Specific Terminology
+
+    - Improving Clarity of Job Descriptions:
+    - Clear Job Titles
+    - Concise Job Duties
+    - Required Qualifications
+    """
+
+    job_post_feedback = await get_chat_response(instruction, doc_text)
+
+    logger.info(f"{job_post_feedback}")
+
+    total = time.time() - start_time
+    logger.info(f"Job Post Review Time: {total}")
+    return job_post_feedback
+
+
 async def improve_doc(doc_type, doc_content, doc_feedback):
     start_time = time.time()
 
@@ -367,6 +369,40 @@ async def improve_doc(doc_type, doc_content, doc_feedback):
         optimized_content = await get_chat_response(instruction, content, doc_type="CL")
     elif doc_type == "resume":
         optimized_content = await get_chat_response(instruction, content, doc_type="R")
+    elif doc_type == "job post":
+        optimized_content = await get_chat_response(instruction, content)
+
+    logger.info(
+        f"----------------------- FULL {doc_type.upper()} FEEDBACK -----------------------"
+    )
+    logger.info(f"{optimized_content}")
+
+    total = time.time() - start_time
+    logger.info(f"Improved Doc Response Time: {total}")
+    return optimized_content
+
+
+async def customize_doc(doc_type, doc_content, custom_instruction):
+    start_time = time.time()
+
+    logger.info("----------------------- OPTIMIZATION -----------------------")
+
+    instruction = f"""
+    Make adjustments to the {doc_type} using the adjustment instruction provided. 
+    """
+
+    content = f"""
+    ORIGINAL CONTENT:
+    {doc_content}
+
+    {doc_type.upper()} ADJUSTMENT INSTRUCTION:
+    {custom_instruction}
+    """
+
+    if doc_type == "cover letter":
+        optimized_content = await get_chat_response(instruction, content, doc_type="CL")
+    elif doc_type == "resume":
+        optimized_content = await get_chat_response(instruction, content, doc_type="R")
 
     logger.info(
         f"----------------------- FULL {doc_type.upper()} FEEDBACK -----------------------"
@@ -379,42 +415,6 @@ async def improve_doc(doc_type, doc_content, doc_feedback):
 
 
 # =========================== PROP-UP FUNCTIONS ===========================
-
-
-# =========================== RESUME FUNCTIONS ===========================
-# async def parse_rresume():
-#     logger.info("----------------------- RESUME PARSING -----------------------")
-
-#     instruction = f"""
-#         You are a helper assistant that helps with detailed resume parsing. Extract and return only the text in the resume. Do not write any additional text\
-#         Take a look at the content of this resume and extract the contents of section: {section}. if section doesn't exist return None
-#     """
-
-#     content = f"""
-#     ORIGINAL CONTENT:
-#     {doc_content}
-
-#     {doc_type.upper()} FEEDBACK:
-#     {doc_feedback}
-#     """
-#     get_chat_response
-#     pass
-
-
-# use this when optimizing JP and save result to DB
-async def extract_keywords(job_description):
-    instruction = f"""Identify and list the keywords in the skills, technologies, qualifications sections that are relevant to the job. Job \
-        description: {job_description}. Do not write any other text except from the keywords seperated with commas ",". Keywords are usually just one or two words.
-    """
-
-    keywords = await get_chat_response(
-        instruction, job_description, doc_type="JP-keywords"
-    )
-    keywords = keywords.split(", ")
-    return keywords
-
-
-# =========================== RESUME FUNCTIONS ===========================
 
 
 # =========================== TAILORING FUNCTIONS ===========================
@@ -477,95 +477,3 @@ async def optimize_doc(doc_type, doc_text, job_description):
 
 
 # =========================== TAILORING FUNCTIONS ===========================
-
-
-# =========================== DOCUMENT SAMPLES ===========================
-default_cover_letter = """
-Dear Hiring Manager,
-
-I am thrilled to apply for the Registered Nurse (RN) - Acute Care position at St. Mary's Health Centre. With my strong background in acute care nursing and a deep commitment to patient-focused care, I am eager to contribute to your team's esteemed reputation for empathetic service and clinical excellence. 
-As a dedicated RN with a Bachelor of Science in Nursing from the Toronto School of Health Sciences and over three years of experience in high-pressure acute care settings, I have honed a robust skill set that aligns with the demands of St. Mary's fast-paced environment. My current role at Good Health Hospital in Toronto has equipped me to excel in situations that require swift decision-making, precise assessments, and the execution of intricate treatment plans.
-
-Key achievements in my professional journey include:
-1. Effective management of patients with diverse and complex health conditions, ensuring compassionate and proficient treatment.
-2. Demonstrating a strong ability to work collaboratively with cross-functional health care teams to enhance patient care plans and outcomes.
-3. Advocacy for patient education, ensuring comprehensible discharge processes, which has notably decreased readmission rates.
-4. Maintaining diligent documentation practices, thereby enhancing the accuracy and reliability of patient records.
-
-The holistic approach to health care at St. Mary's Health Centre and its emphasis on continuous professional development resonate with me. The prospect of working within an institution that offers a supportive work environment and values staff well-being is highly appealing to me.
-
-Attached is my resume for your review. I am eager to discuss how my clinical expertise and personal ethos can align with the noble mission of St. Mary's Health Centre. Please feel free to contact me at your earliest convenience by phone at (647) 555-0198 or via email at emily.johnson@fakemail.com.
-
-Thank you for considering my application. I am confident in my ability to make a meaningful contribution to your distinguished team and am excited about the opportunity to bring my dedication and skills to your institution.
-
-Warm regards,
-Emily Johnson 
-"""
-
-
-default_resume = """
-DANIEL NWACHUKWU
-Email: contactugodaniels@gmail.com | Phone: +2347033588400 | Location: Yaba, Lagos
-
-SUMMARY
-Software Engineer with over 4 years of professional experience in developing and deploying innovative solutions, with a strong interest in Machine Learning and AI. Known for developing ML/AI-powered applications. Fluent in English, with excellent problem-solving skills and the ability to think outside the box.
-
-EXPERIENCE
-Gidaa | AI Developer                                    April 2023 - Present | Delaware, United States
-Engineered advanced recommendation system to tailor properties and mortgage plans to users on the platform thereby increasing customer satisfaction by 25%. 
-Led the development of a customer guide feature to simplify the mortgage application process for users and provide valuable information about the mortgage industry increasing ease of use by 40%.
-Created a risk assessment tool to categorize mortgage plan applicants based on spending and saving patterns increasing the candidate analysis process by 30%.
-
-Essential Recruit | AI Developer                    September 2023 - Present | Halifax, Canada
-Developed an AI application for job recommendations, to candidates using candidate data and preferences pushing up job acquisition rate by 60%.
-Developed AI tool for resume optimization, cover letters optimization, job post optimization, catering to over 500 candidates and recruiters.
-Developed virtual assistant to provide relocation guidance for candidates 
-Implemented AI note-taking plugin integratable for interview meetings. Used in over 10 interview calls weekly.
-
-Project School | Backend Developer                                            Feb 2023 | Lagos, Nigeria
-Improved server-side architecture and built reusable APIs, quickening the response times by 20%.
-Implemented API versioning, cutting down version mismatch errors by 25%.
-Enhanced data accuracy with data validation rules, reducing data entry errors by 10%.
-Created automated testing suites, increasing code coverage by 20% and reducing user-reported bugs by 15%.
-Collaborated with front-end developers, reducing page load times by 25% and improving user satisfaction by 15%.
-Ensured application security through robust protocols.
-
-DFX Gadgets Hub | Full Stack Developer                                  Sep 2022 | Lagos, Nigeria
-Boosted sales by over 75% on the Ecommerce platform and reduced support requests by 5%.
-Updated server-side architecture, resulting in a 15% reduction in page load times and a 10% increase in user retention.
-Improved API documentation and error handling, reducing support requests related to API usage by 20%.
-Expanded third-party integrations, resulting in a 50% increase in integrations for users.
-Integrated Stripe payment platform, increasing successful transactions by 10% and reducing support requests by 5%.
-Reduced the average response time for database queries by 20%, improving overall application performance.
-Enhanced security measures, resulting in a 30% increase in customer retention and a 20% increase in new customer acquisition.
-
-CyberMe Studio | Backend Developer           May 2022 – Sep 2022 | Riyadh, Saudi Arabia
-Developed a web scraper for Instagram data and a trading bot, resulting in a 25% increase in revenue.
-Designed algorithms for arbitrage detection in Centralized and Decentralized Exchanges, boosting profits by 30%. 
-Implemented data collation systems and predictive models to growing profits by 15%.
-
-EDUCATION
-Yaba College of Technology | Higher National Diploma (Metallurgical Engineering) | Dec 2018 | Yaba, Lagos
-
-TECHNICAL SKILLS 
-Python (Advanced), SQL (Advanced), React (Intermediate), Kotlin (Beginner)
-Machine Learning Libraries: TensorFlow (Advanced), Keras (Advanced), Scikit-Learn (Advanced)
-Cloud Technologies: AWS, GCP
-Web Development: Flask, Django
-Blockchain/Smart Contract Tools: Brownie, Ethers.js, Hardhat
-Data Analysis Libraries: NumPy, Pandas
-IDEs and Version Control: Google Colaboratory, Jupyter Notebooks, Pycharm, Visual Studio, Git
-
-CERTIFICATIONS 
-DeepLearning.AI TensorFlow Developer Specialization 
-Machine Learning, Object Localization with TensorFlow 
-Transfer Learning for NLP with TensorFlow 
-Advanced Deployment Scenarios with TensorFlow 
-Neural Networks and Deep Learning - AWS Machine Learning
-
-REFERENCES 
-Available upon request.
-
-LinkedIn Profile: https://www.linkedin.com/in/ugo-nwachukwu
-"""
-# =========================== DOCUMENT SAMPLES ===========================

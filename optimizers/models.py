@@ -23,12 +23,12 @@ class JobPost(models.Model):
     job_post_id = models.CharField(
         max_length=255, unique=True
     )  # ID from the Recruiting Platform
-    title = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField()
+    original_content = models.TextField(null=True, blank=True)
+    optimized_content = models.TextField(null=True, blank=True)
     posted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
+        return self.job_post_id
 
 
 class JobPostAnalysis(AnalysisBase):
@@ -36,18 +36,6 @@ class JobPostAnalysis(AnalysisBase):
 
     def __str__(self):
         return f"Analysis for Job Post ID {self.job_post.job_post_id}"
-
-
-class OptimizedJobPostContent(models.Model):
-    job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE)
-    optimized_content = models.TextField()
-    analysis = models.ForeignKey(
-        JobPostAnalysis, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    optimized_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Optimized Content for Job Post ID {self.job_post.job_post_id}"
 
 
 class CoverLetter(DocBase):
@@ -112,7 +100,7 @@ class ResumeAnalysis(AnalysisBase):
         return f"Analysis for Resume ID {self.resume.resume_id}"
 
 
-class OptimizedResume(models.Model):
+class OptimizedResumeContent(models.Model):
     resume = models.ForeignKey(Resume, on_delete=models.CASCADE)
     optimized_content = models.TextField()
     optimized_pdf = models.FileField(
@@ -123,6 +111,9 @@ class OptimizedResume(models.Model):
     )  # Indicates if the content is tailored to a specific job post
     analysis = models.ForeignKey(
         ResumeAnalysis, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    job_post = models.ForeignKey(
+        JobPost, on_delete=models.CASCADE, null=True, blank=True
     )
     optimized_at = models.DateTimeField(auto_now_add=True)
 

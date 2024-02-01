@@ -1,4 +1,4 @@
-cover_letter_sample = """
+default_cover_letter = """
 Dear Hiring Manager,
 
 I am thrilled to apply for the Registered Nurse (RN) - Acute Care position at St. Mary's Health Centre. With my strong background in acute care nursing and a deep commitment to patient-focused care, I am eager to contribute to your team's esteemed reputation for empathetic service and clinical excellence. 
@@ -18,6 +18,103 @@ Thank you for considering my application. I am confident in my ability to make a
 
 Warm regards,
 Emily Johnson 
+"""
+
+default_resume = """
+SARAH JOHNSON
+Email: sjohnsonnurse@example.com | Phone: +1-555-123-4567 | Location: Seattle, Washington
+
+SUMMARY
+Registered Nurse with over 5 years of experience in providing high-quality patient care in hospital settings. Skilled in emergency care, patient education, and health advocacy. Demonstrated ability to work effectively in fast-paced environments. Committed to improving patient health outcomes through compassionate care and medical expertise. Fluent in English and Spanish, with strong communication skills and a focus on patient-centered care.
+
+EXPERIENCE
+Seattle General Hospital | Registered Nurse June 2019 - Present | Seattle, Washington
+
+Provided critical care for patients in the emergency department, reducing patient wait times by 20%.
+Led a team of nurses to implement a new patient triage system, increasing department efficiency by 30%.
+Developed and conducted patient education programs on chronic disease management, improving patient compliance by 40%.
+Harborview Medical Center | Staff Nurse January 2017 - June 2019 | Seattle, Washington
+
+Managed care for patients with diverse medical conditions in a 30-bed unit.
+Collaborated with interdisciplinary teams to develop patient care plans, enhancing patient satisfaction scores by 25%.
+Initiated a peer mentoring program for new nurses, reducing turnover rate by 15%.
+Rainier Valley Community Clinic | Community Health Nurse July 2015 - December 2016 | Seattle, Washington
+
+Provided primary care and health education to underserved populations.
+Coordinated community health fairs, resulting in a 50% increase in clinic visits and health screenings.
+Implemented a vaccination outreach program, increasing vaccination rates in the community by 35%.
+EDUCATION
+University of Washington | Bachelor of Science in Nursing (BSN) | June 2015 | Seattle, Washington
+
+TECHNICAL SKILLS
+
+Nursing Software: Epic, Cerner, Meditech
+Medical Equipment: IV pumps, EKG machines, Ventilators
+Basic Life Support (BLS), Advanced Cardiac Life Support (ACLS)
+Electronic Health Records (EHRs)
+CERTIFICATIONS
+
+Registered Nurse (RN) License, State of Washington
+Certified Emergency Nurse (CEN)
+Trauma Nursing Core Course (TNCC)
+Pediatric Advanced Life Support (PALS)
+PROFESSIONAL MEMBERSHIPS
+
+American Nurses Association (ANA)
+Emergency Nurses Association (ENA)
+VOLUNTEERING
+
+Volunteer Nurse, Seattle Free Clinic
+Health Educator, Local High Schools
+REFERENCES
+Available upon request.
+
+LinkedIn Profile: https://www.linkedin.com/in/sarah-johnson-rn
+"""
+
+default_job_post = f"""
+Job Title: Registered Nurse (RN) – Critical Care Unit
+
+Location: Sunshine Medical Center, Springfield, IL
+
+Job Type: Full-Time/Part-Time
+
+Salary: Competitive
+
+About Us:
+Sunshine Medical Center is a state-of-the-art healthcare facility dedicated to providing exceptional medical care to our community. Our team of highly skilled medical professionals is committed to delivering compassionate care and improving the health and wellness of our patients.
+
+Job Summary:
+We are seeking a dedicated and skilled Registered Nurse to join our Critical Care Unit. The ideal candidate will have a passion for nursing, a strong commitment to providing high-quality patient care, and excellent interpersonal skills.
+
+Responsibilities:
+
+Assess, plan, implement, and evaluate patient care plans in coordination with healthcare professionals.
+Monitor and record patient conditions, and report any changes to the physician.
+Administer medications and treatments as prescribed by physicians.
+Provide emotional support to patients and their families.
+Educate patients on preventive health care and disease management.
+Ensure compliance with healthcare regulations and safety standards.
+Participate in professional development and continuous education opportunities.
+Qualifications:
+
+Current state Registered Nurse License.
+Bachelor’s Degree in Nursing (BSN) preferred.
+Minimum of 2 years of nursing experience, preferably in a critical care setting.
+ACLS and BLS certification.
+Exceptional interpersonal and communication skills.
+Ability to work collaboratively in a fast-paced work environment.
+Benefits:
+
+Competitive salary with performance-based incentives.
+Comprehensive medical, dental, and vision insurance.
+Retirement savings plan with employer match.
+Professional development and continuing education opportunities.
+Generous paid time off (PTO) and holidays.
+How to Apply:
+Interested candidates are invited to submit their resume and cover letter online at www.sunshinemedicaljobs.com or email to careers@sunshinemedical.com by October 30, 2023. Please include the job title in the subject line of your email.
+
+We look forward to building a healthier community together!
 """
 
 # ===================== COVER LETTER =====================

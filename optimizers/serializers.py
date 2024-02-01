@@ -6,8 +6,7 @@ from .models import (
     JobPost,
     JobPostAnalysis,
     OptimizedCoverLetterContent,
-    OptimizedJobPostContent,
-    OptimizedResume,
+    OptimizedResumeContent,
     Resume,
     ResumeAnalysis,
 )
@@ -42,13 +41,6 @@ class CoverLetterAnalysisSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-# Optimized Content
-class OptimizedJobPostContentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OptimizedJobPostContent
-        fields = "__all__"
-
-
 class OptimizedCoverLetterContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = OptimizedCoverLetterContent
@@ -72,5 +64,5 @@ class ResumeAnalysisSerializer(serializers.ModelSerializer):
 
 class OptimizedResumeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OptimizedResume
+        model = OptimizedResumeContent
         fields = "__all__"

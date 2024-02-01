@@ -17,11 +17,11 @@ urlpatterns = [
         views.ResumeImprovementView.as_view(),
         name="improve_resume",
     ),
-    # path(
-    #     "optimize-resume/<str:application_id>/<str:job_post_id>/",
-    #     views.ResumeOptimizationView.as_view(),
-    #     name="resume_optimization",
-    # ),
+    path(
+        "optimize-resume/<str:applicant_id>/<str:job_post_id>/",
+        views.ResumeOptimizationView.as_view(),
+        name="resume_optimization",
+    ),
     path(
         "improve-cover-letter/<str:applicant_id>/",
         views.CoverLetterImprovementView.as_view(),

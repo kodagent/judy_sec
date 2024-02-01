@@ -91,9 +91,6 @@ async def improve_cover_letter(candidate_id):
 async def optimize_cover_letter(applicant_id, job_post_id):
     start_time = time.time()
 
-    job_post_update = sync_to_async(
-        JobPost.objects.update_or_create, thread_sensitive=True
-    )
     optimized_cover_letter_update = sync_to_async(
         OptimizedCoverLetterContent.objects.update_or_create, thread_sensitive=True
     )
@@ -101,16 +98,14 @@ async def optimize_cover_letter(applicant_id, job_post_id):
         cover_letter_id=applicant_id
     )
 
-    job_post_content = await get_job_post_content_async(job_post_id)
-    job_post_instance, job_post_created = await job_post_update(
-        job_post_id=job_post_id,
-        defaults={"description": job_post_content},
+    job_post_instance = await sync_to_async(JobPost.objects.get)(
+        job_post_id=job_post_id
     )
 
     optimized_content = await optimize_doc(
         doc_type="cover letter",
         doc_text=cover_letter_instance.general_improved_content,
-        job_description=job_post_content,
+        job_description=job_post_instance.optimized_content,
     )
 
     pdf = generate_formatted_pdf(

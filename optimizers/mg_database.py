@@ -83,16 +83,22 @@ async def get_resume_content(application_id):  # , owner_id):
         logger.error(f"An error occurred: {e}")
 
 
-async def get_cover_letter_content(applicant_id):  # , owner_id):
-    # USE OWNER ID INSTEAD
+async def get_doc_content(
+    owner_id, doc_type=None
+):  # owner id rather candidate id because this could function for candidates as well as recruiters
     try:
         applicant = db.applications.find_one(
             {
-                "_id": ObjectId(applicant_id),
-                # "owner_id": ObjectId(owner_id)
+                # "_id": ObjectId(applicant_id),
+                "owner_id": ObjectId(owner_id)
             }
         )
-        public_url = applicant["IELTSDocument"] if applicant else None
+        if doc_type == "CL":
+            public_url = applicant["IELTSDocument"] if applicant else None
+        elif doc_type == "R":
+            public_url = applicant["IELTSDocument"] if applicant else None
+        elif doc_type == "JP":
+            public_url = applicant["IELTSDocument"] if applicant else None
 
         # Load PDF data
         loader = OnlinePDFLoader(public_url)

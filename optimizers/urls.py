@@ -12,6 +12,11 @@ router.register(r"cover_letters", CoverLetterViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
+    path(
+        "improve-resume/<str:applicant_id>/",
+        views.ResumeImprovementView.as_view(),
+        name="improve_resume",
+    ),
     # path(
     #     "optimize-resume/<str:application_id>/<str:job_post_id>/",
     #     views.ResumeOptimizationView.as_view(),

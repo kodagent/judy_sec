@@ -18,6 +18,147 @@ SYSTEM_ROLE = "system"
 USER_ROLE = "user"
 
 
+cover_letter_example_structure = json.dumps(
+    {
+        # "sender_info": {
+        #     "name": "Sender Name",
+        #     "address": "Sender Address",
+        #     "phone": "Sender Phone",
+        #     "email": "Sender Email",
+        #     "date": "Letter Date",
+        # },
+        # "recipient_info": {
+        #     "name": "Recipient Name",
+        #     "address": "Recipient Address",
+        # },
+        "body": "Letter Body excluding concluding greetings like 'Warm regards,\nFull Name'",
+        "concluding_greetings": "\n\nWarm regards,\nFull Name'",
+    },
+    indent=2,
+)
+
+
+resume_fb_example_structure = json.dumps(
+    {
+        "contact": "Feedback on contact section",
+        "summary": "Feedback on summary section",
+        "experiences": {
+            "experience_1": "Feedback on first experience section",
+            "experience_2": "Feedback on second experience section",
+            "experience_3": "Feedback on third experience section",
+            # Additional education entries can be added here
+        },
+        "education": [
+            "Feedback on first education section",
+            # Additional education entries can be added here
+        ],
+        "skills": "Feedback on skills section",
+        "certifications": [
+            "Feedback on certifications section",
+            # Additional certifications can be listed here
+        ],
+        # "projects": [
+        #     "Feedback on projects section",
+        #     # Additional projects can be listed here
+        # ],
+        "references": [
+            "Feedback on references section",
+            # Additional references can be added here
+        ],
+    },
+    indent=2,
+)
+
+
+resume_example_structure = json.dumps(
+    {
+        "contact": {
+            "name": "Sender Name",
+            "address": "Sender Address",
+            "phone": "Sender Phone",
+            "email": "Sender Email",
+            "linkedIn": "LinkedIn Profile url (if available)",
+        },
+        "summary": "Resume Executive Summary",
+        "experiences": {
+            "experience_1": {
+                "company_name": "Name of company worked for",
+                "job_role": "Job Position",
+                "start_date": "Start date of job",
+                "end_date": "End date of job if available",
+                "location": "Location of the company",
+                "job_description": [
+                    "First Description of Job Responsibilities and Achievements",
+                    "Second Description of Job Responsibilities and Achievements",
+                    "Third Description of Job Responsibilities and Achievements",
+                    # Additional descriptions can be added here
+                ],
+            },
+            "experience_2": {
+                "job_title": "Job Position",
+                "start_date": "Start date of job",
+                "end_date": "End date of job if available",
+                "job_description": "Description of Job Responsibilities and Achievements",
+            },
+            "experience_3": {
+                "job_title": "Job Position",
+                "start_date": "Start date of job",
+                "end_date": "End date of job if available",
+                "job_description": "Description of Job Responsibilities and Achievements",
+            },
+        },
+        "education": [
+            {
+                "institution": "Educational Institution",
+                "degree": "Degree Obtained",
+                "end_date": "End Date",
+                "location": "Location of institution",
+                "details": "Details about the Course or Achievements if available",
+            },
+            # Additional education entries can be added here
+        ],
+        "skills": [
+            "Skill 1",
+            "Skill 2",
+            # Additional skills can be listed here
+        ],
+        "certifications": [
+            {
+                "title": "Certification Title",
+                "issuing_organization": "Issuing Organization",
+                "date_obtained": "Date Obtained (if applicable)",
+                "validity_period": "Validity Period (if applicable)",
+            },
+            # Additional certifications can be listed here
+        ],
+        # "projects": [
+        #     {
+        #         "project_title": "Project Title",
+        #         "duration": "Project Duration",
+        #         "description": "Project Description",
+        #         "technologies_used": ["Technology 1", "Technology 2"],
+        #     },
+        #     # Additional projects can be listed here
+        # ],
+        "references": [
+            {
+                "referee_name": "Referee Name",
+                "relationship": "Relationship to the Referee",
+                "contact_information": "Referee Contact Information",
+            },
+            # Additional references can be added here
+        ],
+    },
+    indent=2,
+)
+
+
+job_post_keywords_example_structure = json.dumps(
+    {"keywords": "List of keywords"},
+    indent=2,
+)
+
+
 async def get_openai_response(INSTRUCTION, content, functions=None, function_name=None):
     """
     This function is used for getting responses when there is a need for function call otherwise use get_chat_response
@@ -57,29 +198,13 @@ async def get_chat_response(instruction, message, doc_type=None):
 
     response = chat(messages).content
 
-    if doc_type == "CL":
-        # Example of the desired JSON structure provided in the instruction
-        example_structure = json.dumps(
-            {
-                # "sender_info": {
-                #     "name": "Sender Name",
-                #     "address": "Sender Address",
-                #     "phone": "Sender Phone",
-                #     "email": "Sender Email",
-                #     "date": "Letter Date",
-                # },
-                # "recipient_info": {
-                #     "name": "Recipient Name",
-                #     "address": "Recipient Address",
-                # },
-                "body": "Letter Body",
-                "concluding_greetings": "\n\nWarm regards,\nFull Name'",
-            },
-            indent=2,
-        )
-
-        # Structured instruction asking the model to format the response similarly
-        structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{example_structure}\n\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
+    if doc_type:
+        if doc_type == "CL":
+            structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{cover_letter_example_structure}\n\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
+        elif doc_type == "R":
+            structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_example_structure}\n\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
+        elif doc_type == "R-sections-fb":
+            structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_fb_example_structure}"
 
         messages = [
             {"role": "system", "content": structured_instruction},
@@ -130,20 +255,6 @@ class Readablity:
         return feedback
 
 
-async def check_grammar_and_spelling(text):
-    logger.info(
-        f"----------------------- GRAMMAR & SPELLING CORRECTIONS -----------------------"
-    )
-
-    spell = SpellChecker()
-    misspelled = spell.unknown(text.split())
-    corrections = {word: spell.correction(word) for word in misspelled}
-
-    logger.info(f"{corrections}")
-
-    return corrections
-
-
 class Polarity:
     def __init__(self, text):
         self.text = text
@@ -174,6 +285,20 @@ class Polarity:
         return feedback
 
 
+async def check_grammar_and_spelling(text):
+    logger.info(
+        f"----------------------- GRAMMAR & SPELLING CORRECTIONS -----------------------"
+    )
+
+    spell = SpellChecker()
+    misspelled = spell.unknown(text.split())
+    corrections = {word: spell.correction(word) for word in misspelled}
+
+    logger.info(f"{corrections}")
+
+    return corrections
+
+
 async def review_tone(doc_type, text):
     start_time = time.time()
 
@@ -196,26 +321,29 @@ async def review_tone(doc_type, text):
     return final_feedback
 
 
-async def get_general_feedback_text(
-    readability_feedback,
-    polarity_feedback,
-    tone_feedback,
-):
+async def resume_sections_feedback(doc_text):
     start_time = time.time()
 
-    logger.info(f"----------------------- FEEDBACK -----------------------")
-    feedback = readability_feedback
+    logger.info(
+        f"----------------------- RESUME SECTIONS REVIEW -----------------------"
+    )
 
-    feedback += f"\n\n{polarity_feedback}"
+    instruction = f"""
+    You are a professional recruiter. Review each resume section based on professionalism, assertiveness, compassion and impact where necessary and provide constructive feedback to help in improving the resume:
+    """
 
-    feedback += f"\n\n{tone_feedback}"
+    resume_feedback = await get_chat_response(
+        instruction, doc_text, doc_type="R-sections-fb"
+    )
 
-    # logger.info(f"{feedback}")
+    feedback_title = "RESUME Review:\n"
+    final_feedback = feedback_title + json.dumps(resume_feedback)
+
+    logger.info(f"{final_feedback}")
 
     total = time.time() - start_time
-    logger.info(f"Final Feedback Collation Time: {total}")
-
-    return feedback
+    logger.info(f"Resume Review Response Time: {total}")
+    return final_feedback
 
 
 async def improve_doc(doc_type, doc_content, doc_feedback):
@@ -234,6 +362,7 @@ async def improve_doc(doc_type, doc_content, doc_feedback):
     {doc_type.upper()} FEEDBACK:
     {doc_feedback}
     """
+
     if doc_type == "cover letter":
         optimized_content = await get_chat_response(instruction, content, doc_type="CL")
     elif doc_type == "resume":
@@ -242,41 +371,89 @@ async def improve_doc(doc_type, doc_content, doc_feedback):
     logger.info(
         f"----------------------- FULL {doc_type.upper()} FEEDBACK -----------------------"
     )
-    # logger.info(f"{optimized_content}")
+    logger.info(f"{optimized_content}")
 
     total = time.time() - start_time
-    logger.info(f"Improve Doc Response Time: {total}")
+    logger.info(f"Improved Doc Response Time: {total}")
     return optimized_content
 
 
 # =========================== PROP-UP FUNCTIONS ===========================
 
 
+# =========================== RESUME FUNCTIONS ===========================
+# async def parse_rresume():
+#     logger.info("----------------------- RESUME PARSING -----------------------")
+
+#     instruction = f"""
+#         You are a helper assistant that helps with detailed resume parsing. Extract and return only the text in the resume. Do not write any additional text\
+#         Take a look at the content of this resume and extract the contents of section: {section}. if section doesn't exist return None
+#     """
+
+#     content = f"""
+#     ORIGINAL CONTENT:
+#     {doc_content}
+
+#     {doc_type.upper()} FEEDBACK:
+#     {doc_feedback}
+#     """
+#     get_chat_response
+#     pass
+
+
+# use this when optimizing JP and save result to DB
+async def extract_keywords(job_description):
+    instruction = f"""Identify and list the keywords in the skills, technologies, qualifications sections that are relevant to the job. Job \
+        description: {job_description}. Do not write any other text except from the keywords seperated with commas ",". Keywords are usually just one or two words.
+    """
+
+    keywords = await get_chat_response(
+        instruction, job_description, doc_type="JP-keywords"
+    )
+    keywords = keywords.split(", ")
+    return keywords
+
+
+# =========================== RESUME FUNCTIONS ===========================
+
+
 # =========================== TAILORING FUNCTIONS ===========================
-async def match_keywords_func(doc_text, job_description):
+async def keyword_analysis1(doc_text_1, doc_text_2):
     # Configure CountVectorizer to convert text to lowercase
     vectorizer = CountVectorizer(lowercase=True)
 
-    # Fit the vectorizer to the job description to extract keywords
-    vectorizer.fit([job_description])
-    job_keywords = vectorizer.get_feature_names_out()
+    # Fit the vectorizer to the second doc to extract keywords. E.g Job description
+    vectorizer.fit([doc_text_2])
+    doc_text_2_keywords = vectorizer.get_feature_names_out()
 
-    # Tokenize the cover letter text to ensure accurate matching
-    doc_text_words = set(doc_text.lower().split())
+    # Tokenize the first text text to ensure accurate matching. E.g Resume
+    doc_text_1_words = set(doc_text_1.lower().split())
 
-    # Find the intersection of job keywords and cover letter words
-    matched_keywords = list(doc_text_words.intersection(job_keywords))
+    # Find the intersection of extracted keywords and doc text words
+    matched_keywords = list(doc_text_1_words.intersection(doc_text_2_keywords))
 
     # Optionally, calculate a matching score
-    matching_score = len(matched_keywords) / len(job_keywords)
+    matching_score = len(matched_keywords) / len(doc_text_2_keywords)
 
     return matched_keywords, matching_score
+
+
+# Might not be required
+# async def keyword_analysis1(doc_text, job_keywords):
+#     matching_keywords = []
+#     for keyword in job_keywords:
+#         if keyword.lower() in doc_text.lower():
+#             matching_keywords.append(keyword)
+
+#     matching_score = len(matching_keywords) / len(job_keywords)
+#     return matching_keywords, matching_score
 
 
 async def optimize_doc(doc_type, doc_text, job_description):
     logger.info("----------------------- OPTIMIZATION -----------------------")
     instruction = f"""
-    Please provide an optimized version of the {doc_type} by Tailor this {doc_type} to fit job post.
+        You are a professional recruiter that helps individuals optimize their {doc_type}. \
+        Please provide an optimized version of the {doc_type} by tailoring it to fit job post.
     """
 
     content = f"""
@@ -287,7 +464,10 @@ async def optimize_doc(doc_type, doc_text, job_description):
     {job_description}
     """
 
-    optimized_content = await get_chat_response(instruction, content)
+    if doc_type == "cover letter":
+        optimized_content = await get_chat_response(instruction, content, doc_type="CL")
+    elif doc_type == "resume":
+        optimized_content = await get_chat_response(instruction, content, doc_type="R")
 
     logger.info(
         f"----------------------- {doc_type.upper()} TAILORED -----------------------"
@@ -320,5 +500,72 @@ Thank you for considering my application. I am confident in my ability to make a
 
 Warm regards,
 Emily Johnson 
+"""
+
+
+default_resume = """
+DANIEL NWACHUKWU
+Email: contactugodaniels@gmail.com | Phone: +2347033588400 | Location: Yaba, Lagos
+
+SUMMARY
+Software Engineer with over 4 years of professional experience in developing and deploying innovative solutions, with a strong interest in Machine Learning and AI. Known for developing ML/AI-powered applications. Fluent in English, with excellent problem-solving skills and the ability to think outside the box.
+
+EXPERIENCE
+Gidaa | AI Developer                                    April 2023 - Present | Delaware, United States
+Engineered advanced recommendation system to tailor properties and mortgage plans to users on the platform thereby increasing customer satisfaction by 25%. 
+Led the development of a customer guide feature to simplify the mortgage application process for users and provide valuable information about the mortgage industry increasing ease of use by 40%.
+Created a risk assessment tool to categorize mortgage plan applicants based on spending and saving patterns increasing the candidate analysis process by 30%.
+
+Essential Recruit | AI Developer                    September 2023 - Present | Halifax, Canada
+Developed an AI application for job recommendations, to candidates using candidate data and preferences pushing up job acquisition rate by 60%.
+Developed AI tool for resume optimization, cover letters optimization, job post optimization, catering to over 500 candidates and recruiters.
+Developed virtual assistant to provide relocation guidance for candidates 
+Implemented AI note-taking plugin integratable for interview meetings. Used in over 10 interview calls weekly.
+
+Project School | Backend Developer                                            Feb 2023 | Lagos, Nigeria
+Improved server-side architecture and built reusable APIs, quickening the response times by 20%.
+Implemented API versioning, cutting down version mismatch errors by 25%.
+Enhanced data accuracy with data validation rules, reducing data entry errors by 10%.
+Created automated testing suites, increasing code coverage by 20% and reducing user-reported bugs by 15%.
+Collaborated with front-end developers, reducing page load times by 25% and improving user satisfaction by 15%.
+Ensured application security through robust protocols.
+
+DFX Gadgets Hub | Full Stack Developer                                  Sep 2022 | Lagos, Nigeria
+Boosted sales by over 75% on the Ecommerce platform and reduced support requests by 5%.
+Updated server-side architecture, resulting in a 15% reduction in page load times and a 10% increase in user retention.
+Improved API documentation and error handling, reducing support requests related to API usage by 20%.
+Expanded third-party integrations, resulting in a 50% increase in integrations for users.
+Integrated Stripe payment platform, increasing successful transactions by 10% and reducing support requests by 5%.
+Reduced the average response time for database queries by 20%, improving overall application performance.
+Enhanced security measures, resulting in a 30% increase in customer retention and a 20% increase in new customer acquisition.
+
+CyberMe Studio | Backend Developer           May 2022 – Sep 2022 | Riyadh, Saudi Arabia
+Developed a web scraper for Instagram data and a trading bot, resulting in a 25% increase in revenue.
+Designed algorithms for arbitrage detection in Centralized and Decentralized Exchanges, boosting profits by 30%. 
+Implemented data collation systems and predictive models to growing profits by 15%.
+
+EDUCATION
+Yaba College of Technology | Higher National Diploma (Metallurgical Engineering) | Dec 2018 | Yaba, Lagos
+
+TECHNICAL SKILLS 
+Python (Advanced), SQL (Advanced), React (Intermediate), Kotlin (Beginner)
+Machine Learning Libraries: TensorFlow (Advanced), Keras (Advanced), Scikit-Learn (Advanced)
+Cloud Technologies: AWS, GCP
+Web Development: Flask, Django
+Blockchain/Smart Contract Tools: Brownie, Ethers.js, Hardhat
+Data Analysis Libraries: NumPy, Pandas
+IDEs and Version Control: Google Colaboratory, Jupyter Notebooks, Pycharm, Visual Studio, Git
+
+CERTIFICATIONS 
+DeepLearning.AI TensorFlow Developer Specialization 
+Machine Learning, Object Localization with TensorFlow 
+Transfer Learning for NLP with TensorFlow 
+Advanced Deployment Scenarios with TensorFlow 
+Neural Networks and Deep Learning - AWS Machine Learning
+
+REFERENCES 
+Available upon request.
+
+LinkedIn Profile: https://www.linkedin.com/in/ugo-nwachukwu
 """
 # =========================== DOCUMENT SAMPLES ===========================

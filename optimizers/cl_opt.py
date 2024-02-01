@@ -3,12 +3,10 @@ import time
 
 from asgiref.sync import sync_to_async
 from django.conf import settings
-from django.shortcuts import get_object_or_404
-from sklearn.feature_extraction.text import CountVectorizer
 
 from chatbackend.configs.logging_config import configure_logger
-from helpers.optimizer_utils import cover_letter, job_post_description
-from optimizers.mg_database import get_cover_letter_content, get_job_post_content_async
+from helpers.optimizer_utils import cover_letter
+from optimizers.mg_database import get_doc_content, get_job_post_content_async
 from optimizers.models import (
     CoverLetter,
     CoverLetterAnalysis,
@@ -21,9 +19,7 @@ from optimizers.utils import (
     Readablity,
     check_grammar_and_spelling,
     default_cover_letter,
-    get_general_feedback_text,
     improve_doc,
-    match_keywords_func,
     optimize_doc,
     review_tone,
 )
@@ -35,9 +31,9 @@ USER_ROLE = "user"
 
 
 async def improve_cover_letter(candidate_id):
-    start_time = time.time()
     try:
-        # cover_letter_content = await get_cover_letter_content(candidate_id)
+        start_time = time.time()
+        # cover_letter_content = await get_doc_content(candidate_id, doc_type="CL")
         cover_letter_content = default_cover_letter
 
         cover_letter_update = sync_to_async(
@@ -57,11 +53,13 @@ async def improve_cover_letter(candidate_id):
             doc_type="cover letter", text=cover_letter_content
         )
 
-        cover_letter_feedback = await get_general_feedback_text(
+        feedbacks = [
             readability_feedback,
             polarity_feedback,
             tone_feedback,
-        )
+        ]
+
+        cover_letter_feedback = "\n\n".join(feedbacks)
 
         improved_content = await improve_doc(
             doc_type="cover letter",
@@ -93,11 +91,21 @@ async def improve_cover_letter(candidate_id):
 async def optimize_cover_letter(applicant_id, job_post_id):
     start_time = time.time()
 
-    cover_letter_instance = CoverLetter.objects.get(cover_letter_id=applicant_id)
+    job_post_update = sync_to_async(
+        JobPost.objects.update_or_create, thread_sensitive=True
+    )
+    optimized_cover_letter_update = sync_to_async(
+        OptimizedCoverLetterContent.objects.update_or_create, thread_sensitive=True
+    )
+
+    cover_letter_instance = await sync_to_async(CoverLetter.objects.get)(
+        cover_letter_id=applicant_id
+    )
 
     job_post_content = await get_job_post_content_async(job_post_id)
-    job_post_instance = JobPost.objects.get_or_create(
-        job_post_id=job_post_id, description=job_post_content
+    job_post_instance, job_post_created = await job_post_update(
+        job_post_id=job_post_id,
+        defaults={"description": job_post_content},
     )
 
     optimized_content = await optimize_doc(
@@ -106,18 +114,23 @@ async def optimize_cover_letter(applicant_id, job_post_id):
         job_description=job_post_content,
     )
 
-    pdf = generate_formatted_pdf(optimized_content, filename="Optimized Cover Letter")
-
-    optimized_content_instance = OptimizedCoverLetterContent(
-        cover_letter=cover_letter_instance,
-        optimized_content=optimized_content,
-        optimized_pdf=pdf,
-        is_tailored=True,
-        job_post=job_post_instance,
+    pdf = generate_formatted_pdf(
+        optimized_content, filename="Optimized Cover Letter.pdf", doc_type="CL"
     )
+
+    optimized_content_instance, created = await optimized_cover_letter_update(
+        cover_letter=cover_letter_instance,
+        defaults={
+            "optimized_content": optimized_content,
+            "optimized_pdf": pdf,
+            "is_tailored": True,
+            "job_post": job_post_instance,
+        },
+    )
+
     total = time.time() - start_time
-    logger.info("Total time taken: ", total)
-    return "OPTIMIZED"
+    logger.info(f"Total time taken: {total}")
+    return optimized_content_instance.optimized_pdf.url
 
 
 def run_main():
@@ -143,3 +156,5 @@ def run_main():
     },
     "body": "Dear Hiring Manager,\n\nI am thrilled to apply for the Registered Nurse (RN) - Acute Care position at St. Mary's Health Centre. With my strong background in acute care nursing and commitment to patient-focused care, I am ready to contribute to your team's reputation for empathetic service and clinical excellence. \nAs a dedicated RN with a Bachelor of Science in Nursing and over three years of experience in high-pressure acute care, I possess a robust skill set ideal for St. Mary's fast-paced environment. My role at Good Health Hospital in Toronto has prepared me for quick decision-making, precise assessments, and implementing complex treatment plans.\n\nSome key achievements include:\n- Managing patients with diverse and complex health conditions, providing compassionate and proficient care.\n- Collaborating with cross-functional health care teams to improve patient care plans and outcomes.\n- Advocating for patient education to ensure clear discharge processes, contributing to reduced readmission rates.\n- Enhancing patient record accuracy and reliability through diligent documentation.\n\nSt. Mary's Health Centre's holistic approach and commitment to professional development strongly resonate with me. The prospect of working in a supportive environment that values staff well-being is highly appealing.\n\nPlease find my resume enclosed for your review. I look forward to discussing how my clinical expertise and personal values align with St. Mary's mission. You can reach me at (647) 555-0198 or emily.johnson@fakemail.com.\n\nThank you for considering my application. I am eager to bring my dedication and skills to your esteemed team.\n\nWarm regards,\nEmily Johnson\nEnclosure: Resume",
 }
+
+# https://judy-dev.essentialrecruit-api.com/api/optimizers/optimize-cover-letter/63a6af57677ed8a015025a62/65aa68567bd03fff776fbfcf/

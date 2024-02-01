@@ -14,6 +14,7 @@ from optimizers.models import (
     OptimizedResume,
     Resume,
 )
+from optimizers.resume_opt import improve_resume
 
 # from optimizers.resume import run_resume_optimization
 from optimizers.serializers import (
@@ -54,6 +55,27 @@ class CoverLetterViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+
+class ResumeImprovementView(View):
+    """
+    This view handles resume improvement. It does not interact with the database directly,
+    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    """
+
+    serializer_class = None
+
+    async def get(self, request, applicant_id, format=None):
+        try:
+            # Get the optimized content
+            pdf_url = await improve_resume(applicant_id)
+            data = {
+                "success": "Improvement complete",
+                "improved_content": pdf_url,
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
 
 # class ResumeOptimizationView(View):

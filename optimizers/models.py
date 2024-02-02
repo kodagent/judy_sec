@@ -106,9 +106,7 @@ class OptimizedResumeContent(models.Model):
     optimized_pdf = models.FileField(
         upload_to="resumes/optimized/", null=True, blank=True
     )
-    is_tailored = models.BooleanField(
-        default=False
-    )  # Indicates if the content is tailored to a specific job post
+    is_tailored = models.BooleanField(default=False)
     analysis = models.ForeignKey(
         ResumeAnalysis, on_delete=models.SET_NULL, null=True, blank=True
     )

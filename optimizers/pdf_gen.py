@@ -201,14 +201,16 @@ def create_bullet_list(items, bullet_style):
 
 # Function to add contact information
 def add_contact_info(story, contact_dict):
-    email = contact_dict.get("email", "")
-    phone = contact_dict.get("phone", "")
-    address_dict = contact_dict.get("address", "")
+    name_text = contact_dict.get("name", "")
+    email_text = contact_dict.get("email", "")
+    phone_text = contact_dict.get("phone", "")
+    address_text = contact_dict.get("address", "")
+    linkedIn_url = contact_dict.get("linkedIn", "")
 
-    middle_contact_details = f"{email} | {phone} | {address_dict}"
+    middle_contact_details = f"{email_text} | {phone_text} | {address_text}"
 
     # Append the name with a special style
-    story.append(Paragraph(contact_dict["name"], name_style))
+    story.append(Paragraph(name_text, name_style))
 
     # Append the address
     story.append(Paragraph(middle_contact_details, contact_details_style))
@@ -216,7 +218,7 @@ def add_contact_info(story, contact_dict):
     # Append the LinkedIn URL
     if "linkedIn" in contact_dict:
         # Use Paragraph to allow link styling
-        linkedin = f'<link href="{contact_dict["linkedIn"]}" color="blue">{contact_dict["linkedIn"]}</link>'
+        linkedin = f'<link href="{linkedIn_url}" color="blue">{linkedIn_url}</link>'
         story.append(Paragraph(linkedin, linkedin_style))
 
 

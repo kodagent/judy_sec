@@ -2,6 +2,7 @@ import asyncio
 import time
 
 from asgiref.sync import sync_to_async
+from celery import shared_task
 from django.conf import settings
 
 from chatbackend.configs.logging_config import configure_logger
@@ -30,6 +31,7 @@ SYSTEM_ROLE = "system"
 USER_ROLE = "user"
 
 
+@shared_task
 async def get_default_cover_letter(candidate_id):
     try:
         resume_content = await get_doc_content(candidate_id, doc_type="R")
@@ -64,6 +66,7 @@ async def get_default_cover_letter(candidate_id):
     return cover_letter_instance.original_pdf.url
 
 
+@shared_task
 async def improve_cover_letter(candidate_id):
     try:
         start_time = time.time()
@@ -124,6 +127,7 @@ async def improve_cover_letter(candidate_id):
     return cover_letter_instance.general_improved_pdf.url
 
 
+@shared_task
 async def optimize_cover_letter(applicant_id, job_post_id):
     start_time = time.time()
 
@@ -163,6 +167,7 @@ async def optimize_cover_letter(applicant_id, job_post_id):
     return optimized_content_instance.optimized_pdf.url
 
 
+@shared_task
 async def customize_improved_cover_letter(candidate_id, custom_instruction):
     start_time = time.time()
 
@@ -199,6 +204,7 @@ async def customize_improved_cover_letter(candidate_id, custom_instruction):
     return cover_letter_instance.general_improved_pdf.url
 
 
+@shared_task
 async def customize_optimized_cover_letter(
     applicant_id, job_post_id, custom_instruction
 ):
@@ -226,7 +232,7 @@ async def customize_optimized_cover_letter(
     )
 
     pdf = generate_formatted_pdf(
-        improved_content,
+        customized_content,
         filename="Customized Optimized Cover Letter.pdf",
         doc_type="CL",
     )

@@ -1,6 +1,7 @@
 import time
 
 from asgiref.sync import sync_to_async
+from celery import shared_task
 
 from chatbackend.configs.logging_config import configure_logger
 from helpers.optimizer_utils import get_job_post_instruction
@@ -23,6 +24,7 @@ SYSTEM_ROLE = "system"
 USER_ROLE = "user"
 
 
+@shared_task
 async def improve_resume(candidate_id):
     try:
         start_time = time.time()
@@ -69,6 +71,7 @@ async def improve_resume(candidate_id):
     return resume_instance.general_improved_pdf.url
 
 
+@shared_task
 async def customize_improved_resume(candidate_id, custom_instruction):
     start_time = time.time()
     resume_update = sync_to_async(
@@ -103,6 +106,7 @@ async def customize_improved_resume(candidate_id, custom_instruction):
     return resume_instance.general_improved_pdf.url
 
 
+@shared_task
 async def customize_optimized_resume(applicant_id, job_post_id, custom_instruction):
     start_time = time.time()
 
@@ -126,24 +130,25 @@ async def customize_optimized_resume(applicant_id, job_post_id, custom_instructi
     )
 
     pdf = generate_resume_pdf(
-        optimized_content, filename="Customized Optimized Resume.pdf"
+        customized_content, filename="Customized Optimized Resume.pdf"
     )
 
-    # optimized_content_instance, created = await optimized_resume_update(
-    #     resume=resume_instance,
-    #     defaults={
-    #         "optimized_content": optimized_content,
-    #         "optimized_pdf": pdf,
-    #         "is_tailored": True,
-    #         "job_post": job_post_instance,
-    #     },
-    # )
+    optimized_content_instance, created = await optimized_resume_update(
+        resume=resume_instance,
+        defaults={
+            "optimized_content": optimized_content,
+            "optimized_pdf": pdf,
+            "is_tailored": True,
+            "job_post": job_post_instance,
+        },
+    )
 
     total = time.time() - start_time
     logger.info(f"Total time taken: {total}")
     return "optimized_content_instance.optimized_pdf.url"
 
 
+@shared_task
 async def optimize_resume(applicant_id, job_post_id):
     start_time = time.time()
 

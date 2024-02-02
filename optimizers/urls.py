@@ -11,7 +11,7 @@ router.register(r"job_posts", JobPostViewSet)
 router.register(r"cover_letters", CoverLetterViewSet)
 
 urlpatterns = [
-    # path("", include(router.urls)),
+    path("", include(router.urls)),
     # =====================> Resume URLs <=====================
     path(
         "improve-resume/<str:applicant_id>/",
@@ -27,12 +27,12 @@ urlpatterns = [
         "customize-optimize-resume/<str:applicant_id>/",
         views.ResumeImprovementCustomizationView.as_view(),
         name="customize_improved_resume",
-    ),
+    ),  # ~ 92 secs
     path(
         "customize-optimize-resume/<str:applicant_id>/<str:job_post_id>/",
         views.ResumeOptimizationCustomizationView.as_view(),
         name="customize_resume_optimization",
-    ),
+    ),  # ~ 92 secs
     # =====================> Cover Letter URLs <=====================
     path(
         "create-cover-letter/<str:applicant_id>/",

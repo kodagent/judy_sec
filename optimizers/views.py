@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import status, viewsets
@@ -8,7 +10,12 @@ from rest_framework.views import APIView
 from optimizers.cl_opt import improve_cover_letter, optimize_cover_letter
 from optimizers.job_post import optimize_job_post
 from optimizers.models import CoverLetter, JobPost, OptimizedResumeContent, Resume
-from optimizers.resume_opt import improve_resume, optimize_resume
+from optimizers.resume_opt import (
+    customize_improved_resume,
+    customize_optimized_resume,
+    improve_resume,
+    optimize_resume,
+)
 
 # from optimizers.resume import run_resume_optimization
 from optimizers.serializers import (
@@ -84,6 +91,66 @@ class ResumeOptimizationView(View):
         try:
             # Get the optimized content
             return_data = await optimize_resume(applicant_id, job_post_id)
+            data = {
+                "success": "Optimization complete",
+                "optimized_content": return_data,
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+class ResumeImprovementCustomizationView(View):
+    """
+    This view handles resume optimization. It does not interact with the database directly,
+    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    """
+
+    serializer_class = None
+
+    async def post(self, request, applicant_id, format=None):
+        try:
+            # Parse JSON data from the request body
+            body_unicode = request.body.decode("utf-8")
+            body_data = json.loads(body_unicode)
+
+            # Extract custom_instruction from the parsed data
+            custom_instruction = body_data.get("custom_instruction")
+
+            # Call the utility function with applicant_id and custom_instruction
+            return_data = await customize_improved_resume(
+                applicant_id, custom_instruction
+            )
+            data = {
+                "success": "Optimization complete",
+                "optimized_content": return_data,
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+class ResumeOptimizationCustomizationView(View):
+    """
+    This view handles resume optimization. It does not interact with the database directly,
+    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    """
+
+    serializer_class = None
+
+    async def post(self, request, applicant_id, job_post_id, format=None):
+        try:
+            # Parse JSON data from the request body
+            body_unicode = request.body.decode("utf-8")
+            body_data = json.loads(body_unicode)
+
+            # Extract custom_instruction from the parsed data
+            custom_instruction = body_data.get("custom_instruction")
+
+            # Call the utility function with applicant_id, job_post_id, and custom_instruction
+            return_data = await customize_optimized_resume(
+                applicant_id, job_post_id, custom_instruction
+            )
             data = {
                 "success": "Optimization complete",
                 "optimized_content": return_data,

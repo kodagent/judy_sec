@@ -357,11 +357,8 @@ LEFT_MARGIN = 65
 RIGHT_MARGIN = 40
 TOP_MARGIN = 72
 BOTTOM_MARGIN = 72
-FONT_NAME = "Verdana"
+FONT_NAME = "Helvetica"
 FONT_SIZE = 12
-
-# Register a TrueType font (if needed)
-pdfmetrics.registerFont(TTFont(FONT_NAME, "Verdana.ttf"))
 
 
 def wrap_text(text, width):

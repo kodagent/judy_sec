@@ -2,12 +2,20 @@ import json
 
 from django.http import JsonResponse
 from django.views import View
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from optimizers.cl_opt import improve_cover_letter, optimize_cover_letter
+from optimizers.cl_opt import (
+    customize_improved_cover_letter,
+    customize_optimized_cover_letter,
+    get_default_cover_letter,
+    improve_cover_letter,
+    optimize_cover_letter,
+)
 from optimizers.job_post import optimize_job_post
 from optimizers.models import CoverLetter, JobPost, OptimizedResumeContent, Resume
 from optimizers.resume_opt import (
@@ -16,8 +24,6 @@ from optimizers.resume_opt import (
     improve_resume,
     optimize_resume,
 )
-
-# from optimizers.resume import run_resume_optimization
 from optimizers.serializers import (
     CoverLetterSerializer,
     JobPostSerializer,
@@ -58,13 +64,11 @@ class CoverLetterViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+# ============================> RESUME <============================
 class ResumeImprovementView(View):
     """
-    This view handles resume improvement. It does not interact with the database directly,
-    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    Improves a resume for a given applicant ID
     """
-
-    serializer_class = None
 
     async def get(self, request, applicant_id, format=None):
         try:
@@ -81,8 +85,7 @@ class ResumeImprovementView(View):
 
 class ResumeOptimizationView(View):
     """
-    This view handles resume optimization. It does not interact with the database directly,
-    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    Improves a resume for a given applicant ID to the given job ID
     """
 
     serializer_class = None
@@ -102,8 +105,7 @@ class ResumeOptimizationView(View):
 
 class ResumeImprovementCustomizationView(View):
     """
-    This view handles resume optimization. It does not interact with the database directly,
-    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    Customizes improved resume for a given applicant ID
     """
 
     serializer_class = None
@@ -132,8 +134,7 @@ class ResumeImprovementCustomizationView(View):
 
 class ResumeOptimizationCustomizationView(View):
     """
-    This view handles resume optimization. It does not interact with the database directly,
-    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    Customizes tailored resume for a given applicant ID to the given job ID
     """
 
     serializer_class = None
@@ -154,6 +155,31 @@ class ResumeOptimizationCustomizationView(View):
             data = {
                 "success": "Optimization complete",
                 "optimized_content": return_data,
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+# ============================> RESUME <============================
+
+
+# ============================> COVER LETTER <============================
+class CoverLetterCreationView(View):
+    """
+    This view handles cover letter creation. It does not interact with the database directly,
+    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    """
+
+    serializer_class = None
+
+    async def get(self, request, applicant_id, format=None):
+        try:
+            # Get the optimized content
+            pdf_url = await get_default_cover_letter(applicant_id)
+            data = {
+                "success": "creation complete",
+                "improved_content": pdf_url,
             }
             return JsonResponse(data)
         except Exception as e:
@@ -204,6 +230,70 @@ class CoverLetterOptimizationView(View):
             return JsonResponse({"error": str(e)}, status=500)
 
 
+class CoverLetterImprovementCustomizationView(View):
+    """
+    This view handles resume optimization. It does not interact with the database directly,
+    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    """
+
+    serializer_class = None
+
+    async def post(self, request, applicant_id, format=None):
+        try:
+            # Parse JSON data from the request body
+            body_unicode = request.body.decode("utf-8")
+            body_data = json.loads(body_unicode)
+
+            # Extract custom_instruction from the parsed data
+            custom_instruction = body_data.get("custom_instruction")
+
+            # Call the utility function with applicant_id and custom_instruction
+            return_data = await customize_improved_cover_letter(
+                applicant_id, custom_instruction
+            )
+            data = {
+                "success": "Optimization complete",
+                "optimized_content": return_data,
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+class CoverLetterOptimizationCustomizationView(View):
+    """
+    This view handles cover letter optimization. It does not interact with the database directly,
+    hence does not use a serializer_class. Instead, it relies on custom utility functions.
+    """
+
+    serializer_class = None
+
+    async def post(self, request, applicant_id, job_post_id, format=None):
+        try:
+            # Parse JSON data from the request body
+            body_unicode = request.body.decode("utf-8")
+            body_data = json.loads(body_unicode)
+
+            # Extract custom_instruction from the parsed data
+            custom_instruction = body_data.get("custom_instruction")
+
+            # Call the utility function with applicant_id, job_post_id, and custom_instruction
+            return_data = await customize_optimized_cover_letter(
+                applicant_id, job_post_id, custom_instruction
+            )
+            data = {
+                "success": "Optimization complete",
+                "optimized_content": return_data,
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+# ============================> COVER LETTER <============================
+
+
+# ============================> JOB POST <============================
 class JobOptimizationView(View):
     """
     This view handles job post optimization. It does not interact with the database directly,
@@ -227,6 +317,9 @@ class JobOptimizationView(View):
             return JsonResponse(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+# ============================> JOB POST <============================
 
 
 # http://127.0.0.1:8000/api/optimizers/optimize-job-post/654194177b7c7c8236e8541f/

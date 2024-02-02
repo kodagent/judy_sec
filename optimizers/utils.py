@@ -176,7 +176,7 @@ async def get_chat_response(instruction, message, doc_type=None):
         if doc_type == "CL":
             structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{cover_letter_example_structure}\n\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
         elif doc_type == "R":
-            structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_example_structure}\n\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
+            structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_example_structure}\n\nIf there isn't any provided value for the required key in the json format, return None as corresponding value.\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
         elif doc_type == "R-sections-fb":
             structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{resume_fb_example_structure}\n\nDo not miss any key value pair when creating the JSON data."
 
@@ -348,13 +348,42 @@ async def get_job_post_feedback(doc_text):
     return job_post_feedback
 
 
+async def create_doc(doc_type_1, doc_type_2, doc_content, default_doc):
+    start_time = time.time()
+
+    logger.info("----------------------- DOC CREATION -----------------------")
+
+    instruction = f"""
+    Create a generic {doc_type_1} using the {doc_type_2} provided. 
+    """
+
+    content = f"""
+    {doc_type_2.upper()} PROVIDED:
+    {doc_content}
+
+    DOC SAMPLE: 
+    {default_doc}
+    """
+
+    created_content = await get_chat_response(instruction, content)
+
+    logger.info(
+        f"----------------------- FULL {doc_type.upper()} FEEDBACK -----------------------"
+    )
+    logger.info(f"{created_content}")
+
+    total = time.time() - start_time
+    logger.info(f"Doc Creation Response Time: {total}")
+    return created_content
+
+
 async def improve_doc(doc_type, doc_content, doc_feedback):
     start_time = time.time()
 
     logger.info("----------------------- OPTIMIZATION -----------------------")
 
     instruction = f"""
-    Please provide an optimized version of the {doc_type} using the feedback provided. 
+    Provide an optimized version of the {doc_type} using the feedback provided. Ensure not to miss out on any part of the document
     """
 
     content = f"""

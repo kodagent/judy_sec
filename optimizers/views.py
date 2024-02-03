@@ -34,6 +34,7 @@ from optimizers.serializers import (
 class ResumeViewSet(viewsets.ModelViewSet):
     queryset = Resume.objects.all()
     serializer_class = ResumeSerializer
+    lookup_field = "resume_id"
 
     # This method will handle the default behavior of the GET request for a specific resume
     def retrieve(self, request, *args, **kwargs):
@@ -45,6 +46,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
 class JobPostViewSet(viewsets.ModelViewSet):
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
+    lookup_field = "job_post_id"
 
     # This method will handle the default behavior of the GET request for a specific JobPost
     def retrieve(self, request, *args, **kwargs):
@@ -56,6 +58,7 @@ class JobPostViewSet(viewsets.ModelViewSet):
 class CoverLetterViewSet(viewsets.ModelViewSet):
     queryset = CoverLetter.objects.all()
     serializer_class = CoverLetterSerializer
+    lookup_field = "cover_letter_id"
 
     # This method will handle the default behavior of the GET request for a specific CoverLetter
     def retrieve(self, request, *args, **kwargs):

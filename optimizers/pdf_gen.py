@@ -201,14 +201,16 @@ def create_bullet_list(items, bullet_style):
 
 # Function to add contact information
 def add_contact_info(story, contact_dict):
-    email = contact_dict.get("email", "")
-    phone = contact_dict.get("phone", "")
-    address_dict = contact_dict.get("address", "")
+    name_text = contact_dict.get("name", "")
+    email_text = contact_dict.get("email", "")
+    phone_text = contact_dict.get("phone", "")
+    address_text = contact_dict.get("address", "")
+    linkedIn_url = contact_dict.get("linkedIn", "")
 
-    middle_contact_details = f"{email} | {phone} | {address_dict}"
+    middle_contact_details = f"{email_text} | {phone_text} | {address_text}"
 
     # Append the name with a special style
-    story.append(Paragraph(contact_dict["name"], name_style))
+    story.append(Paragraph(name_text, name_style))
 
     # Append the address
     story.append(Paragraph(middle_contact_details, contact_details_style))
@@ -216,7 +218,7 @@ def add_contact_info(story, contact_dict):
     # Append the LinkedIn URL
     if "linkedIn" in contact_dict:
         # Use Paragraph to allow link styling
-        linkedin = f'<link href="{contact_dict["linkedIn"]}" color="blue">{contact_dict["linkedIn"]}</link>'
+        linkedin = f'<link href="{linkedIn_url}" color="blue">{linkedIn_url}</link>'
         story.append(Paragraph(linkedin, linkedin_style))
 
 
@@ -233,12 +235,16 @@ def add_experiences(doc, story, exp_dict):
     add_header_with_line(doc=doc, story=story, header_text="EXPERIENCES")
 
     for exp_value in exp_dict.values():
-        company_name = Paragraph(exp_value["company_name"], company_name_style)
-        duration = Paragraph(
-            exp_value["start_date"] + " – " + exp_value["end_date"], duration_style
-        )
-        job_role = Paragraph(exp_value["job_role"], job_role_style)
-        location = Paragraph(exp_value["location"], location_style)
+        company_name_text = exp_value.get("company_name", "")
+        start_date_text = exp_value.get("start_date", "")
+        end_date_text = exp_value.get("end_date", "")
+        job_role_text = exp_value.get("job_role", "")
+        location_text = exp_value.get("location", "")
+
+        company_name = Paragraph(company_name_text, company_name_style)
+        duration = Paragraph(start_date_text + " – " + end_date_text, duration_style)
+        job_role = Paragraph(job_role_text, job_role_style)
+        location = Paragraph(location_text, location_style)
 
         # Add a company table
         company_table_data = [[company_name, duration], [job_role, location]]
@@ -259,10 +265,15 @@ def add_education(doc, story, edu_list):
     column_width_small = doc.width * 0.25
 
     for edu in edu_list:
-        degree = Paragraph(edu["degree"], education_style_l)
-        institution = Paragraph(edu["institution"], education_style_l)
-        location = Paragraph(edu["location"], education_style_r)
-        end_date = Paragraph(edu["end_date"], education_style_r)
+        degree_text = edu.get("degree", "")
+        institution_text = edu.get("institution", "")
+        location_text = edu.get("location", "")
+        end_date_text = edu.get("end_date", "")
+
+        degree = Paragraph(degree_text, education_style_l)
+        institution = Paragraph(institution_text, education_style_l)
+        location = Paragraph(location_text, education_style_r)
+        end_date = Paragraph(end_date_text, education_style_r)
 
         # Add a education table
         education_table_data = [[institution, end_date], [degree, location]]
@@ -289,10 +300,14 @@ def add_certifications(doc=None, story=None, cert_list=None):
     column_width_small = doc.width * 0.25
 
     for cert in cert_list:
+        title_text = cert.get("title", "")
+        issuing_organization_text = cert.get("issuing_organization", "")
+        date_obtained_text = cert.get("date_obtained", "")
+
         certification_title = Paragraph(
-            f"{cert['title']} - {cert['issuing_organization']}", doc_style_l
+            f"{title_text} - {issuing_organization_text}", doc_style_l
         )
-        date = Paragraph(f"{cert['date_obtained']}", doc_style_r)
+        date = Paragraph(f"{date_obtained_text}", doc_style_r)
 
         # Add a education table
         certification_table_data = [[certification_title, date]]
@@ -351,6 +366,98 @@ def generate_resume_pdf(improved_resume_dict, filename):
     logger.info(f"PDF CREATION TIME: {total}")
     return ContentFile(pdf_value, name=filename)
 
+
+improved_resume_dict = {
+    "contact": {
+        "name": "SARAH JOHNSON",
+        "address": "Seattle, Washington",
+        "phone": "+1-555-123-4567",
+        "email": "sjohnsonnurse@example.com",
+        "linkedIn": "https://www.linkedin.com/in/sarah-johnson-rn",
+    },
+    "summary": "Highly experienced and strategic Registered Nurse with over 10 years of clinical experience, including 5+ years in leadership roles focused on inpatient care. Proven track record in enhancing patient care, streamlining department operations, and leading healthcare teams towards excellence. Eager to contribute to AMCE's mission by bringing a culture of clinical excellence and patient-centered care to a diverse patient population.",
+    "experiences": {
+        "experience_1": {
+            "company_name": "Seattle General Hospital",
+            "job_role": "Registered Nurse",
+            "start_date": "June 2019",
+            "end_date": "Present",
+            "location": "Seattle, Washington",
+            "job_description": [
+                "Oversee patient care delivery in a high-traffic emergency department, developing and executing strategies to reduce wait times and enhance service quality.",
+                "Spearhead a comprehensive review and overhaul of patient triage protocol, resulting in a 30% leap in departmental efficiency and patient throughput.",
+                "Pioneer patient education initiatives to tackle chronic disease management, yielding a significant improvement in patient compliance and outcomes.",
+            ],
+        },
+        "experience_2": {
+            "job_title": "Staff Nurse",
+            "start_date": "January 2017",
+            "end_date": "June 2019",
+            "job_description": "Managed and coordinated end-to-end patient care for various medical cases within a 30-bed inpatient unit, consistently scoring high on patient satisfaction metrics.",
+        },
+        "experience_3": {
+            "job_title": "Community Health Nurse",
+            "start_date": "July 2015",
+            "end_date": "December 2016",
+            "job_description": "Executed primary care services and health education for underserved communities, with an emphasis on preventative care and wellness.",
+        },
+    },
+    "education": [
+        {
+            "institution": "University of Washington",
+            "degree": "Master of Science in Nursing (MSN)",
+            "end_date": "June 2015",
+            "location": "Seattle, Washington",
+            "details": "Focused on Healthcare Leadership and Management",
+        }
+    ],
+    "skills": [
+        "Clinical Management",
+        "Team Leadership",
+        "Strategic Planning",
+        "Patient Education",
+        "Quality Assurance",
+        "Healthcare Regulation Compliance",
+        "Interdisciplinary Collaboration",
+        "Health Informatics",
+        "Patient Advocacy",
+        "Mentorship Programs",
+    ],
+    "certifications": [
+        {
+            "title": "Certified Emergency Nurse (CEN)",
+            "issuing_organization": "Institute of Michigan",
+            "date_obtained": "August 2016",
+            "validity_period": None,
+        },
+        {
+            "title": "Trauma Nursing Core Course (TNCC)",
+            "issuing_organization": "Institute of Michigan",
+            "date_obtained": "March 2018",
+            "validity_period": "4 years",
+        },
+        {
+            "title": "Pediatric Advanced Life Support (PALS)",
+            "issuing_organization": "Institute of Michigan",
+            "date_obtained": "May 2017",
+            "validity_period": "2 years",
+        },
+        {
+            "title": "Registered Nurse (RN) License, State of Washington",
+            "issuing_organization": "Institute of Michigan",
+            "date_obtained": "June 2015",
+            "validity_period": None,
+        },
+    ],
+    "references": [
+        {
+            "referee_name": "Available upon request.",
+            "relationship": None,
+            "contact_information": None,
+        }
+    ],
+}
+# generate_resume_pdf(improved_resume_dict, filename="resume.pdf")
 
 # Constants
 LEFT_MARGIN = 65
@@ -472,7 +579,6 @@ def generate_formatted_pdf(response_text, filename, doc_type=None):
 async def run_main():
     from asgiref.sync import sync_to_async
 
-    from optimizers.mg_database import get_job_post_content_async
     from optimizers.models import CoverLetter, JobPost
     from optimizers.samples import (
         improved_cover_letter_dict,

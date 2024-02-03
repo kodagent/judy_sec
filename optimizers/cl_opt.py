@@ -2,11 +2,12 @@ import asyncio
 import time
 
 from asgiref.sync import sync_to_async
+from celery import shared_task
 from django.conf import settings
 
 from chatbackend.configs.logging_config import configure_logger
 from helpers.optimizer_utils import cover_letter
-from optimizers.mg_database import get_doc_content, get_job_post_content_async
+from optimizers.mg_database import get_doc_content
 from optimizers.models import (
     CoverLetter,
     CoverLetterAnalysis,
@@ -19,6 +20,7 @@ from optimizers.utils import (
     Polarity,
     Readablity,
     check_grammar_and_spelling,
+    customize_doc,
     improve_doc,
     optimize_doc,
     review_tone,
@@ -30,9 +32,47 @@ SYSTEM_ROLE = "system"
 USER_ROLE = "user"
 
 
+@shared_task
+async def get_default_cover_letter(candidate_id):
+    try:
+        resume_content = await get_doc_content(candidate_id, doc_type="R")
+
+        cover_letter_update = sync_to_async(
+            CoverLetter.objects.update_or_create, thread_sensitive=True
+        )
+
+        created_cl = create_doc(
+            "cover letter", "resume", resume_content, default_cover_letter
+        )
+
+        pdf = generate_formatted_pdf(
+            created_cl, filename="Base Cover Letter.pdf", doc_type="CL"
+        )
+
+        # Run the synchronous database update_or_create functions concurrently
+        cover_letter_instance, cover_letter_created = await cover_letter_update(
+            cover_letter_id=candidate_id,
+            defaults={
+                "original_content": created_cl,
+                "original_pdf": pdf,
+            },
+        )
+
+    except Exception as e:
+        logger.error(e)
+
+    total = time.time() - start_time
+    logger.info("Total time taken: {total}")
+
+    return cover_letter_instance.original_pdf.url
+
+
+@shared_task
 async def improve_cover_letter(candidate_id):
     try:
         start_time = time.time()
+
+        # get from the database, because the default is going to be created using some of the applicant details
         # cover_letter_content = await get_doc_content(candidate_id, doc_type="CL")
         cover_letter_content = default_cover_letter
 
@@ -83,11 +123,12 @@ async def improve_cover_letter(candidate_id):
         logger.error(e)
 
     total = time.time() - start_time
-    logger.info("Total time taken: ", total)
+    logger.info("Total time taken: {total}")
 
     return cover_letter_instance.general_improved_pdf.url
 
 
+@shared_task
 async def optimize_cover_letter(applicant_id, job_post_id):
     start_time = time.time()
 
@@ -127,8 +168,91 @@ async def optimize_cover_letter(applicant_id, job_post_id):
     return optimized_content_instance.optimized_pdf.url
 
 
-def run_main():
-    improve_cover_letter(cover_letter)
+@shared_task
+async def customize_improved_cover_letter(candidate_id, custom_instruction):
+    start_time = time.time()
+
+    cover_letter_update = sync_to_async(
+        CoverLetter.objects.update_or_create, thread_sensitive=True
+    )
+
+    cover_letter_instance = await sync_to_async(CoverLetter.objects.get)(
+        cover_letter_id=candidate_id
+    )
+    improved_content = cover_letter_instance.general_improved_content
+    customized_content = await customize_doc(
+        doc_type="cover letter",
+        doc_content=improved_content,
+        custom_instruction=custom_instruction,
+    )
+
+    pdf = generate_formatted_pdf(
+        customized_content,
+        filename="Customized Improved Cover Letter.pdf",
+        doc_type="CL",
+    )
+
+    # Run the synchronous database update_or_create functions concurrently
+    cover_letter_instance, cover_letter_created = await cover_letter_update(
+        cover_letter_id=candidate_id,
+        defaults={
+            "general_improved_content": customized_content,
+            "general_improved_pdf": pdf,
+        },
+    )
+
+    total = time.time() - start_time
+    logger.info(f"Total time taken: {total}")
+
+    return cover_letter_instance.general_improved_pdf.url
+
+
+@shared_task
+async def customize_optimized_cover_letter(
+    applicant_id, job_post_id, custom_instruction
+):
+    start_time = time.time()
+
+    optimized_cover_letter_update = sync_to_async(
+        OptimizedCoverLetterContent.objects.update_or_create, thread_sensitive=True
+    )
+
+    cover_letter_instance = await sync_to_async(CoverLetter.objects.get)(
+        cover_letter_id=applicant_id
+    )
+    optimized_cover_letter_instance = await sync_to_async(
+        OptimizedCoverLetterContent.objects.get
+    )(cover_letter=cover_letter_instance)
+    job_post_instance = await sync_to_async(JobPost.objects.get)(
+        job_post_id=job_post_id
+    )
+
+    optimized_content = optimized_cover_letter_instance.optimized_content
+    customized_content = await customize_doc(
+        doc_type="cover letter",
+        doc_content=optimized_content,
+        custom_instruction=custom_instruction,
+    )
+
+    pdf = generate_formatted_pdf(
+        customized_content,
+        filename="Customized Optimized Cover Letter.pdf",
+        doc_type="CL",
+    )
+
+    optimized_content_instance, created = await optimized_cover_letter_update(
+        cover_letter=cover_letter_instance,
+        defaults={
+            "optimized_content": optimized_content,
+            "optimized_pdf": pdf,
+            "is_tailored": True,
+            "job_post": job_post_instance,
+        },
+    )
+
+    total = time.time() - start_time
+    logger.info(f"Total time taken: {total}")
+    return optimized_content_instance.optimized_pdf.url
 
 
 {

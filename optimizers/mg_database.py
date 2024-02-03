@@ -56,85 +56,22 @@ db = client[settings.MONGO_DB_NAME]
 # print(relationships)
 
 
-async def get_resume_content(application_id):  # , owner_id):
-    try:
-        applicant = db.applications.find_one(
-            {
-                "_id": ObjectId(application_id),
-                # "owner_id": ObjectId(owner_id)
-            }
-        )
-        public_url = applicant["resumeDocument"] if applicant else None
-        # Load PDF data
-        loader = OnlinePDFLoader(public_url)
-        data = loader.load()
-
-        # Split the text for analysis
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        texts = text_splitter.split_documents(data)
-
-        doc_list = [t.page_content for t in texts]
-        doc_content = "   ".join(doc_list)
-
-        return doc_content
-    except pymongo.errors.PyMongoError as e:
-        logger.error(f"MongoDB error: {e}")
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
-
-
-async def get_doc_content(
-    owner_id, doc_type=None
-):  # owner id rather candidate id because this could function for candidates as well as recruiters
+async def get_doc_content(owner_id, doc_type=None):
     try:
         applicant = db.applications.find_one(
             {
                 # "_id": ObjectId(applicant_id),
-                "owner_id": ObjectId(owner_id)
+                "owner": ObjectId(owner_id)
             }
         )
         if doc_type == "CL":
-            public_url = applicant["IELTSDocument"] if applicant else None
+            public_url = applicant["coverLetterDocument"] if applicant else None
         elif doc_type == "R":
-            public_url = applicant["IELTSDocument"] if applicant else None
-        elif doc_type == "JP":
-            public_url = applicant["IELTSDocument"] if applicant else None
+            public_url = applicant["resumeDocument"] if applicant else None
 
         # Load PDF data
         loader = OnlinePDFLoader(public_url)
         data = loader.load()
-
-        # Split the text for analysis
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-        texts = text_splitter.split_documents(data)
-
-        doc_list = [t.page_content for t in texts]
-        doc_content = "   ".join(doc_list)
-
-        return doc_content
-    except pymongo.errors.PyMongoError as e:
-        logger.error(f"MongoDB error: {e}")
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
-
-
-async def get_job_post_content_async(job_id):
-    try:
-        job = db.jobs.find_one(
-            {
-                "_id": ObjectId(job_id),
-                # "owner_id": ObjectId(owner_id)
-            }
-        )
-
-        # Create a temporary file and get its path
-        temp_file_path = create_temporary_job_file(job)
-
-        # Load PDF data
-        loader = TextLoader(temp_file_path)
-        data = loader.load()
-
-        os.unlink(temp_file_path)
 
         # Split the text for analysis
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)

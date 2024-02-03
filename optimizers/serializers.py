@@ -18,14 +18,6 @@ class JobPostSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class JobPostAnalysisSerializer(serializers.ModelSerializer):
-    job_post = JobPostSerializer(read_only=True)
-
-    class Meta:
-        model = JobPostAnalysis
-        fields = "__all__"
-
-
 # CoverLetter
 class CoverLetterSerializer(serializers.ModelSerializer):
     class Meta:

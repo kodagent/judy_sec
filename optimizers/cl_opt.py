@@ -20,6 +20,7 @@ from optimizers.utils import (
     Polarity,
     Readablity,
     check_grammar_and_spelling,
+    customize_doc,
     improve_doc,
     optimize_doc,
     review_tone,
@@ -61,7 +62,7 @@ async def get_default_cover_letter(candidate_id):
         logger.error(e)
 
     total = time.time() - start_time
-    logger.info("Total time taken: ", total)
+    logger.info("Total time taken: {total}")
 
     return cover_letter_instance.original_pdf.url
 
@@ -122,7 +123,7 @@ async def improve_cover_letter(candidate_id):
         logger.error(e)
 
     total = time.time() - start_time
-    logger.info("Total time taken: ", total)
+    logger.info("Total time taken: {total}")
 
     return cover_letter_instance.general_improved_pdf.url
 
@@ -185,8 +186,10 @@ async def customize_improved_cover_letter(candidate_id, custom_instruction):
         custom_instruction=custom_instruction,
     )
 
-    pdf = generate_resume_pdf(
-        customized_content, filename="Customized Improved Cover Letter.pdf"
+    pdf = generate_formatted_pdf(
+        customized_content,
+        filename="Customized Improved Cover Letter.pdf",
+        doc_type="CL",
     )
 
     # Run the synchronous database update_or_create functions concurrently

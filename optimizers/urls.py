@@ -24,7 +24,7 @@ urlpatterns = [
         name="resume_optimization",
     ),  # ~ 91 secs
     path(
-        "customize-optimize-resume/<str:applicant_id>/",
+        "customize-improved-resume/<str:applicant_id>/",
         views.ResumeImprovementCustomizationView.as_view(),
         name="customize_improved_resume",
     ),  # ~ 92 secs
@@ -32,7 +32,7 @@ urlpatterns = [
         "customize-optimize-resume/<str:applicant_id>/<str:job_post_id>/",
         views.ResumeOptimizationCustomizationView.as_view(),
         name="customize_resume_optimization",
-    ),  # ~ 92 secs
+    ),  # ~ 80 secs
     # =====================> Cover Letter URLs <=====================
     path(
         "create-cover-letter/<str:applicant_id>/",
@@ -43,22 +43,22 @@ urlpatterns = [
         "improve-cover-letter/<str:applicant_id>/",
         views.CoverLetterImprovementView.as_view(),
         name="improve_cover_letter",
-    ),
+    ),  # ~ 58 secs
     path(
         "optimize-cover-letter/<str:applicant_id>/<str:job_post_id>/",
         views.CoverLetterOptimizationView.as_view(),
         name="optimize_cover_letter",
-    ),
+    ),  # ~ 41 secs
     path(
-        "customize-optimize-cover-letter/<str:applicant_id>/",
+        "customize-improved-cover-letter/<str:applicant_id>/",
         views.CoverLetterImprovementCustomizationView.as_view(),
         name="customize_improved_cover_letter",
-    ),
+    ),  # ~ 53 secs
     path(
         "customize-optimize-cover-letter/<str:applicant_id>/<str:job_post_id>/",
         views.CoverLetterOptimizationCustomizationView.as_view(),
         name="customize_cover_letter_optimization",
-    ),
+    ),  # ~ 50 secs
     # =====================> Job Post URLs <=====================
     path(
         "optimize-job-post/<str:job_id>/",

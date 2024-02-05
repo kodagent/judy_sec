@@ -17,7 +17,13 @@ from optimizers.cl_opt import (
     optimize_cover_letter,
 )
 from optimizers.job_post import optimize_job_post
-from optimizers.models import CoverLetter, JobPost, OptimizedResumeContent, Resume
+from optimizers.models import (
+    CoverLetter,
+    JobPost,
+    OptimizedCoverLetterContent,
+    OptimizedResumeContent,
+    Resume,
+)
 from optimizers.resume_opt import (
     customize_improved_resume,
     customize_optimized_resume,
@@ -27,6 +33,8 @@ from optimizers.resume_opt import (
 from optimizers.serializers import (
     CoverLetterSerializer,
     JobPostSerializer,
+    OptimizedCoverLetterContentSerializer,
+    OptimizedResumeSerializer,
     ResumeSerializer,
 )
 
@@ -36,19 +44,26 @@ class ResumeViewSet(viewsets.ModelViewSet):
     serializer_class = ResumeSerializer
     lookup_field = "resume_id"
 
-    # This method will handle the default behavior of the GET request for a specific resume
+    # This method will handle the default behavior of the GET request for a specific Resume
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
 
-class JobPostViewSet(viewsets.ModelViewSet):
-    queryset = JobPost.objects.all()
-    serializer_class = JobPostSerializer
-    lookup_field = "job_post_id"
+class OptimizedResumeContentViewSet(viewsets.ModelViewSet):
+    queryset = OptimizedResumeContent.objects.all()
+    serializer_class = OptimizedResumeSerializer
+    lookup_field = "resume_id"
 
-    # This method will handle the default behavior of the GET request for a specific JobPost
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        resume_id = self.kwargs.get("resume_id")
+        obj = queryset.filter(resume__resume_id=resume_id).first()
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    # This method will handle the default behavior of the GET request for a specific Optimized Resume
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -67,6 +82,37 @@ class CoverLetterViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class OptimizedCoverLetterContentViewSet(viewsets.ModelViewSet):
+    queryset = OptimizedCoverLetterContent.objects.all()
+    serializer_class = CoverLetterSerializer
+    lookup_field = "cover_letter_id"
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        cover_letter_id = self.kwargs.get("cover_letter_id")
+        obj = queryset.filter(cover_letter__cover_letter_id=cover_letter_id).first()
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    # This method will handle the default behavior of the GET request for a specific Optimized CoverLetter
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
+class JobPostViewSet(viewsets.ModelViewSet):
+    queryset = JobPost.objects.all()
+    serializer_class = JobPostSerializer
+    lookup_field = "job_post_id"
+
+    # This method will handle the default behavior of the GET request for a specific JobPost
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
 # ============================> RESUME <============================
 class ResumeImprovementView(View):
     """
@@ -77,6 +123,7 @@ class ResumeImprovementView(View):
         try:
             # Get the optimized content
             pdf_url = improve_resume.delay(applicant_id)
+            # pdf_url = await improve_resume(applicant_id)
             data = {
                 "success": "Resume Improvement Initiated",
                 # "improved_content": pdf_url,
@@ -97,6 +144,7 @@ class ResumeOptimizationView(View):
         try:
             # Get the optimized content
             return_data = optimize_resume.delay(applicant_id, job_post_id)
+            # return_data = await optimize_resume(applicant_id, job_post_id)
             data = {
                 "success": "Resume Optimization Initiated",
                 # "optimized_content": return_data,
@@ -126,6 +174,9 @@ class ResumeImprovementCustomizationView(View):
             return_data = customize_improved_resume.delay(
                 applicant_id, custom_instruction
             )
+            # return_data = await customize_improved_resume(
+            #     applicant_id, custom_instruction
+            # )
             data = {
                 "success": "Resume Improvement Customization Initiated",
                 # "optimized_content": return_data,
@@ -155,6 +206,9 @@ class ResumeOptimizationCustomizationView(View):
             return_data = customize_optimized_resume.delay(
                 applicant_id, job_post_id, custom_instruction
             )
+            # return_data = await customize_optimized_resume(
+            #     applicant_id, job_post_id, custom_instruction
+            # )
             data = {
                 "success": "Resume Optimization Customization Initiated",
                 # "optimized_content": return_data,
@@ -180,6 +234,7 @@ class CoverLetterCreationView(View):
         try:
             # Get the optimized content
             pdf_url = get_default_cover_letter.delay(applicant_id)
+            # pdf_url = await get_default_cover_letter(applicant_id)
             data = {
                 "success": "Cover Letter Creation Initiated",
                 # "improved_content": pdf_url,
@@ -201,6 +256,7 @@ class CoverLetterImprovementView(View):
         try:
             # Get the optimized content
             pdf_url = improve_cover_letter.delay(applicant_id)
+            # pdf_url = await improve_cover_letter(applicant_id)
             data = {
                 "success": "Cover Letter Improvement Initiated",
                 # "improved_content": pdf_url,
@@ -221,9 +277,8 @@ class CoverLetterOptimizationView(View):
     # def get(self, request, application_id, job_post_id, format=None):
     async def get(self, request, applicant_id, job_post_id, format=None):
         try:
-            # Get the optimized content
-            # return_data = run_cover_letter_optimization(application_id, job_post_id)
             return_data = optimize_cover_letter.delay(applicant_id, job_post_id)
+            # return_data = await optimize_cover_letter(applicant_id, job_post_id)
             data = {
                 "success": "Cover Letter Optimization Initiated",
                 # "optimized_content": return_data,
@@ -254,6 +309,9 @@ class CoverLetterImprovementCustomizationView(View):
             return_data = customize_improved_cover_letter.delay(
                 applicant_id, custom_instruction
             )
+            # return_data = await customize_improved_cover_letter(
+            #     applicant_id, custom_instruction
+            # )
             data = {
                 "success": "Cover Letter Improvement Customization Initiated",
                 # "optimized_content": return_data,
@@ -284,6 +342,9 @@ class CoverLetterOptimizationCustomizationView(View):
             return_data = customize_optimized_cover_letter.delay(
                 applicant_id, job_post_id, custom_instruction
             )
+            # return_data = await customize_optimized_cover_letter(
+            #     applicant_id, job_post_id, custom_instruction
+            # )
             data = {
                 "success": "Cover Letter Optimization Customization Initiated",
                 # "optimized_content": return_data,
@@ -309,6 +370,7 @@ class JobOptimizationView(View):
         # feedback_only = request.query_params.get("feedback", "false").lower() == "true"
         try:
             optimized_job_post_content = optimize_job_post.delay(job_id)
+            # optimized_job_post_content = await optimize_job_post(job_id)
             # might need to use the mark down dangerous html before pushing to frontend
             return JsonResponse(
                 {

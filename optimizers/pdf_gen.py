@@ -240,6 +240,7 @@ def add_experiences(doc, story, exp_dict):
         end_date_text = exp_value.get("end_date", "")
         job_role_text = exp_value.get("job_role", "")
         location_text = exp_value.get("location", "")
+        job_description_list = exp_value.get("job_description", "")
 
         company_name = Paragraph(company_name_text, company_name_style)
         duration = Paragraph(start_date_text + " – " + end_date_text, duration_style)
@@ -253,7 +254,7 @@ def add_experiences(doc, story, exp_dict):
         )
 
         # Add job descriptions
-        story.append(create_bullet_list(exp_value["job_description"], job_desc_style))
+        story.append(create_bullet_list(job_description_list, job_desc_style))
         story.append(Spacer(1, 5))
 
 

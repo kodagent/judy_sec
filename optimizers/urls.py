@@ -2,13 +2,21 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from optimizers import views
-from optimizers.views import ResumeViewSet  # , RunResumeOptimizationView)
-from optimizers.views import CoverLetterViewSet, JobPostViewSet
+from optimizers.views import (
+    CoverLetterViewSet,
+    JobPostViewSet,
+    OptimizedCoverLetterContentViewSet,
+    OptimizedResumeContentViewSet,
+    ResumeViewSet,
+)
 
 router = DefaultRouter()
-router.register(r"resumes", ResumeViewSet)
+router.register(r"improved_resumes", ResumeViewSet)
+router.register(r"optimized_resumes", OptimizedResumeContentViewSet)
+router.register(r"improved_cover_letters", CoverLetterViewSet)
+router.register(r"optimized_cover_letters", OptimizedCoverLetterContentViewSet)
 router.register(r"job_posts", JobPostViewSet)
-router.register(r"cover_letters", CoverLetterViewSet)
+
 
 urlpatterns = [
     path("", include(router.urls)),

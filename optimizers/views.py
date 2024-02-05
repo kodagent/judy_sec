@@ -9,21 +9,34 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from optimizers.cl_opt import (customize_improved_cover_letter,
-                               customize_optimized_cover_letter,
-                               get_default_cover_letter, improve_cover_letter,
-                               optimize_cover_letter)
+from optimizers.cl_opt import (
+    customize_improved_cover_letter,
+    customize_optimized_cover_letter,
+    get_default_cover_letter,
+    improve_cover_letter,
+    optimize_cover_letter,
+)
 from optimizers.job_post import optimize_job_post
-from optimizers.models import (CoverLetter, JobPost,
-                               OptimizedCoverLetterContent,
-                               OptimizedResumeContent, Resume)
-from optimizers.resume_opt import (customize_improved_resume,
-                                   customize_optimized_resume, improve_resume,
-                                   optimize_resume)
-from optimizers.serializers import (CoverLetterSerializer, JobPostSerializer,
-                                    OptimizedCoverLetterContentSerializer,
-                                    OptimizedResumeSerializer,
-                                    ResumeSerializer)
+from optimizers.models import (
+    CoverLetter,
+    JobPost,
+    OptimizedCoverLetterContent,
+    OptimizedResumeContent,
+    Resume,
+)
+from optimizers.resume_opt import (
+    customize_improved_resume,
+    customize_optimized_resume,
+    improve_resume,
+    optimize_resume,
+)
+from optimizers.serializers import (
+    CoverLetterSerializer,
+    JobPostSerializer,
+    OptimizedCoverLetterContentSerializer,
+    OptimizedResumeSerializer,
+    ResumeSerializer,
+)
 
 
 class ResumeViewSet(viewsets.ModelViewSet):
@@ -31,7 +44,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
     serializer_class = ResumeSerializer
     lookup_field = "resume_id"
 
-    # This method will handle the default behavior of the GET request for a specific resume
+    # This method will handle the default behavior of the GET request for a specific Resume
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -50,7 +63,7 @@ class OptimizedResumeContentViewSet(viewsets.ModelViewSet):
         self.check_object_permissions(self.request, obj)
         return obj
 
-    # This method will handle the default behavior of the GET request for a specific CoverLetter
+    # This method will handle the default behavior of the GET request for a specific Optimized Resume
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -81,7 +94,7 @@ class OptimizedCoverLetterContentViewSet(viewsets.ModelViewSet):
         self.check_object_permissions(self.request, obj)
         return obj
 
-    # This method will handle the default behavior of the GET request for a specific CoverLetter
+    # This method will handle the default behavior of the GET request for a specific Optimized CoverLetter
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)

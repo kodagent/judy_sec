@@ -170,8 +170,6 @@ async def get_chat_response(instruction, message, doc_type=None):
 
     messages = [SystemMessage(content=instruction), HumanMessage(content=message)]
 
-    response = chat(messages).content
-
     if doc_type:
         if doc_type == "CL":
             structured_instruction = f"{instruction}\n\nHere is how I would like the information to be structured in JSON format:\n{cover_letter_example_structure}\n\nInclude line breaks where appropriate in all the sections of the letter. Now, based on the content provided above, please structure the document content accordingly."
@@ -192,6 +190,13 @@ async def get_chat_response(instruction, message, doc_type=None):
         )
 
         response = json.loads(structured_response.choices[0].message.content)
+        
+        total = time.time() - start_time
+        logger.info(f"Chat Response Time: {total}")
+        
+        return response
+
+    response = chat(messages).content
 
     total = time.time() - start_time
     logger.info(f"Chat Response Time: {total}")
@@ -368,7 +373,7 @@ async def create_doc(doc_type_1, doc_type_2, doc_content, default_doc):
     created_content = await get_chat_response(instruction, content)
 
     logger.info(
-        f"----------------------- FULL {doc_type.upper()} FEEDBACK -----------------------"
+        f"----------------------- CREATED {doc_type_1.upper()} -----------------------"
     )
     logger.info(f"{created_content}")
 

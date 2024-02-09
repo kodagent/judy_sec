@@ -2,13 +2,6 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from optimizers import views
-from optimizers.views import (
-    CoverLetterViewSet,
-    JobPostViewSet,
-    OptimizedCoverLetterContentViewSet,
-    OptimizedResumeContentViewSet,
-    ResumeViewSet,
-)
 
 urlpatterns = [
     path('get-improved-resumes/<str:resume_id>/', views.ResumeDetailView.as_view(), name='improved_resume_detail'),

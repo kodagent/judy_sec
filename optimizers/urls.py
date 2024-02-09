@@ -10,19 +10,6 @@ from optimizers.views import (
     ResumeViewSet,
 )
 
-
-router = DefaultRouter()
-router.register(r"improved_resumes", ResumeViewSet)
-router.register(r"optimized_resumes", OptimizedResumeContentViewSet)
-router.register(r"improved_cover_letters", CoverLetterViewSet)
-router.register(r"optimized_cover_letters", OptimizedCoverLetterContentViewSet)
-router.register(r"job_posts", JobPostViewSet)
-
-
-urlpatterns = [
-    
-
-
 urlpatterns = [
     path('get-improved-resumes/<str:resume_id>/', views.ResumeDetailView.as_view(), name='improved_resume_detail'),
     path('get-optimized-resumes/<str:resume_id>/', views.OptimizedResumeContentDetailView.as_view(), name='optimized_resume_detail'),

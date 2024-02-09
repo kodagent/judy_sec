@@ -25,10 +25,10 @@ urlpatterns = [
 
 urlpatterns = [
     path('get-improved-resumes/<str:resume_id>/', views.ResumeDetailView.as_view(), name='improved_resume_detail'),
-    path('get-optimized-resumes/<str:resume_id>/', views.ResumeDetailView.as_view(), name='optimized_resume_detail'),
+    path('get-optimized-resumes/<str:resume_id>/', views.OptimizedResumeContentDetailView.as_view(), name='optimized_resume_detail'),
     path('get-improved-cover-letters/<str:cover_letter_id>/', views.CoverLetterDetailView.as_view(), name='improved_cover_letter_detail'),
-    path('get-optimized-cover-letters/<str:cover_letter_id>/', views.ResumeDetailView.as_view(), name='optimized_cover_letter_detail'),
-    path('get-improved-jobs/<str:job_id>/', views.ResumeDetailView.as_view(), name='improved_job_detail'),
+    path('get-optimized-cover-letters/<str:cover_letter_id>/', views.OptimizedCoverLetterContentDetailView.as_view(), name='optimized_cover_letter_detail'),
+    path('get-improved-jobs/<str:job_id>/', views.JobDetailView.as_view(), name='improved_job_detail'),
     # =====================> Resume URLs <=====================
     path(
         "improve-resume/<str:applicant_id>/",

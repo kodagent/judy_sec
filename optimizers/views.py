@@ -37,80 +37,42 @@ from optimizers.serializers import (
     OptimizedResumeSerializer,
     ResumeSerializer,
 )
+from django.shortcuts import get_object_or_404
 
 
-class ResumeViewSet(viewsets.ModelViewSet):
-    queryset = Resume.objects.all()
-    serializer_class = ResumeSerializer
-    lookup_field = "resume_id"
-
-    # This method will handle the default behavior of the GET request for a specific Resume
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+class ResumeDetailView(View):
+    def get(self, request, resume_id):
+        resume = get_object_or_404(Resume, resume_id=resume_id)
+        serializer = ResumeSerializer(resume)
+        return JsonResponse(serializer.data, safe=False)
 
 
-class OptimizedResumeContentViewSet(viewsets.ModelViewSet):
-    queryset = OptimizedResumeContent.objects.all()
-    serializer_class = OptimizedResumeSerializer
-    lookup_field = "resume_id"
+class OptimizedResumeContentDetailView(View):
+    def get(self, request, resume_id):
+        optimized_resume_content = get_object_or_404(OptimizedResumeContent, resume__resume_id=resume_id)
+        serializer = OptimizedResumeSerializer(optimized_resume_content)
+        return JsonResponse(serializer.data, safe=False)
+        
 
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-        resume_id = self.kwargs.get("resume_id")
-        obj = queryset.filter(resume__resume_id=resume_id).first()
-        self.check_object_permissions(self.request, obj)
-        return obj
+class CoverLetterDetailView(View):
+    def get(self, request, cover_letter_id):
+        cover_letter = get_object_or_404(CoverLetter, cover_letter_id=cover_letter_id)
+        serializer = CoverLetterSerializer(cover_letter)
+        return JsonResponse(serializer.data, safe=False)
+        
 
-    # This method will handle the default behavior of the GET request for a specific Optimized Resume
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-
-class CoverLetterViewSet(viewsets.ModelViewSet):
-    queryset = CoverLetter.objects.all()
-    serializer_class = CoverLetterSerializer
-    lookup_field = "cover_letter_id"
-
-    # This method will handle the default behavior of the GET request for a specific CoverLetter
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+class OptimizedCoverLetterContentDetailView(View):
+    def get(self, request, cover_letter_id):
+        optimized_cover_letter_content = get_object_or_404(OptimizedCoverLetterContent, cover_letter__cover_letter_id=cover_letter_id)
+        serializer = OptimizedCoverLetterContentSerializer(optimized_cover_letter_content)
+        return JsonResponse(serializer.data, safe=False)
 
 
-class OptimizedCoverLetterContentViewSet(viewsets.ModelViewSet):
-    queryset = OptimizedCoverLetterContent.objects.all()
-    serializer_class = CoverLetterSerializer
-    lookup_field = "cover_letter_id"
-
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-        cover_letter_id = self.kwargs.get("cover_letter_id")
-        obj = queryset.filter(cover_letter__cover_letter_id=cover_letter_id).first()
-        self.check_object_permissions(self.request, obj)
-        return obj
-
-    # This method will handle the default behavior of the GET request for a specific Optimized CoverLetter
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-
-class JobPostViewSet(viewsets.ModelViewSet):
-    queryset = JobPost.objects.all()
-    serializer_class = JobPostSerializer
-    lookup_field = "job_post_id"
-
-    # This method will handle the default behavior of the GET request for a specific JobPost
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+class JobPostDetailView(View):
+    def get(self, request, job_post_id):
+        job_post = get_object_or_404(JobPost, job_post_id=job_post_id)
+        serializer = JobPostSerializer(job_post)
+        return JsonResponse(serializer.data, safe=False)
 
 
 # ============================> RESUME <============================

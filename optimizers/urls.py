@@ -2,24 +2,13 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from optimizers import views
-from optimizers.views import (
-    CoverLetterViewSet,
-    JobPostViewSet,
-    OptimizedCoverLetterContentViewSet,
-    OptimizedResumeContentViewSet,
-    ResumeViewSet,
-)
-
-router = DefaultRouter()
-router.register(r"improved_resumes", ResumeViewSet)
-router.register(r"optimized_resumes", OptimizedResumeContentViewSet)
-router.register(r"improved_cover_letters", CoverLetterViewSet)
-router.register(r"optimized_cover_letters", OptimizedCoverLetterContentViewSet)
-router.register(r"job_posts", JobPostViewSet)
-
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path('get-improved-resumes/<str:resume_id>/', views.ResumeDetailView.as_view(), name='improved_resume_detail'),
+    path('get-optimized-resumes/<str:resume_id>/', views.OptimizedResumeContentDetailView.as_view(), name='optimized_resume_detail'),
+    path('get-improved-cover-letters/<str:cover_letter_id>/', views.CoverLetterDetailView.as_view(), name='improved_cover_letter_detail'),
+    path('get-optimized-cover-letters/<str:cover_letter_id>/', views.OptimizedCoverLetterContentDetailView.as_view(), name='optimized_cover_letter_detail'),
+    path('get-improved-jobs/<str:job_id>/', views.JobDetailView.as_view(), name='improved_job_detail'),
     # =====================> Resume URLs <=====================
     path(
         "improve-resume/<str:applicant_id>/",

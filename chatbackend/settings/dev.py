@@ -5,7 +5,9 @@ ALLOWED_HOSTS = ["*"]
 
 
 # ================================ DATABASES =======================================
-DATABASES = {"default": dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)}
+DATABASES = {
+    "default": dj_database_url.config(default="sqlite:///db.sqlite3", conn_max_age=600)
+}
 
 # # Database
 # DATABASES = {
@@ -21,7 +23,9 @@ DATABASES = {"default": dj_database_url.config(default='sqlite:///db.sqlite3', c
 # ==> STATIC FILE UPLOADS
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 # ==> MEDIA FILE UPLOADS
 MEDIA_URL = "media/"
@@ -30,9 +34,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 # ================================ EMAIL =======================================
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-EMAIL_HOST = 'smtp.office365.com'  # 'smtp.outlook.office365.com'
+EMAIL_HOST = "smtp.office365.com"  # 'smtp.outlook.office365.com'
 EMAIL_PORT = 587  # 465  # TLS port
 EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = True
@@ -48,7 +52,7 @@ DEFAULT_FROM_EMAIL = config("EMAIL")
 #         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
 #     }
 # }
-CHANNEL_LAYERS = {'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}}
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 # ================================ REDIS =======================================
 
 

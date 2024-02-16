@@ -384,6 +384,9 @@ class Boto3UploadView(View):
                 )
             return JsonResponse({"message": "File uploaded successfully!"}, status=200)
         except Exception as e:
+            print(f"============ Error Details Start ============")
+            print(e)
+            print(f"============ Error Details End ============")
             # Here, you should log the exception to be able to debug it later
             return JsonResponse({"message": "Upload failed."}, status=500)
 

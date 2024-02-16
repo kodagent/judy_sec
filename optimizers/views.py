@@ -1,5 +1,7 @@
 import json
 
+import boto3
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -351,6 +353,39 @@ class JobOptimizationView(View):
 
 
 # ============================> JOB POST <============================
+
+
+class Boto3UploadView(View):
+    def get(self, request):
+        # The path to your file within your project directory
+        file_path = "resume.pdf"  # Replace with your file's path
+
+        # Create an S3 client
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        )
+
+        # Define the bucket name and the key for the file in S3
+        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+        file_key = "checking.pdf"  # The name you want the file to have in S3
+
+        # Try to upload the file
+        try:
+            with open(file_path, "rb") as data:
+                s3.upload_fileobj(
+                    data,
+                    bucket_name,
+                    file_key,
+                    ExtraArgs={
+                        "ACL": "public-read"
+                    },  # or 'private', depending on your needs
+                )
+            return JsonResponse({"message": "File uploaded successfully!"}, status=200)
+        except Exception as e:
+            # Here, you should log the exception to be able to debug it later
+            return JsonResponse({"message": "Upload failed."}, status=500)
 
 
 # http://127.0.0.1:8000/api/optimizers/optimize-job-post/654194177b7c7c8236e8541f/

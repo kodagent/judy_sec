@@ -12,34 +12,21 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from optimizers.cl_opt import (
-    customize_improved_cover_letter,
-    customize_optimized_cover_letter,
-    get_default_cover_letter,
-    improve_cover_letter,
-    optimize_cover_letter,
-)
+from optimizers.cl_opt import (customize_improved_cover_letter,
+                               customize_optimized_cover_letter,
+                               get_default_cover_letter, improve_cover_letter,
+                               optimize_cover_letter)
 from optimizers.job_post import optimize_job_post
-from optimizers.models import (
-    CoverLetter,
-    JobPost,
-    OptimizedCoverLetterContent,
-    OptimizedResumeContent,
-    Resume,
-)
-from optimizers.resume_opt import (
-    customize_improved_resume,
-    customize_optimized_resume,
-    improve_resume,
-    optimize_resume,
-)
-from optimizers.serializers import (
-    CoverLetterSerializer,
-    JobPostSerializer,
-    OptimizedCoverLetterContentSerializer,
-    OptimizedResumeSerializer,
-    ResumeSerializer,
-)
+from optimizers.models import (CoverLetter, JobPost,
+                               OptimizedCoverLetterContent,
+                               OptimizedResumeContent, Resume)
+from optimizers.resume_opt import (customize_improved_resume,
+                                   customize_optimized_resume, improve_resume,
+                                   optimize_resume)
+from optimizers.serializers import (CoverLetterSerializer, JobPostSerializer,
+                                    OptimizedCoverLetterContentSerializer,
+                                    OptimizedResumeSerializer,
+                                    ResumeSerializer)
 
 
 class ResumeDetailView(View):
@@ -378,16 +365,13 @@ class Boto3UploadView(View):
                     data,
                     bucket_name,
                     file_key,
-                    ExtraArgs={
-                        "ACL": "public-read"
-                    },  # or 'private', depending on your needs
+                    # Removed the ExtraArgs with ACL since it's not supported with your bucket configuration
                 )
             return JsonResponse({"message": "File uploaded successfully!"}, status=200)
         except Exception as e:
             print(f"============ Error Details Start ============")
             print(e)
             print(f"============ Error Details End ============")
-            # Here, you should log the exception to be able to debug it later
             return JsonResponse({"message": "Upload failed."}, status=500)
 
 

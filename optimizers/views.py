@@ -12,21 +12,34 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from optimizers.cl_opt import (customize_improved_cover_letter,
-                               customize_optimized_cover_letter,
-                               get_default_cover_letter, improve_cover_letter,
-                               optimize_cover_letter)
+from optimizers.cl_opt import (
+    customize_improved_cover_letter,
+    customize_optimized_cover_letter,
+    get_default_cover_letter,
+    improve_cover_letter,
+    optimize_cover_letter,
+)
 from optimizers.job_post import optimize_job_post
-from optimizers.models import (CoverLetter, JobPost,
-                               OptimizedCoverLetterContent,
-                               OptimizedResumeContent, Resume)
-from optimizers.resume_opt import (customize_improved_resume,
-                                   customize_optimized_resume, improve_resume,
-                                   optimize_resume)
-from optimizers.serializers import (CoverLetterSerializer, JobPostSerializer,
-                                    OptimizedCoverLetterContentSerializer,
-                                    OptimizedResumeSerializer,
-                                    ResumeSerializer)
+from optimizers.models import (
+    CoverLetter,
+    JobPost,
+    OptimizedCoverLetterContent,
+    OptimizedResumeContent,
+    Resume,
+)
+from optimizers.resume_opt import (
+    customize_improved_resume,
+    customize_optimized_resume,
+    improve_resume,
+    optimize_resume,
+)
+from optimizers.serializers import (
+    CoverLetterSerializer,
+    JobPostSerializer,
+    OptimizedCoverLetterContentSerializer,
+    OptimizedResumeSerializer,
+    ResumeSerializer,
+)
 
 
 class ResumeDetailView(View):
@@ -356,7 +369,7 @@ class Boto3UploadView(View):
 
         # Define the bucket name and the key for the file in S3
         bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-        file_key = "checking.pdf"  # The name you want the file to have in S3
+        file_key = "resume123.pdf"  # The name you want the file to have in S3
 
         # Try to upload the file
         try:

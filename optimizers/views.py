@@ -358,7 +358,7 @@ class JobOptimizationView(View):
 class Boto3UploadView(View):
     def get(self, request):
         # The path to your file within your project directory
-        file_path = "resume.pdf"  # Replace with your file's path
+        file_path = "resume123.pdf"  # Replace with your file's path
 
         # Create an S3 client
         s3 = boto3.client(

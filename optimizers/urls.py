@@ -81,6 +81,6 @@ urlpatterns = [
         views.JobOptimizationView.as_view(),
         name="job_post_optimization",
     ),
-    # =====================> Testing <=====================
-    path("upload/", views.Boto3UploadView.as_view(), name="upload"),
+    # # =====================> Testing <=====================
+    # path("upload/", views.Boto3UploadView.as_view(), name="upload"),
 ]

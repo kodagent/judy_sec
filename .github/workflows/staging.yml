@@ -35,6 +35,9 @@ jobs:
       
         # ------------------------- DATABASE ------------------------- 
         # DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+        # -------------------------- REDIS CONFIG ----------------------------
+        REDIS_URL: ${{ secrets.REDIS_URL }}
       
         # ------------------------- CORS ------------------------- 
         CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
@@ -51,9 +54,10 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         ASSISTANT_ID: ${{ secrets.ASSISTANT_ID }}
         
-        # -------------------------- REDIS CONFIG ----------------------------
-        REDIS_URL: ${{ secrets.REDIS_URL }}
-        
+        # ------------------------- MONGO DATABASE DETAILS -------------------------
+        MONGO_DB_URL: ${{ secrets.MONGO_DB_URL }}
+        MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+
         # -------------------------- MEETINGS ----------------------------
         FIREFLIES_API_KEY: ${{ secrets.FIREFLIES_API_KEY }}      
         # ===========================================================

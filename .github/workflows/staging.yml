@@ -34,7 +34,7 @@ jobs:
         PASSWORD: ${{ secrets.PASSWORD }}
       
         # ------------------------- DATABASE ------------------------- 
-        # DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
         # -------------------------- REDIS CONFIG ----------------------------
         REDIS_URL: ${{ secrets.REDIS_URL }}

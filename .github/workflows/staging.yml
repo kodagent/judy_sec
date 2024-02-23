@@ -97,6 +97,12 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+    
+    - name: Decrypt .env.gpg File
+      env:
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      run: |
+        echo $GPG_PASSPHRASE | gpg --quiet --batch --yes --decrypt --passphrase-fd 0 --output ./.env ./.env.gpg
 
     - name: Transfer Repository to Remote Server
       run: rsync -avz -e "ssh -i ~/.ssh/id_rsa" ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/home/ubuntu/judy/
@@ -109,6 +115,48 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+          
           cd /home/ubuntu/judy/
-          docker-compose down
-          docker-compose up -d
+          
+          # Pull the latest image
+          docker pull essentialrecruit/judy-staging:latest
+
+          # Ensure scripts are executable (in case they are not already)
+          chmod +x install_docker.sh
+          chmod +x entrypoint.sh
+
+          # Check if Docker Compose is installed
+          if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+            echo "Installing Docker Compose..."
+            ./install_docker.sh
+            # No need to modify PATH or logout/login; Docker should be immediately usable
+          else
+            echo "Docker Compose already installed."
+          fi
+          
+          # Run docker commands using Docker Compose plugin syntax
+          sudo docker compose down || echo "Docker Compose down failed or not necessary"
+          sudo docker compose up -d || echo "Docker Compose up failed"
+      
+    - name: Setup crontab for Docker cleanup on the server with logging
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Define the cron job command with logging
+          CRON_JOB="0 0 * * * /usr/bin/docker system prune -af > /var/log/docker_cleanup.log 2>&1"
+          
+          # Create a log file and set permissions (if not already exist)
+          TOUCH_LOG_CMD="sudo touch /var/log/docker_cleanup.log && sudo chmod 644 /var/log/docker_cleanup.log"
+          (crontab -l | grep -q "/var/log/docker_cleanup.log") || (eval "$TOUCH_LOG_CMD")
+
+          # Check if the cleanup cron job already exists
+            (crontab -l | grep -q "docker system prune") || (crontab -l 2>/dev/null; echo "$CRON_JOB") | sudo crontab -
+
+          # Ensure the cron service is running
+          sudo service cron restart
+
+          # This cron job is scheduled to run at midnight every day, performing a Docker system prune
+          # to remove unused Docker objects and logs the output to /var/log/docker_cleanup.log.

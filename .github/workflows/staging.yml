@@ -153,7 +153,7 @@ jobs:
           (crontab -l | grep -q "/var/log/docker_cleanup.log") || (eval "$TOUCH_LOG_CMD")
 
           # Check if the cleanup cron job already exists
-            (crontab -l | grep -q "docker system prune") || (crontab -l 2>/dev/null; echo "$CRON_JOB") | sudo crontab -
+          (crontab -l | grep -q "docker system prune") || (crontab -l 2>/dev/null; echo "$CRON_JOB") | sudo crontab -
 
           # Ensure the cron service is running
           sudo service cron restart

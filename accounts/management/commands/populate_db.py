@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from accounts.factories import OrganizationProfileFactory, UserFactory
+# from accounts.factories import OrganizationProfileFactory, UserFactory
 
 
 class Command(BaseCommand):
@@ -28,13 +28,13 @@ class Command(BaseCommand):
                 self.style.WARNING(f"Superuser {username} already exists")
             )
 
-        # Create Users
-        for _ in range(10):
-            UserFactory.create()
+        # # Create Users
+        # for _ in range(10):
+        #     UserFactory.create()
 
-        # Create Organization Profiles
-        for _ in range(5):
-            OrganizationProfileFactory.create()
+        # # Create Organization Profiles
+        # for _ in range(5):
+        #     OrganizationProfileFactory.create()
 
         # ... create other objects
 

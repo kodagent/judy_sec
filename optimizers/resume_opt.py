@@ -11,14 +11,9 @@ from optimizers.mg_database import get_doc_content
 from optimizers.models import JobPost, OptimizedResumeContent, Resume
 from optimizers.pdf_gen import generate_resume_pdf
 from optimizers.samples import default_job_post, default_resume
-from optimizers.utils import (
-    Readablity,
-    customize_doc,
-    improve_doc,
-    optimize_doc,
-    resume_sections_feedback,
-    upload_directly_to_s3,
-)
+from optimizers.utils import (Readablity, customize_doc, improve_doc,
+                              optimize_doc, resume_sections_feedback,
+                              upload_directly_to_s3)
 
 logger = configure_logger(__name__)
 
@@ -43,9 +38,7 @@ def improve_resume(candidate_id):
             )
 
             sections_feedback = await resume_sections_feedback(resume_content)
-
             feedbacks = [readability_feedback, sections_feedback]
-
             resume_feedback = "\n\n".join(feedbacks)
 
             improved_content = await improve_doc(
@@ -78,7 +71,9 @@ def improve_resume(candidate_id):
     total = time.time() - start_time
     logger.info(f"Total time taken: {total}")
 
-    return resume_instance.general_improved_pdf.url
+    # Construct the URL to the PDF stored in S3
+    pdf_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+    return pdf_url
 
 
 @shared_task

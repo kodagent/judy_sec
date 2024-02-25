@@ -87,8 +87,8 @@ class ResumeImprovementView(View):
     async def get(self, request, applicant_id, format=None):
         try:
             # Get the optimized content
-            # pdf_url = improve_resume.delay(applicant_id)
-            pdf_url = improve_resume(applicant_id)
+            pdf_url = improve_resume.delay(applicant_id)
+            # pdf_url = improve_resume(applicant_id)
             data = {
                 "success": "Resume Improvement Initiated",
                 # "improved_content": pdf_url,
@@ -108,8 +108,8 @@ class ResumeOptimizationView(View):
     async def get(self, request, applicant_id, job_post_id, format=None):
         try:
             # Get the optimized content
-            # return_data = optimize_resume.delay(applicant_id, job_post_id)
-            return_data = optimize_resume(applicant_id, job_post_id)
+            return_data = optimize_resume.delay(applicant_id, job_post_id)
+            # return_data = optimize_resume(applicant_id, job_post_id)
             data = {
                 "success": "Resume Optimization Initiated",
                 # "optimized_content": return_data,
@@ -136,10 +136,10 @@ class ResumeImprovementCustomizationView(View):
             custom_instruction = body_data.get("custom_instruction")
 
             # Call the utility function with applicant_id and custom_instruction
-            # return_data = customize_improved_resume.delay(
-            #     applicant_id, custom_instruction
-            # )
-            return_data = customize_improved_resume(applicant_id, custom_instruction)
+            return_data = customize_improved_resume.delay(
+                applicant_id, custom_instruction
+            )
+            # return_data = customize_improved_resume(applicant_id, custom_instruction)
             data = {
                 "success": "Resume Improvement Customization Initiated",
                 # "optimized_content": return_data,
@@ -166,12 +166,12 @@ class ResumeOptimizationCustomizationView(View):
             custom_instruction = body_data.get("custom_instruction")
 
             # Call the utility function with applicant_id, job_post_id, and custom_instruction
-            # return_data = customize_optimized_resume.delay(
-            #     applicant_id, job_post_id, custom_instruction
-            # )
-            return_data = customize_optimized_resume(
+            return_data = customize_optimized_resume.delay(
                 applicant_id, job_post_id, custom_instruction
             )
+            # return_data = customize_optimized_resume(
+            #     applicant_id, job_post_id, custom_instruction
+            # )
             data = {
                 "success": "Resume Optimization Customization Initiated",
                 # "optimized_content": return_data,
@@ -196,8 +196,8 @@ class CoverLetterCreationView(View):
     async def get(self, request, applicant_id, format=None):
         try:
             # Get the optimized content
-            # pdf_url = get_default_cover_letter.delay(applicant_id)
-            pdf_url = get_default_cover_letter(applicant_id)
+            pdf_url = get_default_cover_letter.delay(applicant_id)
+            # pdf_url = get_default_cover_letter(applicant_id)
             data = {
                 "success": "Cover Letter Creation Initiated",
                 # "improved_content": pdf_url,
@@ -218,8 +218,8 @@ class CoverLetterImprovementView(View):
     async def get(self, request, applicant_id, format=None):
         try:
             # Get the optimized content
-            # pdf_url = improve_cover_letter.delay(applicant_id)
-            pdf_url = improve_cover_letter(applicant_id)
+            pdf_url = improve_cover_letter.delay(applicant_id)
+            # pdf_url = improve_cover_letter(applicant_id)
             data = {
                 "success": "Cover Letter Improvement Initiated",
                 # "improved_content": pdf_url,
@@ -240,8 +240,8 @@ class CoverLetterOptimizationView(View):
     # def get(self, request, application_id, job_post_id, format=None):
     async def get(self, request, applicant_id, job_post_id, format=None):
         try:
-            # return_data = optimize_cover_letter.delay(applicant_id, job_post_id)
-            return_data = optimize_cover_letter(applicant_id, job_post_id)
+            return_data = optimize_cover_letter.delay(applicant_id, job_post_id)
+            # return_data = optimize_cover_letter(applicant_id, job_post_id)
             data = {
                 "success": "Cover Letter Optimization Initiated",
                 # "optimized_content": return_data,
@@ -269,12 +269,12 @@ class CoverLetterImprovementCustomizationView(View):
             custom_instruction = body_data.get("custom_instruction")
 
             # Call the utility function with applicant_id and custom_instruction
-            # return_data = customize_improved_cover_letter.delay(
-            #     applicant_id, custom_instruction
-            # )
-            return_data = customize_improved_cover_letter(
+            return_data = customize_improved_cover_letter.delay(
                 applicant_id, custom_instruction
             )
+            # return_data = customize_improved_cover_letter(
+            #     applicant_id, custom_instruction
+            # )
             data = {
                 "success": "Cover Letter Improvement Customization Initiated",
                 # "optimized_content": return_data,
@@ -302,12 +302,12 @@ class CoverLetterOptimizationCustomizationView(View):
             custom_instruction = body_data.get("custom_instruction")
 
             # Call the utility function with applicant_id, job_post_id, and custom_instruction
-            # return_data = customize_optimized_cover_letter.delay(
-            #     applicant_id, job_post_id, custom_instruction
-            # )
-            return_data = customize_optimized_cover_letter(
+            return_data = customize_optimized_cover_letter.delay(
                 applicant_id, job_post_id, custom_instruction
             )
+            # return_data = customize_optimized_cover_letter(
+            #     applicant_id, job_post_id, custom_instruction
+            # )
             data = {
                 "success": "Cover Letter Optimization Customization Initiated",
                 # "optimized_content": return_data,
@@ -332,8 +332,8 @@ class JobOptimizationView(View):
     async def get(self, request, job_id, format=None):
         # feedback_only = request.query_params.get("feedback", "false").lower() == "true"
         try:
-            # optimized_job_post_content = optimize_job_post.delay(job_id)
-            optimized_job_post_content = optimize_job_post(job_id)
+            optimized_job_post_content = optimize_job_post.delay(job_id)
+            # optimized_job_post_content = optimize_job_post(job_id)
             # might need to use the mark down dangerous html before pushing to frontend
             return JsonResponse(
                 {

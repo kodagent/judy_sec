@@ -33,25 +33,21 @@ THIRD_PARTY_APPS = [
     "drf_yasg",
     "drf_spectacular",
     "rest_framework",
-    'rest_framework_simplejwt',
+    "rest_framework_simplejwt",
     "storages",
 ]
 
 LOCAL_APPS = [
     # auth apps
     "accounts",
-
     # chat apps
     "assistant",
-    
-    'optimizers',
-    'recommendation',
-    'meeting',
-    
+    "optimizers",
+    "recommendation",
+    "meeting",
     # knowledge
-    'knowledge',
+    "knowledge",
     "record",
-    
     # payment apps
     # "payment",
 ]
@@ -66,7 +62,7 @@ INSTALLED_APPS = DEFAULT_APPS + LOCAL_APPS + THIRD_PARTY_APPS + OTHER_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware", # Custom added
+    "corsheaders.middleware.CorsMiddleware",  # Custom added
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -79,7 +75,7 @@ ROOT_URLCONF = "chatbackend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -137,19 +133,21 @@ ASGI_APPLICATION = "chatbackend.asgi.application"
 LOGIN_URL = "login"
 LOGOUT_URL = "logout"
 LOGIN_REDIRECT_URL = "index"  # "dashboard"
-LOGOUT_REDIRECT_URL = 'login' 
+LOGOUT_REDIRECT_URL = "login"
 
-def get_origin_list(env_variable, default=''):
+
+def get_origin_list(env_variable, default=""):
     origins = config(env_variable, default)
-    return [origin.strip() for origin in origins.split(',') if origin.strip()]
+    return [origin.strip() for origin in origins.split(",") if origin.strip()]
+
 
 # ==> CORS
-CORS_ALLOWED_ORIGINS = get_origin_list('CORS_ORIGINS')
+CORS_ALLOWED_ORIGINS = get_origin_list("CORS_ORIGINS")
 CORS_ALLOWED_CREDENTIALS = True
 # CORS_ALLOW_ALL_ORIGINS = True
 
 # ==> CSRF
-CSRF_TRUSTED_ORIGINS = get_origin_list('CSRF_TRUSTED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = get_origin_list("CSRF_TRUSTED_ORIGINS")
 
 # ==> CONSTANTS
 CART_SESSION_ID = secrets.token_urlsafe(16)
@@ -161,11 +159,11 @@ AUTHENTICATION_BACKENDS = [
 
 # ==> REST FRAMEWORK
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    'DEFAULT_PAGINATION_CLASS': "rest_framework.pagination.PageNumberPagination",
-    'PAGE_SIZE': 10,
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 SIMPLE_JWT = {
@@ -174,7 +172,6 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
-
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": "",
@@ -183,23 +180,18 @@ SIMPLE_JWT = {
     "JSON_ENCODER": None,
     "JWK_URL": None,
     "LEEWAY": 0,
-
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
     "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
     "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
-
     "JTI_CLAIM": "jti",
-
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
-
     "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
@@ -209,27 +201,27 @@ SIMPLE_JWT = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Chatbot API',
-    'DESCRIPTION': 'Chatbot description',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': True,
+    "TITLE": "Chatbot API",
+    "DESCRIPTION": "Chatbot description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": True,
 }
 
 # ==> CELERY
 # Use the actual IP address and port of your Redis server
-REDIS_IP = 'redis'
+REDIS_IP = "redis"
 REDIS_PORT = 6379
-CELERY_BROKER_URL = f'redis://{REDIS_IP}:{REDIS_PORT}/0'
-CELERY_RESULT_BACKEND = f'redis://{REDIS_IP}:{REDIS_PORT}/0'
-CELERY_TIMEZONE = 'UTC'
+CELERY_BROKER_URL = f"redis://{REDIS_IP}:{REDIS_PORT}/0"
+CELERY_RESULT_BACKEND = f"redis://{REDIS_IP}:{REDIS_PORT}/0"
+CELERY_TIMEZONE = "UTC"
 
 # List of modules to import when the Celery worker starts.
-CELERY_IMPORTS = ('chatbackend.tasks', ) 
+CELERY_IMPORTS = ("chatbackend.tasks",)
 
 # If using JSON as the serialization format
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
 # ==> MONGO DB
 MONGO_DB_URL = config("MONGO_DB_URL")
@@ -239,8 +231,12 @@ MONGO_DB_NAME = config("MONGO_DB_NAME")
 # ================================ CUSTOM VARIABLES =======================================
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 ASSISTANT_ID = config("ASSISTANT_ID")
-os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-PINECONE_API_KEY=config("PINECONE_API_KEY")
-PINECONE_API_ENV=config("PINECONE_API_ENV")
-PINECONE_INDEX_NAME=config("PINECONE_INDEX_NAME")
+PINECONE_API_KEY = config("PINECONE_API_KEY")
+PINECONE_API_ENV = config("PINECONE_API_ENV")
+PINECONE_INDEX_NAME = config("PINECONE_INDEX_NAME")
+
+ADMIN_USERNAME = config("ADMIN_USERNAME")
+ADMIN_EMAIL = config("ADMIN_EMAIL")
+ADMIN_PASSWORD = config("ADMIN_PASSWORD")

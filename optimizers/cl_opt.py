@@ -50,7 +50,7 @@ def get_default_cover_letter(candidate_id):
         )
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"cover_letters/original/{uuid4()}.pdf"
+        s3_key = f"media/cover_letters/original/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
@@ -111,7 +111,7 @@ def improve_cover_letter(candidate_id):
         )
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"cover_letters/general_improved/{uuid4()}.pdf"
+        s3_key = f"media/cover_letters/general_improved/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
@@ -160,7 +160,7 @@ def optimize_cover_letter(applicant_id, job_post_id):
         )
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"cover_letters/optimized/{uuid4()}.pdf"
+        s3_key = f"media/cover_letters/optimized/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
@@ -210,7 +210,7 @@ def customize_improved_cover_letter(candidate_id, custom_instruction):
         )
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"cover_letters/general_improved/{uuid4()}.pdf"
+        s3_key = f"media/cover_letters/general_improved/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
@@ -266,7 +266,7 @@ def customize_optimized_cover_letter(applicant_id, job_post_id, custom_instructi
         )
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"cover_letters/optimized/{uuid4()}.pdf"
+        s3_key = f"media/cover_letters/optimized/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)

@@ -12,9 +12,9 @@ class Command(BaseCommand):
         User = get_user_model()
 
         # Set your custom superuser data
-        username = settings.USERNAME
-        email = settings.EMAIL
-        password = settings.PASSWORD
+        username = settings.ADMIN_USERNAME
+        email = settings.ADMIN_EMAIL
+        password = settings.ADMIN_PASSWORD
 
         if not User.objects.filter(username=username).exists():
             User.objects.create_superuser(

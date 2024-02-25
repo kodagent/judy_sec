@@ -43,9 +43,7 @@ def improve_resume(candidate_id):
             )
 
             sections_feedback = await resume_sections_feedback(resume_content)
-
             feedbacks = [readability_feedback, sections_feedback]
-
             resume_feedback = "\n\n".join(feedbacks)
 
             improved_content = await improve_doc(
@@ -60,7 +58,7 @@ def improve_resume(candidate_id):
         pdf = generate_resume_pdf(improved_content, filename="Improved Resume.pdf")
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"resume/general_improved/{uuid4()}.pdf"
+        s3_key = f"media/resume/general_improved/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
@@ -78,7 +76,9 @@ def improve_resume(candidate_id):
     total = time.time() - start_time
     logger.info(f"Total time taken: {total}")
 
-    return resume_instance.general_improved_pdf.url
+    # Construct the URL to the PDF stored in S3
+    pdf_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+    return pdf_url
 
 
 @shared_task
@@ -102,7 +102,7 @@ async def customize_improved_resume(candidate_id, custom_instruction):
     )
 
     # Generate a unique S3 key for the PDF
-    s3_key = f"resume/general_improved/{uuid4()}.pdf"
+    s3_key = f"media/resume/general_improved/{uuid4()}.pdf"
 
     # Upload the PDF directly to S3
     upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
@@ -151,7 +151,7 @@ def customize_optimized_resume(applicant_id, job_post_id, custom_instruction):
         )
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"resume/optimized/{uuid4()}.pdf"
+        s3_key = f"media/resume/optimized/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
@@ -200,7 +200,7 @@ def optimize_resume(applicant_id, job_post_id):
         pdf = generate_resume_pdf(optimized_content, filename="Optimized Resume.pdf")
 
         # Generate a unique S3 key for the PDF
-        s3_key = f"resume/optimized/{uuid4()}.pdf"
+        s3_key = f"media/resume/optimized/{uuid4()}.pdf"
 
         # Upload the PDF directly to S3
         upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)

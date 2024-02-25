@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from optimizers.utils import get_full_url
+
 from .models import (
     CoverLetter,
     CoverLetterAnalysis,
@@ -20,9 +22,27 @@ class JobPostSerializer(serializers.ModelSerializer):
 
 # CoverLetter
 class CoverLetterSerializer(serializers.ModelSerializer):
+    original_pdf_url = serializers.SerializerMethodField()
+    general_improved_pdf_url = serializers.SerializerMethodField()
+
     class Meta:
         model = CoverLetter
-        fields = "__all__"
+        fields = (
+            "original_pdf_url",
+            "general_improved_pdf_url",
+        )
+
+    def get_original_pdf_url(self, obj):
+        return (
+            get_full_url(obj.original_pdf_s3_key) if obj.original_pdf_s3_key else None
+        )
+
+    def get_general_improved_pdf_url(self, obj):
+        return (
+            get_full_url(obj.general_improved_pdf_s3_key)
+            if obj.general_improved_pdf_s3_key
+            else None
+        )
 
 
 class CoverLetterAnalysisSerializer(serializers.ModelSerializer):
@@ -36,14 +56,37 @@ class CoverLetterAnalysisSerializer(serializers.ModelSerializer):
 class OptimizedCoverLetterContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = OptimizedCoverLetterContent
-        fields = "__all__"
+        fields = ("optimized_pdf_url",)
+
+    def get_optimized_pdf_url(self, obj):
+        return (
+            get_full_url(obj.optimized_pdf_s3_key) if obj.optimized_pdf_s3_key else None
+        )
 
 
 # Resume
 class ResumeSerializer(serializers.ModelSerializer):
+    original_pdf_url = serializers.SerializerMethodField()
+    general_improved_pdf_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Resume
-        fields = "__all__"
+        fields = (
+            "original_pdf_url",
+            "general_improved_pdf_url",
+        )
+
+    def get_original_pdf_url(self, obj):
+        return (
+            get_full_url(obj.original_pdf_s3_key) if obj.original_pdf_s3_key else None
+        )
+
+    def get_general_improved_pdf_url(self, obj):
+        return (
+            get_full_url(obj.general_improved_pdf_s3_key)
+            if obj.general_improved_pdf_s3_key
+            else None
+        )
 
 
 class ResumeAnalysisSerializer(serializers.ModelSerializer):
@@ -55,6 +98,13 @@ class ResumeAnalysisSerializer(serializers.ModelSerializer):
 
 
 class OptimizedResumeSerializer(serializers.ModelSerializer):
+    optimized_pdf_url = serializers.SerializerMethodField()
+
     class Meta:
         model = OptimizedResumeContent
-        fields = "__all__"
+        fields = ("optimized_pdf_url",)
+
+    def get_optimized_pdf_url(self, obj):
+        return (
+            get_full_url(obj.optimized_pdf_s3_key) if obj.optimized_pdf_s3_key else None
+        )

@@ -34,6 +34,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install Playwright and browsers
 RUN npm i -D playwright && npx playwright install
 
+# Set execute permission for entrypoint.sh
+RUN chmod +x /code/entrypoint.sh
+
 ENTRYPOINT ["/code/entrypoint.sh"]
 
 # Run the application

@@ -1,23 +1,27 @@
 image:
   file: .gitpod.Dockerfile
 
-# Define services
 tasks:
-  - name: web
-    before: pip install --no-cache-dir -r requirements.txt
-    init: npm i -D playwright && npx playwright install
-    command: daphne chatbackend.asgi:application -b 0.0.0.0 -p 8000
+  - name: Initialize
+    init: >
+      pip install --no-cache-dir -r requirements.txt &&
+      npm i -D playwright && npx playwright install
+    command: echo "Ready!"
 
-  - name: celery
-    command: celery -A chatbackend worker --loglevel=info
-
-ports:
-  - port: 8000
-    onOpen: open-preview
-
-# Services similar to docker-compose services
+# Define services
 services:
   - name: redis
     image: redis:latest
     ports:
       - port: 6379
+
+  - name: web
+    image: gitpod/workspace-full
+    command: daphne chatbackend.asgi:application -b 0.0.0.0 -p 8000
+    ports:
+      - port: 8000
+        onOpen: open-preview
+
+  - name: celery
+    image: gitpod/workspace-full
+    command: celery -A chatbackend worker --loglevel=info

@@ -29,9 +29,9 @@ jobs:
         DJANGO_SETTINGS_MODULE: ${{ secrets.DJANGO_SETTINGS_MODULE }}
       
         # ------------------------- SUPERUSER ------------------------- 
-        USERNAME: ${{ secrets.ADMIN_USERNAME }}
-        EMAIL: ${{ secrets.ADMIN_EMAIL }}
-        PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+        ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
       
         # ------------------------- DATABASE ------------------------- 
         DATABASE_URL: ${{ secrets.DATABASE_URL }}

@@ -1,0 +1,16 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: Web Server
+    init: pip install -r requirements.txt && npm i -D playwright && npx playwright install
+    command: daphne chatbackend.asgi:application -b 0.0.0.0 -p 8000
+
+services:
+  - name: redis
+    image: redis:latest
+    ports:
+      - port: 6379
+
+  - name: celery
+    command: celery -A chatbackend worker --loglevel=info

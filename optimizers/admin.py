@@ -12,7 +12,6 @@ from optimizers.models import (
     Resume,
     ResumeAnalysis,
 )
-from optimizers.utils import get_full_url
 
 
 # Inline admin for analyses and optimized content to show them on the same page as their parent models
@@ -58,7 +57,7 @@ class CoverLetterAdmin(admin.ModelAdmin):
 
     def original_pdf_link(self, obj):
         if obj.original_pdf_s3_key:
-            url = get_full_url(obj.original_pdf_s3_key)
+            url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{obj.original_pdf_s3_key}"
             return format_html(
                 "<a href='{url}' target='_blank'>View Original PDF</a>", url=url
             )
@@ -68,7 +67,7 @@ class CoverLetterAdmin(admin.ModelAdmin):
 
     def general_improved_pdf_link(self, obj):
         if obj.general_improved_pdf_s3_key:
-            url = get_full_url(obj.general_improved_pdf_s3_key)
+            url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{obj.general_improved_pdf_s3_key}"
             return format_html(
                 "<a href='{url}' target='_blank'>View Improved PDF</a>", url=url
             )
@@ -87,7 +86,7 @@ class ResumeAdmin(admin.ModelAdmin):
 
     def original_pdf_link(self, obj):
         if obj.original_pdf_s3_key:
-            url = get_full_url(obj.original_pdf_s3_key)
+            url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{obj.original_pdf_s3_key}"
             return format_html(
                 "<a href='{url}' target='_blank'>View Original PDF</a>", url=url
             )
@@ -97,7 +96,7 @@ class ResumeAdmin(admin.ModelAdmin):
 
     def general_improved_pdf_link(self, obj):
         if obj.general_improved_pdf_s3_key:
-            url = get_full_url(obj.general_improved_pdf_s3_key)
+            url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{obj.general_improved_pdf_s3_key}"
             return format_html(
                 "<a href='{url}' target='_blank'>View Improved PDF</a>", url=url
             )
@@ -113,7 +112,7 @@ class OptimizedCoverLetterContentAdmin(admin.ModelAdmin):
 
     def optimized_pdf_link(self, obj):
         if obj.optimized_pdf_s3_key:
-            url = get_full_url(obj.optimized_pdf_s3_key)
+            url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{obj.optimized_pdf_s3_key}"
             return format_html(
                 "<a href='{url}' target='_blank'>View Optimized PDF</a>", url=url
             )
@@ -129,7 +128,7 @@ class OptimizedResumeContentAdmin(admin.ModelAdmin):
 
     def optimized_pdf_link(self, obj):
         if obj.optimized_pdf_s3_key:
-            url = get_full_url(obj.optimized_pdf_s3_key)
+            url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{obj.optimized_pdf_s3_key}"
             return format_html(
                 "<a href='{url}' target='_blank'>View Optimized PDF</a>", url=url
             )

@@ -34,8 +34,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install Playwright and browsers
 RUN npm i -D playwright && npx playwright install
 
-# Collect static files
-# RUN python manage.py collectstatic --noinput
+# Set execute permission for entrypoint.sh
+RUN chmod +x /code/entrypoint.sh
+
+ENTRYPOINT ["/code/entrypoint.sh"]
 
 # Run the application
 # CMD daphne chatbackend.asgi:application --port $PORT --bind 0.0.0.0

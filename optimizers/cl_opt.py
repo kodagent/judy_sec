@@ -1,7 +1,8 @@
 import asyncio
 import time
+from uuid import uuid4
 
-from asgiref.sync import sync_to_async, async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from celery import shared_task
 from django.conf import settings
 
@@ -20,11 +21,12 @@ from optimizers.utils import (
     Polarity,
     Readablity,
     check_grammar_and_spelling,
+    create_doc,
     customize_doc,
     improve_doc,
     optimize_doc,
     review_tone,
-    create_doc,
+    upload_directly_to_s3,
 )
 
 logger = configure_logger(__name__)
@@ -47,16 +49,26 @@ def get_default_cover_letter(candidate_id):
             created_cl, filename="Base Cover Letter.pdf", doc_type="CL"
         )
 
+        # Generate a unique S3 key for the PDF
+        s3_key = f"media/cover_letters/original/{uuid4()}.pdf"
+
+        # Upload the PDF directly to S3
+        upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
+
         cover_letter_instance, cover_letter_created = await sync_to_async(
             CoverLetter.objects.update_or_create, thread_sensitive=True
         )(
             cover_letter_id=candidate_id,
             defaults={
                 "original_content": created_cl,
-                "original_pdf": pdf,
+                "original_pdf_s3_key": s3_key,
             },
         )
-        return cover_letter_instance.original_pdf.url
+        # Construct the URL to the PDF stored in S3
+        pdf_url = (
+            f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+        )
+        return pdf_url
 
     url = async_to_sync(get_default_cl)()
     total = time.time() - start_time
@@ -69,15 +81,21 @@ def improve_cover_letter(candidate_id):
     start_time = time.time()
 
     async def improve_cl():
-        cover_letter_content = default_cover_letter  # Assuming this is fetched or defined earlier
+        cover_letter_content = (
+            default_cover_letter  # Assuming this is fetched or defined earlier
+        )
 
         readability = Readablity(cover_letter_content)
-        readability_feedback = await readability.get_readability_text(doc_type="cover letter")
+        readability_feedback = await readability.get_readability_text(
+            doc_type="cover letter"
+        )
 
         polarity = Polarity(cover_letter_content)
         polarity_feedback = await polarity.get_polarity_text(doc_type="cover letter")
 
-        tone_feedback = await review_tone(doc_type="cover letter", text=cover_letter_content)
+        tone_feedback = await review_tone(
+            doc_type="cover letter", text=cover_letter_content
+        )
 
         feedbacks = [readability_feedback, polarity_feedback, tone_feedback]
         cover_letter_feedback = "\n\n".join(feedbacks)
@@ -92,16 +110,26 @@ def improve_cover_letter(candidate_id):
             improved_content, filename="Improved Cover Letter.pdf", doc_type="CL"
         )
 
+        # Generate a unique S3 key for the PDF
+        s3_key = f"media/cover_letters/general_improved/{uuid4()}.pdf"
+
+        # Upload the PDF directly to S3
+        upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
+
         cover_letter_instance, cover_letter_created = await sync_to_async(
             CoverLetter.objects.update_or_create, thread_sensitive=True
         )(
             cover_letter_id=candidate_id,
             defaults={
                 "general_improved_content": improved_content,
-                "general_improved_pdf": pdf,
+                "general_improved_pdf_s3_key": s3_key,
             },
         )
-        return cover_letter_instance.general_improved_pdf.url
+        # Construct the URL to the PDF stored in S3
+        pdf_url = (
+            f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+        )
+        return pdf_url
 
     url = async_to_sync(improve_cl)()
     total = time.time() - start_time
@@ -131,18 +159,28 @@ def optimize_cover_letter(applicant_id, job_post_id):
             optimized_content, filename="Optimized Cover Letter.pdf", doc_type="CL"
         )
 
+        # Generate a unique S3 key for the PDF
+        s3_key = f"media/cover_letters/optimized/{uuid4()}.pdf"
+
+        # Upload the PDF directly to S3
+        upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
+
         optimized_content_instance, created = await sync_to_async(
             OptimizedCoverLetterContent.objects.update_or_create, thread_sensitive=True
         )(
             cover_letter=cover_letter_instance,
             defaults={
                 "optimized_content": optimized_content,
-                "optimized_pdf": pdf,
+                "optimized_pdf_s3_key": s3_key,
                 "is_tailored": True,
                 "job_post": job_post_instance,
             },
         )
-        return optimized_content_instance.optimized_pdf.url
+        # Construct the URL to the PDF stored in S3
+        pdf_url = (
+            f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+        )
+        return pdf_url
 
     url = async_to_sync(optimize_cl)()
     total = time.time() - start_time
@@ -171,16 +209,27 @@ def customize_improved_cover_letter(candidate_id, custom_instruction):
             doc_type="CL",
         )
 
+        # Generate a unique S3 key for the PDF
+        s3_key = f"media/cover_letters/general_improved/{uuid4()}.pdf"
+
+        # Upload the PDF directly to S3
+        upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
+
         cover_letter_instance, cover_letter_created = await sync_to_async(
             CoverLetter.objects.update_or_create, thread_sensitive=True
         )(
             cover_letter_id=candidate_id,
             defaults={
                 "general_improved_content": customized_content,
-                "general_improved_pdf": pdf,
+                "general_improved_pdf_s3_key": s3_key,
             },
         )
-        return cover_letter_instance.general_improved_pdf.url
+
+        # Construct the URL to the PDF stored in S3
+        pdf_url = (
+            f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+        )
+        return pdf_url
 
     url = async_to_sync(customize_cl)()
     total = time.time() - start_time
@@ -216,24 +265,33 @@ def customize_optimized_cover_letter(applicant_id, job_post_id, custom_instructi
             doc_type="CL",
         )
 
+        # Generate a unique S3 key for the PDF
+        s3_key = f"media/cover_letters/optimized/{uuid4()}.pdf"
+
+        # Upload the PDF directly to S3
+        upload_directly_to_s3(pdf, settings.AWS_STORAGE_BUCKET_NAME, s3_key)
+
         optimized_content_instance, created = await sync_to_async(
             OptimizedCoverLetterContent.objects.update_or_create, thread_sensitive=True
         )(
             cover_letter=cover_letter_instance,
             defaults={
                 "optimized_content": customized_content,
-                "optimized_pdf": pdf,
+                "optimized_pdf_s3_key": s3_key,
                 "is_tailored": True,
                 "job_post": job_post_instance,
             },
         )
-        return optimized_content_instance.optimized_pdf.url
+        # Construct the URL to the PDF stored in S3
+        pdf_url = (
+            f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+        )
+        return pdf_url
 
     url = async_to_sync(customize_opt_cl)()
     total = time.time() - start_time
     logger.info(f"Total time taken: {total}")
     return url
-
 
 
 {

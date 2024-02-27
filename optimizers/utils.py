@@ -1,6 +1,7 @@
 import json
 import time
 
+import boto3
 import textstat as textstat_analysis
 from django.conf import settings
 from langchain.chat_models import ChatOpenAI
@@ -190,10 +191,10 @@ async def get_chat_response(instruction, message, doc_type=None):
         )
 
         response = json.loads(structured_response.choices[0].message.content)
-        
+
         total = time.time() - start_time
         logger.info(f"Chat Response Time: {total}")
-        
+
         return response
 
     response = chat(messages).content
@@ -511,3 +512,31 @@ async def optimize_doc(doc_type, doc_text, job_description):
 
 
 # =========================== TAILORING FUNCTIONS ===========================
+
+
+# =========================== DATABASE FUNCTIONS ===========================
+def upload_directly_to_s3(file, bucket_name, s3_key):
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        # region_name='your-region',  # Uncomment and set your region if necessary
+    )
+
+    # Include ExtraArgs to set content type and content disposition
+    s3.upload_fileobj(
+        file,
+        bucket_name,
+        s3_key,
+        ExtraArgs={
+            "ContentType": "application/pdf",
+            "ContentDisposition": "inline",
+        },
+    )
+
+
+def get_full_url(s3_key):
+    return f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+
+
+# =========================== DATABASE FUNCTIONS ===========================

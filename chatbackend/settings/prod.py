@@ -8,7 +8,11 @@ ALLOWED_HOSTS = ["*"]
 
 # ================================ DATABASES =======================================
 DATABASES = {"default": dj_database_url.parse(config("DATABASE_URL"))}
-# DATABASES["default"]["OPTIONS"] = {"sslmode": "require"}
+# # DATABASES["default"]["OPTIONS"] = {"sslmode": "require"}
+
+# DATABASES = {
+#     "default": dj_database_url.config(default="sqlite:///db.sqlite3", conn_max_age=600)
+# }
 # ================================ DATABASES =======================================
 
 

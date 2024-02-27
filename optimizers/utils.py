@@ -535,4 +535,8 @@ def upload_directly_to_s3(file, bucket_name, s3_key):
     )
 
 
+def get_full_url(s3_key):
+    return f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+
+
 # =========================== DATABASE FUNCTIONS ===========================

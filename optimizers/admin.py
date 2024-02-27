@@ -80,7 +80,7 @@ class CoverLetterAdmin(admin.ModelAdmin):
 @admin.register(Resume)
 class ResumeAdmin(admin.ModelAdmin):
     # Combine the configurations into a single list_display
-    list_display = ("resume_id", "general_improved_pdf_link")
+    list_display = ("resume_id", "original_pdf_link", "general_improved_pdf_link")
     search_fields = ("resume_id",)
     inlines = [ResumeAnalysisInline, OptimizedResumeContentInline]
 

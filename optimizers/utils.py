@@ -522,7 +522,17 @@ def upload_directly_to_s3(file, bucket_name, s3_key):
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
         # region_name='your-region',  # Uncomment and set your region if necessary
     )
-    s3.upload_fileobj(file, bucket_name, s3_key)
+
+    # Include ExtraArgs to set content type and content disposition
+    s3.upload_fileobj(
+        file,
+        bucket_name,
+        s3_key,
+        ExtraArgs={
+            "ContentType": "application/pdf",
+            "ContentDisposition": "inline",
+        },
+    )
 
 
 def get_full_url(s3_key):

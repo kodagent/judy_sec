@@ -1,10 +1,10 @@
 version: "3"
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: essentialrecruit/judy-staging:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: essentialrecruit/judy-staging:latest
     command: daphne chatbackend.asgi:application -b 0.0.0.0 -p 8000
     volumes:
       - .:/code
@@ -15,10 +15,10 @@ services:
     container_name: chat_app
 
   celery:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: essentialrecruit/judy-staging:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: essentialrecruit/judy-staging:latest
     command: celery -A chatbackend worker --loglevel=info
     volumes:
       - .:/code

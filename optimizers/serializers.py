@@ -2,16 +2,9 @@ from rest_framework import serializers
 
 from optimizers.utils import get_full_url
 
-from .models import (
-    CoverLetter,
-    CoverLetterAnalysis,
-    JobPost,
-    JobPostAnalysis,
-    OptimizedCoverLetterContent,
-    OptimizedResumeContent,
-    Resume,
-    ResumeAnalysis,
-)
+from .models import (CoverLetter, CoverLetterAnalysis, JobPost,
+                     JobPostAnalysis, OptimizedCoverLetterContent,
+                     OptimizedResumeContent, Resume, ResumeAnalysis)
 
 
 class JobPostSerializer(serializers.ModelSerializer):
@@ -54,6 +47,8 @@ class CoverLetterAnalysisSerializer(serializers.ModelSerializer):
 
 
 class OptimizedCoverLetterContentSerializer(serializers.ModelSerializer):
+    optimized_pdf_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = OptimizedCoverLetterContent
         fields = ("optimized_pdf_url",)

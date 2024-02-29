@@ -1,10 +1,9 @@
 from django.urls import path
-from optimizerconsumers import OptimizationConsumer
 
-from assistant import consumers
+from assistant import consumers, optimizerconsumers
 
 websocket_urlpatterns = [
     path("ws/chat/", consumers.ChatConsumer.as_asgi()),
     # Optimizers
-    path("ws/optimize/", OptimizationConsumer.as_asgi()),
+    path("ws/optimize/", optimizerconsumers.OptimizationConsumer.as_asgi()),
 ]

@@ -2,16 +2,27 @@ import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+from chatbackend.configs.logging_config import configure_logger
 from optimizers.cl_opt import cl_optimize_func, customize_opt_cl
 from optimizers.resume_opt import customize_resume_optimize_func, resume_optimize_func
+
+logger = configure_logger(__name__)
 
 
 class OptimizationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        # Retrieve the applicant_id from the query string
+        self.applicant_id = self.scope["query_string"].decode("utf-8").split("=")[1]
+        self.group_name = f"user_{self.applicant_id}"
+
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
-        pass
+        logger.info("...Disconnected")
+
+        # Remove this channel from the group
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)

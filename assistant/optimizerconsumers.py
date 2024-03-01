@@ -29,7 +29,7 @@ class OptimizationConsumer(AsyncWebsocketConsumer):
             )
 
         if process_type == "cover_letter_optimization":
-            return_data = await resume_optimize_func(applicant_id, job_post_id)
+            return_data = await cl_optimize_func(applicant_id, job_post_id)
 
         if process_type == "customize_optimized_cover_letter":
             return_data = await customize_opt_cl(

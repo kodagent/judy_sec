@@ -42,7 +42,7 @@ def get_default_cover_letter(candidate_id):
 
     async def get_default_cl():
         resume_content = await get_doc_content(candidate_id, doc_type="R")
-        created_cl = create_doc(
+        created_cl = await create_doc(
             "cover letter", "resume", resume_content, default_cover_letter
         )
 

@@ -10,13 +10,25 @@ from chatbackend.configs.logging_config import configure_logger
 from helpers.optimizer_utils import cover_letter
 from optimizers.job_post import optimize_job
 from optimizers.mg_database import get_doc_content, get_job_post_content
-from optimizers.models import (CoverLetter, CoverLetterAnalysis, JobPost,
-                               OptimizedCoverLetterContent)
+from optimizers.models import (
+    CoverLetter,
+    CoverLetterAnalysis,
+    JobPost,
+    OptimizedCoverLetterContent,
+)
 from optimizers.pdf_gen import generate_formatted_pdf
 from optimizers.samples import default_cover_letter
-from optimizers.utils import (Polarity, Readablity, check_grammar_and_spelling,
-                              create_doc, customize_doc, improve_doc,
-                              optimize_doc, review_tone, upload_directly_to_s3)
+from optimizers.utils import (
+    Polarity,
+    Readablity,
+    check_grammar_and_spelling,
+    create_doc,
+    customize_doc,
+    improve_doc,
+    optimize_doc,
+    review_tone,
+    upload_directly_to_s3,
+)
 
 logger = configure_logger(__name__)
 
@@ -34,7 +46,7 @@ def get_default_cover_letter(candidate_id):
             "cover letter", "resume", resume_content, default_cover_letter
         )
 
-        pdf = generate_formatted_pdf(
+        pdf = await generate_formatted_pdf(
             created_cl, filename="Base Cover Letter.pdf", doc_type="CL"
         )
 
@@ -95,7 +107,7 @@ def improve_cover_letter(candidate_id):
             doc_feedback=cover_letter_feedback,
         )
 
-        pdf = generate_formatted_pdf(
+        pdf = await generate_formatted_pdf(
             improved_content, filename="Improved Cover Letter.pdf", doc_type="CL"
         )
 
@@ -141,7 +153,7 @@ def customize_improved_cover_letter(candidate_id, custom_instruction):
             custom_instruction=custom_instruction,
         )
 
-        pdf = generate_formatted_pdf(
+        pdf = await generate_formatted_pdf(
             customized_content,
             filename="Customized Improved Cover Letter.pdf",
             doc_type="CL",

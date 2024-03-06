@@ -184,7 +184,7 @@ async def get_chat_response(instruction, message, doc_type=None):
             {"role": "user", "content": message},
         ]
 
-        structured_response = client.chat.completions.create(
+        structured_response = await client.chat.completions.create(
             model="gpt-4-1106-preview",
             messages=messages,
             response_format={"type": "json_object"},
@@ -507,7 +507,7 @@ async def optimize_doc(doc_type, doc_text, job_description):
     logger.info(
         f"----------------------- {doc_type.upper()} TAILORED -----------------------"
     )
-    logger.info(f"{optimized_content}")
+    # logger.info(f"{optimized_content}")
     return optimized_content
 
 

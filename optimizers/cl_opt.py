@@ -214,7 +214,7 @@ async def cl_optimize_func(applicant_id, job_post_id):
         job_description=optimized_content_for_job_post,
     )
 
-    pdf = generate_formatted_pdf(
+    pdf = await generate_formatted_pdf(
         optimized_content, filename="Optimized Cover Letter.pdf", doc_type="CL"
     )
 
@@ -270,7 +270,7 @@ async def customize_opt_cl(applicant_id, job_post_id, custom_instruction):
         custom_instruction=custom_instruction,
     )
 
-    pdf = generate_formatted_pdf(
+    pdf = await generate_formatted_pdf(
         customized_content,
         filename="Customized Optimized Cover Letter.pdf",
         doc_type="CL",

@@ -519,7 +519,7 @@ def format_paragraphs(canvas, text_blocks, width, height, y, is_paragraph=True):
     return y
 
 
-def generate_formatted_pdf(response_text, filename, doc_type=None):
+async def generate_formatted_pdf(response_text, filename, doc_type=None):
     start_time = time.time()
 
     buffer = BytesIO()

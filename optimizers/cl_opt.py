@@ -46,7 +46,7 @@ def get_default_cover_letter(candidate_id):
             "cover letter", "resume", resume_content, default_cover_letter
         )
 
-        pdf = generate_formatted_pdf(
+        pdf = await generate_formatted_pdf(
             created_cl, filename="Base Cover Letter.pdf", doc_type="CL"
         )
 
@@ -107,7 +107,7 @@ def improve_cover_letter(candidate_id):
             doc_feedback=cover_letter_feedback,
         )
 
-        pdf = generate_formatted_pdf(
+        pdf = await generate_formatted_pdf(
             improved_content, filename="Improved Cover Letter.pdf", doc_type="CL"
         )
 
@@ -153,7 +153,7 @@ def customize_improved_cover_letter(candidate_id, custom_instruction):
             custom_instruction=custom_instruction,
         )
 
-        pdf = generate_formatted_pdf(
+        pdf = await generate_formatted_pdf(
             customized_content,
             filename="Customized Improved Cover Letter.pdf",
             doc_type="CL",

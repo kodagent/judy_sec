@@ -371,7 +371,7 @@ async def create_doc(doc_type_1, doc_type_2, doc_content, default_doc):
     {default_doc}
     """
 
-    created_content = await get_chat_response(instruction, content)
+    created_content = await get_chat_response(instruction, content, doc_type="CL")
 
     logger.info(
         f"----------------------- CREATED {doc_type_1.upper()} -----------------------"
@@ -384,31 +384,48 @@ async def create_doc(doc_type_1, doc_type_2, doc_content, default_doc):
 
 
 async def improve_doc(doc_type, doc_content, doc_feedback):
+    """Optimizes a document based on its type and provided feedback.
+
+    Args:
+        doc_type (str): The type of the document (e.g., 'cover letter', 'resume', 'job post').
+        content (str): The original content of the document.
+        feedback (str, optional): Feedback provided for optimization. Defaults to None.
+
+    Returns:
+        str: The optimized content.
+    """
+
     start_time = time.time()
+    doc_type_upper = doc_type.upper()
+    logger.info(
+        f"----------------------- {doc_type_upper} OPTIMIZATION STARTED -----------------------"
+    )
 
-    logger.info("----------------------- OPTIMIZATION -----------------------")
-
-    instruction = f"""
-    Provide an optimized version of the {doc_type} using the feedback provided. Ensure not to miss out on any part of the document
-    """
-
-    content = f"""
-    ORIGINAL CONTENT:
-    {doc_content}
-
-    {doc_type.upper()} FEEDBACK:
-    {doc_feedback}
-    """
+    instruction_base = f"Provide an optimized version of the {doc_type}."
+    if doc_feedback:
+        instruction = f"{instruction_base} Use the feedback provided and ensure not to miss out on any part of the document"
+        content_feedback_combined = f"ORIGINAL CONTENT:\n{doc_content}\n\n{doc_type_upper} FEEDBACK:\n{doc_feedback}"
+    else:
+        instruction = (
+            f"{instruction_base} Ensure not to miss out on any part of the document."
+        )
+        content_feedback_combined = f"ORIGINAL CONTENT:\n{doc_content}"
 
     if doc_type == "cover letter":
-        optimized_content = await get_chat_response(instruction, content, doc_type="CL")
+        optimized_content = await get_chat_response(
+            instruction, content_feedback_combined, doc_type="CL"
+        )
     elif doc_type == "resume":
-        optimized_content = await get_chat_response(instruction, content, doc_type="R")
+        optimized_content = await get_chat_response(
+            instruction, content_feedback_combined, doc_type="R"
+        )
     elif doc_type == "job post":
-        optimized_content = await get_chat_response(instruction, content)
+        optimized_content = await get_chat_response(
+            instruction, content_feedback_combined
+        )
 
     logger.info(
-        f"----------------------- FULL {doc_type.upper()} FEEDBACK -----------------------"
+        f"----------------------- FULL {doc_type_upper} FEEDBACK -----------------------"
     )
     logger.info(f"{optimized_content}")
 

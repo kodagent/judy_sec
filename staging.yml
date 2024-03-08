@@ -6,7 +6,6 @@ services:
     volumes:
       - .:/code
     ports:
-      # - "8000:8000"
       - "0.0.0.0:${APP_PORT}:${APP_PORT}"
     depends_on:
       - redis

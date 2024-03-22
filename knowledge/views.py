@@ -25,18 +25,19 @@ from knowledge.scraper.scraper_utils import clear_s3_directory
 
 logger = configure_logger(__name__)
 
-class ScrapeAndUpdateAPI(View): 
+
+class ScrapeAndUpdateAPI(View):
     async def get(self, request, scraper_province, *args, **kwargs):
         try:
             scrapers = {
-                "ontario": scrape_ontario_site,
-                "british": scrape_british_site,
-                "alberta_1": scrape_alberta_site_1,
-                "alberta_2": scrape_alberta_site_2,
+                # "ontario": scrape_ontario_site,
+                # "british": scrape_british_site,
+                # "alberta_1": scrape_alberta_site_1,
+                # "alberta_2": scrape_alberta_site_2,
                 "alberta_3": scrape_alberta_site_3,
-                "saskatchewan_1": scrape_crns_site,
+                # "saskatchewan_1": scrape_crns_site,
                 "saskatchewan_2": scrape_clpns_site,
-                "saskatchewan_3": scrape_rpnas_site,
+                # "saskatchewan_3": scrape_rpnas_site,
                 "manitoba_1": scrape_crnm_site,
                 "manitoba_2": scrape_clpnm_site,
                 "manitoba_3": scrape_crpnm_site,
@@ -45,20 +46,35 @@ class ScrapeAndUpdateAPI(View):
             }
 
             if scraper_province in scrapers:
-                clear_s3_directory(settings.AWS_STORAGE_BUCKET_NAME, f'media/scraped_data/{scraper_province}/')
-                
+                # clear_s3_directory(
+                #     settings.AWS_STORAGE_BUCKET_NAME,
+                #     f"media/scraped_data/{scraper_province}/",
+                # )
+
                 start_time = time.time()
                 await scrapers[scraper_province]()
                 duration = time.time() - start_time
                 logger.info(f"SCRAPING DURATION: {duration:.2f} seconds")
-                
-                return JsonResponse({'status': 'success', 'message': f'Scraping {scraper_province} initiated'}, status=status.HTTP_200_OK)
+
+                return JsonResponse(
+                    {
+                        "status": "success",
+                        "message": f"Scraping {scraper_province} initiated",
+                    },
+                    status=status.HTTP_200_OK,
+                )
             else:
-                return JsonResponse({'status': 'error', 'message': 'Invalid scraper key'}, status=status.HTTP_400_BAD_REQUEST)
-            
+                return JsonResponse(
+                    {"status": "error", "message": "Invalid scraper key"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         except Exception as e:
             logger.error(f"Error during scraping: {e}")
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse(
+                {"status": "error", "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class SaveVecToDBAPI(View):
@@ -77,7 +93,9 @@ class QueryVecDBAPI(View):
     async def get(self, request, *args, **kwargs):
         try:
             # Convert the asynchronous function to synchronous for Django compatibility
-            await query_vec_database(query="What is the BCCNM's legal obligation?", num_results=3)
+            await query_vec_database(
+                query="What is the BCCNM's legal obligation?", num_results=3
+            )
             return JsonResponse({"Success": "Answer contexts received"}, status=200)
         except Exception as e:
             # Log the error and send an error response

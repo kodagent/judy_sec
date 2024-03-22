@@ -85,8 +85,9 @@ async def process_page(page, url, file, processed_urls, depth, max_depth=10):
         logger.info(f"Processing page: {url}")
         content = await scrape_page_content(page, url)
         if content:
-            file.write(f"URL: {url}\n{content}")
-            file.write("------------------------------------------------------------\n\n")
+            print(f"URL: {url}\n{content}")
+            # file.write(f"URL: {url}\n{content}")
+            # file.write("------------------------------------------------------------\n\n")
 
             if depth <= max_depth:
                 child_links = await extract_page_links(page)
@@ -115,8 +116,8 @@ async def scrape_clpns_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/saskatchewan_2/scraped_clpns_content.txt"
-            default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
+            # s3_file_name = "scraped_data/saskatchewan_2/scraped_clpns_content.txt"
+            # default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
         # Clean up the temporary file

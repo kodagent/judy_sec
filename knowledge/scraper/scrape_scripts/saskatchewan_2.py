@@ -20,22 +20,21 @@ base_url = "https://clpns.com/"
 # Function to scrape dropdown menu links
 async def scrape_dropdown_links(page):
     dropdown_links = []
-    # Trigger all dropdowns
-    nav_links = await page.query_selector_all('.x-anchor.x-anchor-toggle')
-    for nav_link in nav_links:
-        # Click the nav link to show the dropdown
-        await nav_link.click()
 
-        # Locate dropdown elements within the clicked nav link and extract links
-        dropdown_elements = await nav_link.query_selector_all(".x-dropdown")
-        for element in dropdown_elements:
-            links = await element.query_selector_all("a")
-            for link in links:
-                href = await link.get_attribute("href")
-                if href and href.startswith("http") and href not in dropdown_links:
-                    dropdown_links.append(href)
+    # Locate all first-level menu UL elements
+    menu_elements = await page.query_selector_all("ul.x-menu-first-level")
+
+    for menu in menu_elements:
+        # Get all 'a' elements from each first-level menu
+        links = await menu.query_selector_all("a")
+        for link in links:
+            href = await link.get_attribute("href")
+            # Append to the list if it's a valid link
+            if href and href.startswith("http"):
+                dropdown_links.append(href)
 
     return dropdown_links
+
 
 async def extract_page_links(page):
     # Extracts all links from the current page content
@@ -106,7 +105,7 @@ async def scrape_clpns_site():
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, encoding='utf-8') as temp_file:
             dropdown_links = await scrape_dropdown_links(page)
             for link in dropdown_links:
-                await process_page(page, link, temp_file, processed_urls)
+                await process_page(page, link, temp_file, processed_urls, depth=1)
 
             temp_file_path = temp_file.name  # Save the path to upload later
 

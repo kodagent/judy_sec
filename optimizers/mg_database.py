@@ -60,8 +60,8 @@ async def get_doc_content(owner_id, doc_type=None):
     try:
         applicant = db.applications.find_one(
             {
-                # "_id": ObjectId(applicant_id),
-                "owner": ObjectId(owner_id)
+                "_id": ObjectId(owner_id),
+                # "owner": ObjectId(owner_id)
             }
         )
         if doc_type == "CL":

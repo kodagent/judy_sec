@@ -36,20 +36,20 @@ class ScrapeAndUpdateAPI(View):
                 # "alberta_2": scrape_alberta_site_2,
                 "alberta_3": scrape_alberta_site_3,
                 # "saskatchewan_1": scrape_crns_site,
-                "saskatchewan_2": scrape_clpns_site,
+                # # # # "saskatchewan_2": scrape_clpns_site,
                 # "saskatchewan_3": scrape_rpnas_site,
-                "manitoba_1": scrape_crnm_site,
-                "manitoba_2": scrape_clpnm_site,
-                "manitoba_3": scrape_crpnm_site,
-                "brunswick_1": scrape_nanb_site,
-                "brunswick_2": scrape_anblpn_site,
+                # # # # "manitoba_1": scrape_crnm_site,
+                # # # # "manitoba_2": scrape_clpnm_site,
+                # # # # "manitoba_3": scrape_crpnm_site,
+                # # # # "brunswick_1": scrape_nanb_site,
+                # # # # "brunswick_2": scrape_anblpn_site,
             }
 
             if scraper_province in scrapers:
-                # clear_s3_directory(
-                #     settings.AWS_STORAGE_BUCKET_NAME,
-                #     f"media/scraped_data/{scraper_province}/",
-                # )
+                clear_s3_directory(
+                    settings.AWS_STORAGE_BUCKET_NAME,
+                    f"media/scraped_data/{scraper_province}/",
+                )
 
                 start_time = time.time()
                 await scrapers[scraper_province]()

@@ -77,7 +77,7 @@ async def process_page(page, url, temp_file, processed_urls):
     if content:
         temp_file.write(f"URL: {url}\n{content}")
         temp_file.write("------------------------------------------------------------\n\n")
-
+        
     page_links = await extract_page_links(page)
     for link in page_links:
         await process_page(page, link, temp_file, processed_urls)

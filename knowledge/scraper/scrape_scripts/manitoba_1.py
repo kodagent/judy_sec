@@ -16,6 +16,17 @@ logger = configure_logger(__name__)
 # Base URL
 base_url = "https://www.crnm.mb.ca/"
 
+EXCLUDED_URLS = [
+    "https://www.crnm.mb.ca/",
+    "https://www.crnm.mb.ca/#skipNavigation",
+    "https://www.crnm.mb.ca/news/",
+    "https://www.crnm.mb.ca/news/#skipNavigation",
+    "https://www.crnm.mb.ca/rns-nps/resource-library/",
+    "https://www.crnm.mb.ca/rns-nps/resource-library/#skipNavigation",
+    "https://www.crnm.mb.ca/contact/",
+    "https://www.crnm.mb.ca/contact/#skipNavigation",
+]
+
 async def extract_nav_links(page):
     return await page.evaluate('''() => {
         const links = [];
@@ -62,23 +73,32 @@ async def scrape_html_content(page, url):
 
         return content_text
     except Exception as e:
-        print(f"Error scraping content from {url}: {str(e)}")
+        logger.info(f"Error scraping content from {url}: {str(e)}")
         return None
 
 async def process_page(page, url, temp_file, processed_urls):
     if url in processed_urls or not url.startswith(base_url):
         return
+    if "#skipNavigation" in url or url in EXCLUDED_URLS:
+        return  
     processed_urls.add(url)
 
-    logger.info(f"Processing page: {url}")
-    content = await scrape_html_content(page, url)
-    if content:
-        temp_file.write(f"URL: {url}\n{content}")
-        temp_file.write("------------------------------------------------------------\n\n")
+    if url.endswith('.pdf'):
+        logger.info(f"Processing pdf: {url}")
+        pdf_name = sanitize_filename(url.rsplit('/', 1)[-1])
+        pdf_path = f"manitoba_1/{pdf_name}"
+        logger.info(f"PDF found: {pdf_path}")
+        await download_pdf(pdf_url, pdf_path)
+    else:
+        logger.info(f"Processing page: {url}")
+        content = await scrape_html_content(page, url)
+        if content:
+            temp_file.write(f"URL: {url}\n{content}")
+            temp_file.write("------------------------------------------------------------\n\n")
 
-    all_links = await extract_all_links(page)
-    for link in all_links:
-        await process_page(page, link, temp_file, processed_urls)
+        all_links = await extract_all_links(page)
+        for link in all_links:
+            await process_page(page, link, temp_file, processed_urls)
 
 async def scrape_crnm_site():
     async with async_playwright() as p:

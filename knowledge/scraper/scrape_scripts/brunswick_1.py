@@ -72,15 +72,22 @@ async def process_page(page, url, temp_file, processed_urls):
         return
     processed_urls.add(url)
 
-    logger.info(f"Processing page: {url}")
-    content = await scrape_html_content(page, url)
-    if content:
-        temp_file.write(f"URL: {url}\n{content}")
-        temp_file.write("------------------------------------------------------------\n\n")
-
-    page_links = await extract_page_links(page)
-    for link in page_links:
-        await process_page(page, link, temp_file, processed_urls)
+    if url.endswith('.pdf'):
+        logger.info(f"Processing pdf: {url}")
+        pdf_name = sanitize_filename(url.rsplit('/', 1)[-1])
+        pdf_path = f"brunswick_1/{pdf_name}"
+        logger.info(f"PDF found: {pdf_path}")
+        await download_pdf(pdf_url, pdf_path)
+    else:
+        logger.info(f"Processing page: {url}")
+        content = await scrape_html_content(page, url)
+        if content:
+            temp_file.write(f"URL: {url}\n{content}")
+            temp_file.write("------------------------------------------------------------\n\n")
+            
+        page_links = await extract_page_links(page)
+        for link in page_links:
+            await process_page(page, link, temp_file, processed_urls)
 
 async def scrape_nanb_site():
     async with async_playwright() as p:
@@ -105,7 +112,7 @@ async def scrape_nanb_site():
             s3_file_name = "scraped_data/brunswick_1/scraped_nanb_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
-
+          
         # Clean up the temporary file
         try:
             os.remove(temp_file_path)

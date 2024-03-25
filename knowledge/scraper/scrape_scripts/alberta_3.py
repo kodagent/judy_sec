@@ -27,7 +27,6 @@ urls_to_scrape = [
     "https://www.crpna.ab.ca/CRPNAMember/Library/CRPNAMember/Library/Library.aspxhttps://www.crpna.ab.ca/CRPNAMember/Contact_Us/CRPNAMember/Home_Page_New/Contact_Us.aspx",
 ]
 
-
 # Function to scrape main content
 async def scrape_main_content(page, url, scraped_urls, file):
     if url in scraped_urls:
@@ -43,6 +42,8 @@ async def scrape_main_content(page, url, scraped_urls, file):
         await download_pdf(url, pdf_path)
     else:
         try:
+            if "crpna.ab.ca" not in url:
+                return
             await page.goto(url, timeout=60000)
             content = await page.content()
             soup = BeautifulSoup(content, "html.parser")
@@ -50,7 +51,10 @@ async def scrape_main_content(page, url, scraped_urls, file):
             main_content = soup.select("#yui-main div.yui-b div.ContentPanel")
             content_text = f"URL: {url}\n"
             for section in main_content:
-                content_text += f"{section.get_text(strip=True)}\n\n"
+                section_text = section.get_text(strip=True)
+                if not section_text:
+                    return
+                content_text += f"{section_text}\n\n"
 
             file.write(content_text)
             file.write(
@@ -76,7 +80,6 @@ async def scrape_nav_links(page, soup, base_url, scraped_urls, file):
             await scrape_main_content(page, link, scraped_urls, file)
     except Exception as e:
         logger.error(f"Error scraping navigation links from {base_url}: {str(e)}")
-
 
 # Main scraping function
 async def scrape_alberta_site_3():

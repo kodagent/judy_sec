@@ -62,7 +62,7 @@ async def scrape_html_content(page, url):
                         if subelement['href'].endswith('.pdf'):
                             pdf_url = subelement['href']
                             pdf_name = sanitize_filename(subelement.get_text(strip=True)) + '.pdf'
-                            pdf_path = f"manitoba_3/{pdf_name}"
+                            pdf_path = f"manitoba_3/pdfs/{pdf_name}"
                             await download_pdf(pdf_url, pdf_path)
                         else:
                             content_text += f"{subelement.get_text(strip=True)}\n\n"
@@ -111,7 +111,7 @@ async def scrape_crpnm_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/manitoba_3/scraped_crpnm_content.txt"
+            s3_file_name = "scraped_data/manitoba_3/scraped_content/scraped_crpnm_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
@@ -123,8 +123,10 @@ async def scrape_crpnm_site():
             logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
 
 # # Run the scraping process
-# asyncio.run(scrape_crpnm_site())
-            
+@shared_task
+def scrape_crpnm_site_task():
+    asyncio.run(scrape_crpnm_site())
+
 
 # @shared_task
 # def scrape_crpnm_site():

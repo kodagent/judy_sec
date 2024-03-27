@@ -92,7 +92,7 @@ async def scrape_british_site():
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
             # Save the temporary file to S3 within the 'scraped_data' folder
-            s3_file_name = "scraped_data/british/scraped_british_content.txt"
+            s3_file_name = "scraped_data/british/scraped_content/scraped_british_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 

@@ -77,7 +77,7 @@ async def process_category(page, category_url, file, processed_urls, title=""):
 
     if category_url.endswith('.pdf'):
         pdf_name = f"{sanitize_filename(title)}.pdf"
-        pdf_path = f"ontario/{pdf_name}"
+        pdf_path = f"ontario/pdfs/{pdf_name}"
         await download_pdf(category_url, pdf_path)
     else:
         logger.info(f"Processing category: {category_url}")
@@ -117,7 +117,7 @@ async def scrape_ontario_site():
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
             # Save the temporary file to S3 within the 'scraped_data' folder
-            s3_file_name = "scraped_data/ontario/scraped_ontario_content.txt"
+            s3_file_name = "scraped_data/ontario/scraped_content/scraped_ontario_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 

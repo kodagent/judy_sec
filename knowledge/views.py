@@ -111,8 +111,8 @@ class SaveVecToDBAPI(View):
     async def get(self, request, province_dir, *args, **kwargs):
         try:
             # Convert the asynchronous function to synchronous for Django compatibility
-            await save_vec_to_database(province_dir, first_db_opt=True)
-            # save_vec_to_database_task.delay(province_dir, first_db_opt=True)
+            # await save_vec_to_database(province_dir, first_db_opt=True)
+            save_vec_to_database_task.delay(province_dir, first_db_opt=True)
 
             return JsonResponse({"Success": "Done saving vector to vecDB"}, status=200)
         except Exception as e:

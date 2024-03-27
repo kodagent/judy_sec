@@ -11,6 +11,7 @@ from decouple import config
 from django.conf import settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import S3DirectoryLoader
+from langchain_community.document_loaders import S3DirectoryLoader
 from more_itertools import chunked
 
 logger = configure_logger(__name__)
@@ -38,12 +39,14 @@ async def get_text(knowledge_dir, pdfs=False):
     # Load data
     if pdfs:
         dir_name = f"media/scraped_data/{knowledge_dir}/pdfs/"
+        logger.info(f"Working on pdf: {dir_name}")
     else:
         dir_name = f"media/scraped_data/{knowledge_dir}/scraped_content/"
+        logger.info(f"Working on scraped content: {dir_name}")
 
     loader = S3DirectoryLoader(
         bucket=settings.AWS_STORAGE_BUCKET_NAME,
-        prefix=dir_name,
+        prefix=f"media/scraped_data/{knowledge_dir}/scraped_content/",
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     )
@@ -70,6 +73,7 @@ async def create_embedding(text):
 async def upload_data(PINECONE_INDEX_NAME, knowledge_dir, pdf):
     pinecone_index = pinecone.Index(index_name=PINECONE_INDEX_NAME)
     text_chunks = await get_text(knowledge_dir, pdf)
+    print("This is working: ", text_chunks)
     embeddings = []
 
     for i, chunk in enumerate(text_chunks):

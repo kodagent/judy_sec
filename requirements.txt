@@ -22,7 +22,7 @@
 # drf-yasg==1.21.7
 # google-cloud-storage==2.13.0
 # gunicorn==21.2.0
-# langchain==0.0.349
+# langchain
 # markdown==3.5.1
 # more-itertools==10.1.0
 # numpy==1.26.2

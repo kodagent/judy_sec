@@ -58,7 +58,7 @@ async def scrape_html_content(page, url):
                         if subelement['href'].endswith('.pdf'):
                             pdf_url = subelement['href']
                             pdf_name = sanitize_filename(subelement.get_text(strip=True)) + '.pdf'
-                            pdf_path = f"brunswick_2/{pdf_name}"
+                            pdf_path = f"brunswick_2/pdfs/{pdf_name}"
                             await download_pdf(pdf_url, pdf_path)
                         else:
                             content_text += f"{subelement.get_text(strip=True)}\n\n"
@@ -80,8 +80,9 @@ async def process_page(page, url, temp_file, processed_urls):
     if url.endswith('.pdf'):
         logger.info(f"Processing pdf: {url}")
         pdf_name = sanitize_filename(url.rsplit('/', 1)[-1])
-        pdf_path = f"brunswick_2/{pdf_name}"
+        pdf_path = f"brunswick_2/pdfs/{pdf_name}"
         logger.info(f"PDF found: {pdf_path}")
+        pdf_url = url
         await download_pdf(pdf_url, pdf_path)
     else:
         logger.info(f"Processing page: {url}")
@@ -126,7 +127,9 @@ async def scrape_anblpn_site():
             logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
 
 # # Run the scraping process
-# asyncio.run(scrape_anblpn_site())
+@shared_task
+def scrape_anblpn_site_task():
+    asyncio.run(scrape_anblpn_site())
 
 
 # @shared_task

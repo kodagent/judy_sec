@@ -38,7 +38,7 @@ async def scrape_main_content(page, url, scraped_urls, file):
 
     if url.endswith(".pdf"):
         pdf_name = sanitize_filename(url.split("/")[-1])
-        pdf_path = f"alberta_3/{pdf_name}"
+        pdf_path = f"alberta_3/pdfs/{pdf_name}"
         await download_pdf(url, pdf_path)
     else:
         try:

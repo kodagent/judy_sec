@@ -64,7 +64,7 @@ async def scrape_html_content(page, url):
                 if element.name == 'a' and 'href' in element.attrs and element['href'].endswith('.pdf'):
                     pdf_url = element['href']
                     pdf_name = f"{sanitize_filename(element.get_text(strip=True))}.pdf"
-                    pdf_path = f"manitoba_1/{pdf_name}"
+                    pdf_path = f"manitoba_1/pdfs/{pdf_name}"
                     await download_pdf(pdf_url, pdf_path)
                 else:
                     content_text += f"{element.get_text(' ', strip=True)}\n\n"
@@ -85,8 +85,9 @@ async def process_page(page, url, temp_file, processed_urls):
 
     if url.endswith('.pdf'):
         logger.info(f"Processing pdf: {url}")
+        pdf_url = url
         pdf_name = sanitize_filename(url.rsplit('/', 1)[-1])
-        pdf_path = f"manitoba_1/{pdf_name}"
+        pdf_path = f"manitoba_1/pdfs/{pdf_name}"
         logger.info(f"PDF found: {pdf_path}")
         await download_pdf(pdf_url, pdf_path)
     else:
@@ -106,7 +107,7 @@ async def scrape_crnm_site():
         page = await browser.new_page()
 
         await page.goto(base_url, timeout=60000)
-        await page.wait_for_selector('#mega-menu-main-menu .mega-menu-item a', timeout=60000)
+        await page.wait_for_selector('#mega-menu-main-menu .mega-menu-item a', timeout=30000)
 
         processed_urls = set()
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, encoding='utf-8') as temp_file:
@@ -132,8 +133,10 @@ async def scrape_crnm_site():
         except Exception as e:
             logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
             
-# # Run the scraping process
-# asyncio.run(scrape_crnm_site())
+# Run the scraping process
+@shared_task
+def scrape_crnm_site_task():
+    asyncio.run(scrape_crnm_site())
 
 
 # @shared_task

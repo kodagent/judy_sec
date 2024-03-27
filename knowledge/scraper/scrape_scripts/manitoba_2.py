@@ -53,7 +53,7 @@ async def scrape_html_content(page, url):
                         if subelement['href'].endswith('.pdf'):
                             pdf_url = subelement['href']
                             pdf_name = sanitize_filename(subelement.get_text(strip=True)) + '.pdf'
-                            pdf_path = f"manitoba_2/{pdf_name}"
+                            pdf_path = f"manitoba_2/pdfs/{pdf_name}"
                             await download_pdf(pdf_url, pdf_path)
                         else:
                             content_text += f"{subelement.get_text(strip=True)}\n\n"
@@ -113,8 +113,10 @@ async def scrape_clpnm_site():
         except Exception as e:
             logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
 
-# # Run the scraping process
-# asyncio.run(scrape_clpnm_site())
+# Run the scraping process
+@shared_task
+def scrape_clpnm_site_task():
+    asyncio.run(scrape_clpnm_site())
 
 
 # @shared_task

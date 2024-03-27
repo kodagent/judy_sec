@@ -125,8 +125,10 @@ async def scrape_clpns_site():
         except Exception as e:
             logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
 
-# # Run the scraper
-# asyncio.run(scrape_clpns_site())
+# Run the scraper
+@shared_task
+def scrape_clpns_site_task():
+    asyncio.run(scrape_clpns_site())
 
 
 # @shared_task

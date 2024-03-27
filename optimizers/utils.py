@@ -15,9 +15,6 @@ from chatbackend.configs.logging_config import configure_logger
 
 logger = configure_logger(__name__)
 
-SYSTEM_ROLE = "system"
-USER_ROLE = "user"
-
 
 cover_letter_example_structure = json.dumps(
     {

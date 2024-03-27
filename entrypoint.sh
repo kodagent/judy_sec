@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# Run database migrations
-python manage.py migrate --noinput
+# # Run database migrations
+# python manage.py migrate --noinput
 
-# Populate the database
-python manage.py populate_db
+# # Populate the database
+# python manage.py populate_db
 
-# Run collectstatic
-python manage.py collectstatic --noinput
+# # Run collectstatic
+# python manage.py collectstatic --noinput
 
 # Then start your application
 exec "$@"

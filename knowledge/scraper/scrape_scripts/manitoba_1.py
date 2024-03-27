@@ -16,6 +16,17 @@ logger = configure_logger(__name__)
 # Base URL
 base_url = "https://www.crnm.mb.ca/"
 
+EXCLUDED_URLS = [
+    "https://www.crnm.mb.ca/",
+    "https://www.crnm.mb.ca/#skipNavigation",
+    "https://www.crnm.mb.ca/news/",
+    "https://www.crnm.mb.ca/news/#skipNavigation",
+    "https://www.crnm.mb.ca/rns-nps/resource-library/",
+    "https://www.crnm.mb.ca/rns-nps/resource-library/#skipNavigation",
+    "https://www.crnm.mb.ca/contact/",
+    "https://www.crnm.mb.ca/contact/#skipNavigation",
+]
+
 async def extract_nav_links(page):
     return await page.evaluate('''() => {
         const links = [];
@@ -53,7 +64,7 @@ async def scrape_html_content(page, url):
                 if element.name == 'a' and 'href' in element.attrs and element['href'].endswith('.pdf'):
                     pdf_url = element['href']
                     pdf_name = f"{sanitize_filename(element.get_text(strip=True))}.pdf"
-                    pdf_path = f"manitoba_1/{pdf_name}"
+                    pdf_path = f"manitoba_1/pdfs/{pdf_name}"
                     await download_pdf(pdf_url, pdf_path)
                 else:
                     content_text += f"{element.get_text(' ', strip=True)}\n\n"
@@ -62,23 +73,33 @@ async def scrape_html_content(page, url):
 
         return content_text
     except Exception as e:
-        print(f"Error scraping content from {url}: {str(e)}")
+        logger.info(f"Error scraping content from {url}: {str(e)}")
         return None
 
 async def process_page(page, url, temp_file, processed_urls):
     if url in processed_urls or not url.startswith(base_url):
         return
+    if "#skipNavigation" in url or url in EXCLUDED_URLS:
+        return  
     processed_urls.add(url)
 
-    logger.info(f"Processing page: {url}")
-    content = await scrape_html_content(page, url)
-    if content:
-        temp_file.write(f"URL: {url}\n{content}")
-        temp_file.write("------------------------------------------------------------\n\n")
+    if url.endswith('.pdf'):
+        logger.info(f"Processing pdf: {url}")
+        pdf_url = url
+        pdf_name = sanitize_filename(url.rsplit('/', 1)[-1])
+        pdf_path = f"manitoba_1/pdfs/{pdf_name}"
+        logger.info(f"PDF found: {pdf_path}")
+        await download_pdf(pdf_url, pdf_path)
+    else:
+        logger.info(f"Processing page: {url}")
+        content = await scrape_html_content(page, url)
+        if content:
+            temp_file.write(f"URL: {url}\n{content}")
+            temp_file.write("------------------------------------------------------------\n\n")
 
-    all_links = await extract_all_links(page)
-    for link in all_links:
-        await process_page(page, link, temp_file, processed_urls)
+        all_links = await extract_all_links(page)
+        for link in all_links:
+            await process_page(page, link, temp_file, processed_urls)
 
 async def scrape_crnm_site():
     async with async_playwright() as p:
@@ -86,7 +107,7 @@ async def scrape_crnm_site():
         page = await browser.new_page()
 
         await page.goto(base_url, timeout=60000)
-        await page.wait_for_selector('#mega-menu-main-menu .mega-menu-item a', timeout=60000)
+        await page.wait_for_selector('#mega-menu-main-menu .mega-menu-item a', timeout=30000)
 
         processed_urls = set()
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, encoding='utf-8') as temp_file:
@@ -101,7 +122,7 @@ async def scrape_crnm_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/manitoba_1/scraped_crnm_content.txt"
+            s3_file_name = "scraped_data/manitoba_1/scraped_content/scraped_crnm_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
@@ -112,8 +133,10 @@ async def scrape_crnm_site():
         except Exception as e:
             logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
             
-# # Run the scraping process
-# asyncio.run(scrape_crnm_site())
+# Run the scraping process
+@shared_task
+def scrape_crnm_site_task():
+    asyncio.run(scrape_crnm_site())
 
 
 # @shared_task

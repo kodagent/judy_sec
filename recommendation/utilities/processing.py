@@ -102,6 +102,7 @@ def preprocess_working_experience_data(applications_data):
 
     # Convert boolean columns to numeric
     working_experience_df['hasLicense'] = working_experience_df['hasLicense'].astype(int)
+    working_experience_df['processingCanadaLicense'] = working_experience_df['processingCanadaLicense'].fillna(False)
     working_experience_df['processingCanadaLicense'] = working_experience_df['processingCanadaLicense'].astype(int)
 
     # Flatten the 'locationsOfActiveLicense' column

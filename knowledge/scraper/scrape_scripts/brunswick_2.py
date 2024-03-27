@@ -18,13 +18,18 @@ base_url = "https://www.anblpn.ca/"
 
 async def extract_nav_links(page):
     return await page.evaluate('''() => {
-        const links = [];
-        document.querySelectorAll('.elementor-nav-menu--main .menu-item a').forEach(a => {
-            if (a.offsetParent !== null) {
-                links.push({text: a.innerText.trim(), href: a.href});
+        const navLinks = [];
+        document.querySelectorAll('#menu-1-6777e36.elementor-nav-menu li.menu-item > a').forEach(a => {
+            const link = {text: a.innerText.trim(), href: a.href, subItems: []};
+            const subMenu = a.closest('li').querySelector('ul.sub-menu');
+            if (subMenu) {
+                subMenu.querySelectorAll('li.menu-item > a').forEach(subA => {
+                    link.subItems.push({text: subA.innerText.trim(), href: subA.href});
+                });
             }
+            navLinks.push(link);
         });
-        return links;
+        return navLinks;
     }''')
 
 async def extract_page_links(page):
@@ -53,7 +58,7 @@ async def scrape_html_content(page, url):
                         if subelement['href'].endswith('.pdf'):
                             pdf_url = subelement['href']
                             pdf_name = sanitize_filename(subelement.get_text(strip=True)) + '.pdf'
-                            pdf_path = f"brunswick_2/{pdf_name}"
+                            pdf_path = f"brunswick_2/pdfs/{pdf_name}"
                             await download_pdf(pdf_url, pdf_path)
                         else:
                             content_text += f"{subelement.get_text(strip=True)}\n\n"
@@ -72,15 +77,23 @@ async def process_page(page, url, temp_file, processed_urls):
         return
     processed_urls.add(url)
 
-    logger.info(f"Processing page: {url}")
-    content = await scrape_html_content(page, url)
-    if content:
-        temp_file.write(f"URL: {url}\n{content}")
-        temp_file.write("------------------------------------------------------------\n\n")
+    if url.endswith('.pdf'):
+        logger.info(f"Processing pdf: {url}")
+        pdf_name = sanitize_filename(url.rsplit('/', 1)[-1])
+        pdf_path = f"brunswick_2/pdfs/{pdf_name}"
+        logger.info(f"PDF found: {pdf_path}")
+        pdf_url = url
+        await download_pdf(pdf_url, pdf_path)
+    else:
+        logger.info(f"Processing page: {url}")
+        content = await scrape_html_content(page, url)
+        if content:
+            temp_file.write(f"URL: {url}\n{content}")
+            temp_file.write("------------------------------------------------------------\n\n")
 
-    page_links = await extract_page_links(page)
-    for link in page_links:
-        await process_page(page, link, temp_file, processed_urls)
+        page_links = await extract_page_links(page)
+        for link in page_links:
+            await process_page(page, link, temp_file, processed_urls)
 
 async def scrape_anblpn_site():
     async with async_playwright() as p:
@@ -102,7 +115,7 @@ async def scrape_anblpn_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/brunswick_2/scraped_anblpn_content.txt"
+            s3_file_name = "scraped_data/brunswick_2/scraped_content/scraped_anblpn_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 
@@ -114,7 +127,9 @@ async def scrape_anblpn_site():
             logger.error(f"Error deleting temporary file {temp_file_path}: {e}")
 
 # # Run the scraping process
-# asyncio.run(scrape_anblpn_site())
+@shared_task
+def scrape_anblpn_site_task():
+    asyncio.run(scrape_anblpn_site())
 
 
 # @shared_task

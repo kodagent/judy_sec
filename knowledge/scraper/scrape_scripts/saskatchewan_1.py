@@ -73,7 +73,7 @@ async def process_page(page, url, file, processed_urls, depth, max_depth=10):
 
     if url.endswith('.pdf'):
         pdf_name = f"{sanitize_filename(url)}.pdf"
-        pdf_path = f"saskatchewan_1/{pdf_name}"
+        pdf_path = f"saskatchewan_1/pdfs/{pdf_name}"
         await download_pdf(url, pdf_path)
     else:
         logger.info(f"Processing page: {url}")
@@ -107,7 +107,7 @@ async def scrape_crns_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/saskatchewan_1/scraped_crns_content.txt"
+            s3_file_name = "scraped_data/saskatchewan_1/scraped_content/scraped_crns_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
 

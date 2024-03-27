@@ -5,7 +5,7 @@ import pymongo
 from bs4 import BeautifulSoup
 from bson import ObjectId
 from django.conf import settings
-from langchain.document_loaders import OnlinePDFLoader, TextLoader
+from langchain_community.document_loaders import OnlinePDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from chatbackend.configs.logging_config import configure_logger

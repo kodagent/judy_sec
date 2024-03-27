@@ -46,7 +46,7 @@ async def get_text(knowledge_dir, pdfs=False):
 
     loader = S3DirectoryLoader(
         bucket=settings.AWS_STORAGE_BUCKET_NAME,
-        prefix=f"media/scraped_data/{knowledge_dir}/scraped_content/",
+        prefix=dir_name,
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     )
@@ -65,7 +65,7 @@ async def get_text(knowledge_dir, pdfs=False):
 
 
 async def create_embedding(text):
-    response = client.embeddings.create(input=[text], model="text-embedding-ada-002")
+    response = await client.embeddings.create(input=[text], model="text-embedding-ada-002")
     text_embedded = response.data[0].embedding
     return text_embedded
 
@@ -73,7 +73,6 @@ async def create_embedding(text):
 async def upload_data(PINECONE_INDEX_NAME, knowledge_dir, pdf):
     pinecone_index = pinecone.Index(index_name=PINECONE_INDEX_NAME)
     text_chunks = await get_text(knowledge_dir, pdf)
-    print("This is working: ", text_chunks)
     embeddings = []
 
     for i, chunk in enumerate(text_chunks):

@@ -74,6 +74,7 @@ class ScrapeAndUpdateAPI(View):
             }
 
             if scraper_province in scrapers:
+                # To delete both pdfs and scraped content dir
                 clear_s3_directory(
                     settings.AWS_STORAGE_BUCKET_NAME,
                     f"media/scraped_data/{scraper_province}/",
@@ -110,8 +111,8 @@ class SaveVecToDBAPI(View):
     async def get(self, request, province_dir, *args, **kwargs):
         try:
             # Convert the asynchronous function to synchronous for Django compatibility
-            # await save_vec_to_database(province_dir, first_db_opt=False)
-            save_vec_to_database_task.delay(knowledge_dir="your_dir", first_db_opt=True)
+            await save_vec_to_database(province_dir, first_db_opt=True)
+            # save_vec_to_database_task.delay(province_dir, first_db_opt=True)
 
             return JsonResponse({"Success": "Done saving vector to vecDB"}, status=200)
         except Exception as e:

@@ -99,7 +99,7 @@ async def scrape_alberta_site_3():
         await browser.close()
 
         with open(temp_file_path, "rb") as temp_file_to_upload:
-            s3_file_name = "scraped_data/alberta_3/scraped_alberta_3_content.txt"
+            s3_file_name = "scraped_data/alberta_3/scraped_content/scraped_alberta_3_content.txt"
             content_file = ContentFile(temp_file_to_upload.read())
             default_storage.save(s3_file_name, content_file)
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")

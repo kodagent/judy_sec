@@ -28,7 +28,7 @@ PINECONE_INDEX_NAME = settings.PINECONE_INDEX_NAME
 
 
 # ------------------------ UTIL FUNCTIONS ----------------------
-async def get_text(knowledge_dir):
+async def get_text(knowledge_dir, pdfs=False):
     def tiktoken_len(text):
         # Tokenize and split text
         tokenizer = tiktoken.get_encoding("cl100k_base")
@@ -36,9 +36,14 @@ async def get_text(knowledge_dir):
         return len(tokens)
 
     # Load data
+    if pdfs:
+        dir_name = f"media/scraped_data/{knowledge_dir}/pdfs/"
+    else:
+        dir_name = f"media/scraped_data/{knowledge_dir}/scraped_content/"
+
     loader = S3DirectoryLoader(
         bucket=settings.AWS_STORAGE_BUCKET_NAME,
-        prefix=f"media/scraped_data/{knowledge_dir}/",
+        prefix=dir_name,
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     )
@@ -62,19 +67,9 @@ async def create_embedding(text):
     return text_embedded
 
 
-async def save_vec_to_database(knowledge_dir, first_db_opt=False):
-    logger.info(f"Save-to-vec process started")
-
-    if first_db_opt and PINECONE_INDEX_NAME in pinecone.list_indexes():
-        logger.info(f"Deleting existing index: {PINECONE_INDEX_NAME}")
-        pinecone.delete_index(PINECONE_INDEX_NAME)
-
-    if PINECONE_INDEX_NAME not in pinecone.list_indexes():
-        logger.info(f"Creating new index: {PINECONE_INDEX_NAME}")
-        pinecone.create_index(PINECONE_INDEX_NAME, dimension=1536)
-
+async def upload_data(PINECONE_INDEX_NAME, knowledge_dir, pdf):
     pinecone_index = pinecone.Index(index_name=PINECONE_INDEX_NAME)
-    text_chunks = await get_text(knowledge_dir)
+    text_chunks = await get_text(knowledge_dir, pdf)
     embeddings = []
 
     for i, chunk in enumerate(text_chunks):
@@ -88,6 +83,20 @@ async def save_vec_to_database(knowledge_dir, first_db_opt=False):
     for i, batch in enumerate(chunked(embeddings, BATCH_SIZE)):
         logger.info(f"Uploaded Batch {i}")
         pinecone_index.upsert(batch)
+
+
+async def save_vec_to_database(knowledge_dir, first_db_opt=False):
+    logger.info(f"Save-to-vec process started")
+
+    if first_db_opt and PINECONE_INDEX_NAME in pinecone.list_indexes():
+        logger.info(f"Deleting existing index: {PINECONE_INDEX_NAME}")
+        pinecone.delete_index(PINECONE_INDEX_NAME)
+
+    if PINECONE_INDEX_NAME not in pinecone.list_indexes():
+        logger.info(f"Creating new index: {PINECONE_INDEX_NAME}")
+        pinecone.create_index(PINECONE_INDEX_NAME, dimension=1536)
+
+    await upload_data(PINECONE_INDEX_NAME, knowledge_dir, pdf=False)
 
 
 @shared_task

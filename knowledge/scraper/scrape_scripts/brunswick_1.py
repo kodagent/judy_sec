@@ -112,7 +112,7 @@ async def scrape_nanb_site():
 
         # Upload the temporary file to S3
         with open(temp_file_path, 'rb') as temp_file_to_upload:
-            s3_file_name = "scraped_data/brunswick_1/scraped_nanb_content.txt"
+            s3_file_name = "scraped_data/brunswick_1/scraped_content/scraped_nanb_content.txt"
             default_storage.save(s3_file_name, ContentFile(temp_file_to_upload.read()))
             logger.info(f"Scraped content saved to S3 as {s3_file_name}")
           

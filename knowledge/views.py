@@ -111,10 +111,10 @@ class SaveVecToDBAPI(View):
     async def get(self, request, province_dir, *args, **kwargs):
         try:
             # Convert the asynchronous function to synchronous for Django compatibility
-            await save_vec_to_database(province_dir, first_db_opt=True)
-            # save_vec_to_database_task.delay(province_dir, first_db_opt=True)
+            # await save_vec_to_database(province_dir, first_db_opt=True)
+            save_vec_to_database_task.delay(province_dir, first_db_opt=False)
 
-            return JsonResponse({"Success": "Done saving vector to vecDB"}, status=200)
+            return JsonResponse({"Success": "Initiated saving vector to vecDB"}, status=200)
         except Exception as e:
             # Log the error and send an error response
             logger.error(f"Error in SaveVecToDBAPI: {e}")
@@ -126,7 +126,7 @@ class QueryVecDBAPI(View):
         try:
             # Convert the asynchronous function to synchronous for Django compatibility
             await query_vec_database(
-                query="What is the BCCNM's legal obligation?", num_results=3
+                query="What is the Canada legal obligation for becoming a nurse?", num_results=3
             )
             return JsonResponse({"Success": "Answer contexts received"}, status=200)
         except Exception as e:

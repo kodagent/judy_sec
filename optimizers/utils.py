@@ -4,7 +4,7 @@ import time
 import boto3
 import textstat as textstat_analysis
 from django.conf import settings
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from sklearn.feature_extraction.text import CountVectorizer
 from spellchecker import SpellChecker

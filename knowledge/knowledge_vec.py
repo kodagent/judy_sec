@@ -11,6 +11,7 @@ from decouple import config
 from django.conf import settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import S3DirectoryLoader
+from langchain_community.document_loaders import S3DirectoryLoader
 from more_itertools import chunked
 
 logger = configure_logger(__name__)
@@ -38,8 +39,10 @@ async def get_text(knowledge_dir, pdfs=False):
     # Load data
     if pdfs:
         dir_name = f"media/scraped_data/{knowledge_dir}/pdfs/"
+        logger.info(f"Working on pdf: {dir_name}")
     else:
         dir_name = f"media/scraped_data/{knowledge_dir}/scraped_content/"
+        logger.info(f"Working on scraped content: {dir_name}")
 
     loader = S3DirectoryLoader(
         bucket=settings.AWS_STORAGE_BUCKET_NAME,
@@ -62,7 +65,7 @@ async def get_text(knowledge_dir, pdfs=False):
 
 
 async def create_embedding(text):
-    response = client.embeddings.create(input=[text], model="text-embedding-ada-002")
+    response = await client.embeddings.create(input=[text], model="text-embedding-ada-002")
     text_embedded = response.data[0].embedding
     return text_embedded
 

@@ -47,37 +47,6 @@ from rest_framework import status
 logger = configure_logger(__name__)
 
 
-def list_s3_folders(bucket_name, prefix):
-    """
-    Lists all folders under a specified prefix in an S3 bucket.
-    
-    :param bucket_name: Name of the S3 bucket.
-    :param prefix: Prefix path to list the folders from.
-    """
-    # Initialize a boto3 S3 client
-    s3_client = boto3.client('s3')
-
-    # Ensure the prefix ends with a slash
-    if not prefix.endswith('/'):
-        prefix += '/'
-
-    # Use a paginator to handle the listing
-    paginator = s3_client.get_paginator('list_objects_v2')
-    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=prefix, Delimiter='/')
-
-    print(f"Folders under '{prefix}' in '{bucket_name}':")
-    for page in page_iterator:
-        # CommonPrefixes contains the "folders" under the current prefix
-        for obj in page.get('CommonPrefixes', []):
-            print(obj['Prefix'])
-
-
-# # Example usage:
-# bucket_name = 'your-bucket-name'  # Replace with your actual bucket name
-# prefix = 'media/scraped_data/'  # Replace with your actual prefix
-# list_s3_folders(bucket_name, prefix)
-
-
 class ScrapeAndUpdateAPI(View):
     async def get(self, request, scraper_province, *args, **kwargs):
         try:
@@ -145,9 +114,7 @@ class SaveVecToDBAPI(View):
             # await save_vec_to_database(province_dir, first_db_opt=True)
             save_vec_to_database_task.delay(province_dir, first_db_opt=False)
 
-            # ==> using the s3 bucket arrangement, I haven't done manitoba downwards
-
-            return JsonResponse({"Success": "Done saving vector to vecDB"}, status=200)
+            return JsonResponse({"Success": "Initiated saving vector to vecDB"}, status=200)
         except Exception as e:
             # Log the error and send an error response
             logger.error(f"Error in SaveVecToDBAPI: {e}")
@@ -159,7 +126,7 @@ class QueryVecDBAPI(View):
         try:
             # Convert the asynchronous function to synchronous for Django compatibility
             await query_vec_database(
-                query="What is the BCCNM's legal obligation?", num_results=3
+                query="What is the Canada legal obligation for becoming a nurse?", num_results=3
             )
             return JsonResponse({"Success": "Answer contexts received"}, status=200)
         except Exception as e:

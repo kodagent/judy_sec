@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from chatbackend.configs.logging_config import configure_logger
 from optimizers.cl_opt import cl_optimize_func, customize_opt_cl
 from optimizers.resume_opt import customize_resume_optimize_func, resume_optimize_func
-
+from assistant.tasks import create_conversation
 logger = configure_logger(__name__)
 
 

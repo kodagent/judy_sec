@@ -14,6 +14,7 @@ from assistant.utils import convert_markdown_to_html
 from chatbackend.configs.base_config import openai_client as client
 from chatbackend.configs.logging_config import configure_logger
 from knowledge.knowledge_vec import query_vec_database
+from assistant.tasks import create_conversation
 
 logger = configure_logger(__name__)
 
@@ -40,7 +41,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.conversation_memory = BaseMemory()
 
         # Create the Conversation instance without setting the customer and channel
-        self.conversation = await database_sync_to_async(Conversation.objects.create)()
+        # self.conversation = await database_sync_to_async(Conversation.objects.create)()
+        create_conversation.delay()
 
         # Initialize the conversation start time
         self.conversation_memory.session_start_time = datetime.now()

@@ -121,4 +121,9 @@ def calculate_average_response_time(conversation_history):
         return 0  # To avoid division by zero
     else:
         return total_response_time / total_messages
-    
+        
+
+@shared_task
+def create_conversation():
+    conversation = Conversation.objects.create()
+    return conversation.id  # Returning ID for future reference if needed

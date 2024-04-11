@@ -5,13 +5,20 @@ from django.http import JsonResponse
 from django.views import View
 
 from meeting.candidate_analyzer import main_analysis as analysis_for_candidate
-from meeting.models import (Analysis, CandidateFeedback, InterviewTranscript,
-                            RecruiterFeedback)
+from meeting.models import (
+    Analysis,
+    CandidateFeedback,
+    InterviewTranscript,
+    RecruiterFeedback,
+)
 from meeting.recruiter_analyzer import main_analysis as analysis_for_recruiter
-from meeting.serializers import (AnalysisSerializer,
-                                 CandidateFeedbackSerializer,
-                                 InterviewTranscriptSerializer,
-                                 RecruiterFeedbackSerializer)
+from meeting.serializers import (
+    AnalysisSerializer,
+    CandidateFeedbackSerializer,
+    InterviewTranscriptSerializer,
+    RecruiterFeedbackSerializer,
+)
+from meeting.tasks import run_candidate_analysis, run_recruiter_analysis
 
 
 def get_existing_candidate_analysis(transcript_id):
@@ -38,33 +45,76 @@ class TranscriptAnalysis(View):
     async def post(self, request, format=None):
         # try:
         data = json.loads(request.body)
-        transcript_id = data.get('transcript_id')
-        transcript_text = data.get('transcript')
+        transcript_id = data.get("transcript_id")
+        transcript_text = data.get("transcript")
 
         # Check for existing analysis
-        existing_transcript, existing_candidate_analysis, existing_candidate_feedback = await sync_to_async(get_existing_candidate_analysis)(transcript_id)
-        _, existing_recruiter_analysis, existing_recruiter_feedback = await sync_to_async(get_existing_recruiter_analysis)(transcript_id)
+        (
+            existing_transcript,
+            existing_candidate_analysis,
+            existing_candidate_feedback,
+        ) = await sync_to_async(get_existing_candidate_analysis)(transcript_id)
+        _, existing_recruiter_analysis, existing_recruiter_feedback = (
+            await sync_to_async(get_existing_recruiter_analysis)(transcript_id)
+        )
 
-        if existing_transcript and existing_candidate_analysis and existing_candidate_feedback and existing_recruiter_analysis and existing_recruiter_feedback:
+        if (
+            existing_transcript
+            and existing_candidate_analysis
+            and existing_candidate_feedback
+            and existing_recruiter_analysis
+            and existing_recruiter_feedback
+        ):
             # Return existing data
             data = {
-                'transcript': InterviewTranscriptSerializer(existing_transcript).data,
-                'candidate_analysis': AnalysisSerializer(existing_candidate_analysis, many=True).data,
-                'candidate_feedback': CandidateFeedbackSerializer(existing_candidate_feedback, many=True).data,
-                'recruiter_analysis': AnalysisSerializer(existing_recruiter_analysis, many=True).data,
-                'recruiter_feedback': RecruiterFeedbackSerializer(existing_recruiter_feedback, many=True).data
+                "transcript": InterviewTranscriptSerializer(existing_transcript).data,
+                "candidate_analysis": AnalysisSerializer(
+                    existing_candidate_analysis, many=True
+                ).data,
+                "candidate_feedback": CandidateFeedbackSerializer(
+                    existing_candidate_feedback, many=True
+                ).data,
+                "recruiter_analysis": AnalysisSerializer(
+                    existing_recruiter_analysis, many=True
+                ).data,
+                "recruiter_feedback": RecruiterFeedbackSerializer(
+                    existing_recruiter_feedback, many=True
+                ).data,
             }
             return JsonResponse(data)
 
         # If not existing, process new analysis for both candidate and recruiter
-        candidate_analysis_results = await analysis_for_candidate(transcript_text)
-        recruiter_analysis_results = await analysis_for_recruiter(transcript_text)
+        # candidate_analysis_results = await analysis_for_candidate(transcript_text)
+        # recruiter_analysis_results = await analysis_for_recruiter(transcript_text)
+
+        # Create new Analysis instances
+        candidate_analysis = Analysis.objects.create(
+            transcript=existing_transcript, analysis_type="Candidate Analysis"
+        )
+        recruiter_analysis = Analysis.objects.create(
+            transcript=existing_transcript, analysis_type="Recruiter Analysis"
+        )
+
+        candidate_analysis_task = run_candidate_analysis.delay(
+            transcript_text, candidate_analysis.id
+        )
+        recruiter_analysis_task = run_recruiter_analysis.delay(
+            transcript_text, recruiter_analysis.id
+        )
+
+        # Update the task IDs
+        candidate_analysis.task_id = candidate_analysis_task.id
+        candidate_analysis.save()
+        recruiter_analysis.task_id = recruiter_analysis_task.id
+        recruiter_analysis.save()
 
         # Combine and return the results
-        return JsonResponse({
-            'candidate_analysis': candidate_analysis_results,
-            'recruiter_analysis': recruiter_analysis_results
-        })
+        return JsonResponse(
+            {
+                "candidate_analysis": candidate_analysis_task.id,
+                "recruiter_analysis": recruiter_analysis_task.id,
+            }
+        )
         # except json.JSONDecodeError:
         #     return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
@@ -99,7 +149,7 @@ class TranscriptAnalysis(View):
                 during the interview.\n\n\
             In conclusion, Jordan demonstrates effective communication skills throughout the interview. They are articulate, respond well to questions, and \
             seem to listen actively to the recruiter. Their ability to describe complex ideas in accessible terms is also evident, although there is always room \
-            to enrich responses with more pertinent examples and further detail.", 
+            to enrich responses with more pertinent examples and further detail.",
         "Technical Knowledge": "Based on the provided transcript, Jordan demonstrates a solid grounding in the field of nursing, particularly in pediatric care. Here are \
             some instances that show their technical expertise:\n\n\
                 1. **Range of Experiences**: Jordan mentions having worked in both hospital and clinic settings, suggesting familiarity with different healthcare \
@@ -125,7 +175,7 @@ class TranscriptAnalysis(View):
                     mentions opportunities for advancement into leadership roles.\n\n\
                 Overall, Jordan appears to be a well-rounded candidate with a strong foundation in nursing and a commendable dedication to professional development. \
                 However, more detailed conversations about their technical skills, practical problem-solving experiences, and specific interests within the field \
-                would provide a comprehensive understanding of their expertise.", 
+                would provide a comprehensive understanding of their expertise.",
         "Behavioral Competencies": "Based on the provided transcript, Jordan demonstrates several behavioral competencies effectively:\n\n**Teamwork:**\nJordan highlights \
             the importance of teamwork in nursing and mentions clear communication, mutual respect, and collaboration as key components of their approach to working in a \
             team setting. By mentioning active listening and positive contribution to team goals, Jordan demonstrates an understanding of what effective teamwork entails. \
@@ -142,7 +192,7 @@ class TranscriptAnalysis(View):
             current with nursing knowledge and practices. Although there are no explicit examples of Jordan taking on formal leadership roles, their proactive approach to \
             problem-solving and professional development suggests they have the potential to develop strong leadership skills. It would be beneficial to explore Jordan's \
             leadership experiences further, perhaps by asking for specific instances where they have led a team or project. Overall, Jordan presents as a strong team player \
-            with the capacity to adapt to changing environments and the potential to grow into leadership positions.", 
+            with the capacity to adapt to changing environments and the potential to grow into leadership positions.",
         "Experience & Qualification": "Jordan's discussion of their nursing experience appears to be quite relevant to the role they have applied for. Their five-year focus \
             on pediatric care and work in both hospital and clinic settings demonstrates a solid background that would likely be valuable in a hospital environment that \
             emphasizes patient-centered care and innovation in pediatric medicine. Jordan's handling of a challenging pediatric patient shows an understanding of the \
@@ -160,7 +210,7 @@ class TranscriptAnalysis(View):
             beneficial to mention these to align with the hospital's interest in professional advancement and leadership development within their team.\n\n5. **Professional \
             Goals**: It might be helpful for Jordan to articulate their long-term professional goals and how they see themselves growing within the hospital. This would \
             demonstrate ambition and a desire to invest long-term in the hospital, making them a potentially more attractive candidate.\n\nOverall, Jordan presents a strong \
-            case for their candidacy, but providing more detail and emphasizing specific relevant experiences could further enhance their appeal for the position.", 
+            case for their candidacy, but providing more detail and emphasizing specific relevant experiences could further enhance their appeal for the position.",
         "Problem Solving Skills": "Based on the provided interview exchange, Jordan appears to demonstrate strong problem-solving and critical thinking skills, particularly \
             in their approach to handling a challenging situation with a pediatric patient. Jordan's method of using age-appropriate communication and involving the patient's \
             parents showcases an analytical approach to resolving issues by considering the patient's emotional needs and the importance of family support.\n\nCreativity is \
@@ -178,7 +228,7 @@ class TranscriptAnalysis(View):
             problem-solving efforts. Reflective practice is a crucial aspect of continuous improvement and learning in nursing, and discussing this could demonstrate a higher level \
             of self-awareness and critical thinking.\n\nOverall, Jordan seems to be a strong candidate with a good foundation in problem-solving and critical thinking. Encouraging \
             them to continue developing these skills through varied experiences and continued education will further enhance their ability to contribute positively to a healthcare \
-            team.", 
+            team.",
         "Emotional Intelligence": "Based on the provided transcript, Jordan displays several aspects of emotional intelligence during the interview:\n\n1. Self-awareness: Jordan \
             is aware of their passion for pediatric care and aligns their values with those of the hospital. They also recognize the importance of self-care in managing \
             stress.\n\n2. Self-regulation: Jordan mentions staying calm and focused under pressure, which indicates an ability to manage emotions effectively in stressful \
@@ -193,8 +243,7 @@ class TranscriptAnalysis(View):
             Mindfulness and stress management: Although Jordan practices self-care, they could further explore mindfulness techniques to enhance their ability to remain composed \
             and empathetic in high-stress environments.\n\n- Develop conflict resolution skills: While it wasn't specifically mentioned in the transcript, being prepared to handle \
             conflicts with emotional intelligence is crucial. Jordan could benefit from training or workshops on conflict resolution to complement their skill set.\n\nOverall, \
-            Jordan seems to have a strong foundation in emotional intelligence but, like most people, could benefit from continuous self-improvement in this area.", 
-        
+            Jordan seems to have a strong foundation in emotional intelligence but, like most people, could benefit from continuous self-improvement in this area.",
         "Professionalism": "Based on the provided dialogue, Jordan demonstrates a high level of professionalism throughout the interview. Here are some observations and \
             tips for presenting an even more polished image:\n\n**Strengths:**\n\n1. **Preparedness:** Jordan arrives at the interview ready to discuss their background, \
             motivations for applying, and how their values align with the hospital's mission. This indicates good preparation, which is a key professional trait.\n\n2. \
@@ -213,10 +262,10 @@ class TranscriptAnalysis(View):
             the recruiter for their time and consideration.\n\n5. **Follow-Up:** After the interview, sending a thank-you email to Alex reiterating interest in the position and \
             reflecting on a key part of the conversation can leave a positive, lasting impression.\n\nOverall, Jordan comes across as a very professional candidate. By focusing \
             slightly more on the nuances of personal interaction and providing more detailed examples of their achievements, they can present an even stronger case for their \
-            suitability for the nursing position.", 
+            suitability for the nursing position.",
         "Sentiment Analysis": "Your interview responses seem mostly positive. They also appear to be subjective. Consider if this tone aligns with how you want to present \
-            yourself in professional settings."
-    }, 
+            yourself in professional settings.",
+    },
     "recruiter_analysis": {
         "Communication Skills": "Based on the provided interview transcript, the candidate, Jordan, demonstrates strong communication skills overall.\n\n**Clarity of \
             Expression:**\nJordan articulates their thoughts clearly throughout the interview. They provide concise and relevant information about their background and \
@@ -234,7 +283,7 @@ class TranscriptAnalysis(View):
             the end of the interview, indicating engagement with the process and a forward-thinking approach to their potential role within the hospital.\n- There is a \
             polite and professional tone maintained throughout the conversation, showing Jordan's interpersonal communication skills.\n\nOverall, the candidate comes across \
             as a strong communicator who is able to express themselves effectively, listen to questions, and articulate responses that demonstrate a good understanding of \
-            the nursing profession and the role they are applying for.", 
+            the nursing profession and the role they are applying for.",
         "Technical Knowledge": "As the recruitment lead for the nursing team, Alex's primary role is to assess the candidates' qualifications, experience, and suitability \
             for the nursing position at the hospital. In this simulated job interview scenario, the candidate, Jordan, presents their technical knowledge and skills through \
             their responses to Alex's inquiries.\n\nJordan's technical proficiency in nursing can be inferred from their answers:\n\n1. Experience: Jordan has five years of \
@@ -253,7 +302,7 @@ class TranscriptAnalysis(View):
             to apply technical knowledge in real-world situations. They show an understanding of the importance of both hard skills (such as medical knowledge) and soft skills \
             (such as communication and teamwork) in the nursing profession.\n\nHowever, to provide a detailed analysis of Jordan's technical proficiency, it would be \
             beneficial to delve into more specific technical questions about nursing protocols, procedures, and clinical decision-making. This information is not present in \
-            the transcript, but such inquiries would be expected in a real-life technical interview for a nursing position.", 
+            the transcript, but such inquiries would be expected in a real-life technical interview for a nursing position.",
         "Emotional Intelligence": "Based on the candidate's responses during the interview, we can analyze Jordan's emotional intelligence across several \
             dimensions:\n\n**Self-awareness:**\nJordan demonstrates self-awareness by acknowledging the importance of self-care to maintain well-being and effectively \
             handle stress. This shows an understanding of personal needs and limitations, which is crucial in high-stress environments like \
@@ -273,7 +322,7 @@ class TranscriptAnalysis(View):
             ability to work collaboratively within a team are imperative in a hospital, and Jordan seems to possess these qualities. The motivation for continuous learning \
             and professional development indicates that Jordan will strive to perform at a high level and stay engaged with their work.\n\nOverall, Jordan's emotional \
             intelligence traits suggest they would not only integrate well into a nursing team but could also positively influence team dynamics and contribute to a \
-            supportive and effective work environment.", 
+            supportive and effective work environment.",
         "Professionalism": "Based on the interview, Jordan exhibits a high level of professionalism and assertiveness. Their responses to the recruiter's questions are clear, \
             articulate, and focused, demonstrating a strong understanding of the role of a nurse and a commitment to patient care.\n\n**Professionalism**: Jordan's \
             professionalism is evident in their detailed recounting of their nursing experience and the emphasis on patient-centered care. They articulate their alignment \
@@ -290,7 +339,7 @@ class TranscriptAnalysis(View):
             professional environment of the organization. Their values align with the hospital's, and they demonstrate a commitment to teamwork, patient care, and personal \
             and professional development\u2014all of which are likely to be valued in the hospital setting.\n\nIn conclusion, Jordan seems like a strong candidate who would \
             contribute positively to the nursing team. Their professionalism, assertiveness, and proactive approach to learning and development suggest they would be a \
-            dependable and valuable addition to the organization.", 
+            dependable and valuable addition to the organization.",
         "Teamwork & Leadership": "Based on the interview transcript, the candidate, Jordan, demonstrates strong competencies in both teamwork and leadership.\n\n**Teamwork \
             Abilities:**\n\n1. **Diverse Experience in Team Settings:** Jordan mentions having worked in both hospital and clinic settings, indicating experience in varying \
             team dynamics and environments. This suggests adaptability and the ability to collaborate with different types of healthcare teams.\n\n2. **Patient-Centered \
@@ -310,7 +359,7 @@ class TranscriptAnalysis(View):
             Development:** By inquiring about opportunities for advancement and professional development, Jordan demonstrates a desire to grow and potentially take on more \
             significant leadership roles within the nursing team.\n\nWhile Jordan does not provide explicit examples of leading a team, the behaviors and attitudes described \
             in the interview suggest a candidate with the potential to take on leadership roles. The focus on communication, collaboration, and personal development, along \
-            with the ability to manage stress and advocate for patients, are all indicative of a nurse with the foundational qualities of a strong leader and team player.", 
+            with the ability to manage stress and advocate for patients, are all indicative of a nurse with the foundational qualities of a strong leader and team player.",
         "Adaptibility & Problem Solving": "Based on the interview transcript, Jordan demonstrates adaptability and problem-solving skills in several instances:\n\n1. **Approach \
             to Challenges and Changes:**\n   - Jordan's adaptability is showcased when discussing their experience in different healthcare settings, including hospitals and \
             clinics. This implies a capacity to adjust to various work environments and patient needs.\n   - The situation described with the anxious pediatric patient \
@@ -328,7 +377,7 @@ class TranscriptAnalysis(View):
             environment.\n\n**Assessment of Potential Effectiveness:**\nJordan appears to be a highly adaptable and effective problem-solver with a patient-centered approach, \
             a commitment to continuous learning, and good teamwork skills. Their experience in multiple healthcare settings, combined with a calm demeanor and structured \
             approach to stress, suggests that they would be effective in a dynamic work environment. Jordan's emphasis on communication and engagement with both patients and \
-            team members would likely contribute to their success in navigating the complexities of a hospital setting.", 
+            team members would likely contribute to their success in navigating the complexities of a hospital setting.",
         "Cultural Fit & Motivation": "Based on the transcript, Jordan seems to exhibit a strong alignment with the company's culture and a clear motivation for applying for \
             the nursing position.\n\n1. **Understanding of Company Values**:\n   - Jordan mentions an alignment with the hospital's emphasis on **patient-centered care and \
             continuous learning**, which indicates an understanding of key aspects of the company's values.\n   - They express excitement about the hospital's **initiatives \
@@ -346,6 +395,6 @@ class TranscriptAnalysis(View):
             they are looking to invest in the organization and envision a future there, signaling a potential for long-term retention and integration into the culture.\n\nIn \
             conclusion, Jordan's responses and the way they conduct themselves during the interview give strong cues that they would integrate well into the company culture. \
             They seem to be motivated by the same values that the hospital upholds, are committed to their own growth and learning, and demonstrate a collaborative spirit that \
-            would likely make them a valuable addition to the nursing team."
-    }
+            would likely make them a valuable addition to the nursing team.",
+    },
 }
